@@ -30,21 +30,6 @@ class CommandResult extends Result {
   }
 }
 
-
-// a4: Don't need, I think
-//class JumpResult extends Result {
-//  /**
-//   * Return a node to jump to next.
-//   * @param {string} [identifier] node to jump to
-//   * @param {int} [lineNum] line number of the result in the node
-//   */
-//  constructor(identifier, lineNum) {
-//    super();
-//    this.identifier = identifier;
-//    this.lineNum = lineNum;
-//  }
-//}
-
 class OptionsResult extends Result {
   /**
    * Create a selectable list of options from the given list of text

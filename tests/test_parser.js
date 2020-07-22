@@ -20,11 +20,11 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  it('can parse an option', () => {
+  it('can parse a jump', () => {
     const results = parser.parse('[[optiondest]]');
 
     const expected = [
-      new nodes.LinkNode('optiondest', undefined, { first_line: results[0].lineNum }),
+      new nodes.JumpNode('optiondest',  { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -53,22 +53,22 @@ describe('Parser', () => {
   });
 
   it('can parse some text followed by an option', () => {
-    const results = parser.parse('some text [[optiondest]]');
+    const results = parser.parse('some text [[text1|dest1]]');
 
     const expected = [
       new nodes.TextNode('some text ', { first_line: results[0].lineNum }),
-      new nodes.LinkNode('optiondest', undefined, { first_line: results[1].lineNum }),
+      new nodes.LinkNode('text1', 'dest1', { first_line: results[1].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
   it('can parse some text followed by a newline and an option', () => {
-    const results = parser.parse('some text\n[[optiondest]]');
+    const results = parser.parse('some text\n[[text1|dest1]]');
 
     const expected = [
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.LinkNode('optiondest', undefined, { first_line: results[1].lineNum }),
+      new nodes.LinkNode('text1', 'dest1', { first_line: results[1].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);

@@ -12,7 +12,7 @@
 	{
 		"title": "ThreeNodes",
 		"tags": "",
-		"body": "This is a test line\nThis is another test line[[Option1]]\n[[Option2]]",
+		"body": "This is a test line\nThis is another test line[[First choice|Option1]]\n[[Second choice|Option2]]",
 		"position": {
 			"x": 449,
 			"y": 252
@@ -40,7 +40,7 @@
 		"colorID": 0
 	},
 	{
-		"title": "NamedLink",
+		"title": "Link",
 		"tags": "",
 		"body": "This is a test line\nThis is another test line\n[[First choice|Option1]]\n[[Second choice|Option2]]",
 		"position": {
@@ -50,7 +50,7 @@
 		"colorID": 0
 	},
 	{
-		"title": "OneLinkPassthrough",
+		"title": "OneJumpPassthrough",
 		"tags": "",
 		"body": "First test line\n[[Option1]]",
 		"position": {

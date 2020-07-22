@@ -58,7 +58,7 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is another test line', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Option1', 'Option2'], [2, 3]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['First choice', 'Second choice'], [2, 3]));
 
     optionResult.select(0);
     value = run.next().value;
@@ -67,9 +67,9 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can run through a named link to another node', () => {
+  it('Can run through a link to another node', () => {
     runner.load(linksYarnData);
-    const run = runner.run('NamedLink');
+    const run = runner.run('Link');
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
@@ -86,9 +86,9 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Automatically goes to the linked node, if only one link is given', () => {
+  it('Automatically goes to the jump node', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneLinkPassthrough');
+    const run = runner.run('OneJumpPassthrough');
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('First test line', value.data, value.lineNum));

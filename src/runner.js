@@ -85,6 +85,7 @@ class Runner {
     if (!nodes) return;
 
     let selectableNodes = null;
+		let jumpNode = null;
 
     // Either nodeTypes.Link or nodeTypes.Shortcut depending on which we're accumulating
     // (Since we don't want to accidentally lump shortcuts in with links)
@@ -95,7 +96,10 @@ class Runner {
     //  the weirdness here)
     for (const node of nodes) {
 
-      if (selectableNodes !== null && node instanceof selectionType) {
+			if (node instanceof nodeTypes.Jump){
+				jumpNode = node;
+			}
+      else if (selectableNodes !== null && node instanceof selectionType) {
         // We're accumulating selection nodes, so add this one to the list
         // TODO: handle conditional option nodes
         selectableNodes.push(node);
@@ -135,7 +139,10 @@ class Runner {
       }
     }
 
-    if (selectableNodes !== null) {
+		if (jumpNode !== null) {
+			yield* this.run(jumpNode.identifier);
+		}
+    else if (selectableNodes !== null) {
       // At the end of the node, but we still need to handle any final options
       yield* this.handleSelections(selectableNodes);
     }
@@ -146,9 +153,8 @@ class Runner {
    * @param {any[]} selections
    */
   * handleSelections(selections) {
-    if (selections.length > 1 || selections[0] instanceof nodeTypes.Shortcut) {
+    if (selections.length > 0 || selections[0] instanceof nodeTypes.Shortcut) {		  
       // Multiple options to choose from (or just a single shortcut)
-
       // Filter out any conditional dialog options that result to false
       const filteredSelections = selections.filter((s) => {
         if (s.type === 'ConditionalDialogOptionNode') {

@@ -2,6 +2,7 @@
 
 class Text { }
 class Shortcut { }
+class Jump { }
 class Link { }
 class Conditional { }
 class Assignment { }
@@ -13,6 +14,7 @@ module.exports = {
   types: {
     Text,
     Shortcut,
+		Jump,
     Link,
     Conditional,
     Assignment,
@@ -107,6 +109,17 @@ module.exports = {
     }
   },
 
+  JumpNode: class extends Jump {
+    constructor(identifier, lineNo) {
+      super();
+      this.type = 'JumpNode';
+      this.identifier = identifier;
+      this.lineNum = lineNo ? lineNo.first_line : -1;
+
+      this.selectable = true;
+    }
+  },
+  
   LinkNode: class extends Link {
     constructor(text, identifier, lineNo) {
       super();

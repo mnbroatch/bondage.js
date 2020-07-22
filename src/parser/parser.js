@@ -47,19 +47,35 @@ const grammar = {
     statement: [
       ['shortcut', '$$ = $1;'],
       ['command', '$$ = $1;'],
+      ['jump', '$$ = $1;'],
       ['link', '$$ = $1;'],
       ['assignment', '$$ = $1;'],
       ['Text', '$$ = new yy.TextNode($1, @$);'],
     ],
 
-    link: [
-      ['OptionStart Text OptionEnd', '$$ = new yy.LinkNode($2, undefined, @$);'],
-      ['OptionStart Text OptionDelimit Identifier OptionEnd', '$$ = new yy.LinkNode($2, $4, @$);'],
-    ],
-
     shortcut: [
       ['ShortcutOption Text Indent statements Dedent', '$$ = new yy.DialogOptionNode($2, $4, @$);'],
       ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogOptionNode($2, $8, $5, @$);'],
+    ],
+
+    command: [
+      ['BeginCommand CommandCall EndCommand', '$$ = new yy.CommandNode($2, @$);'],
+    ],
+
+		jump: [
+			['OptionStart Text OptionEnd', '$$ = new yy.JumpNode($2, @$);'],
+		],
+	
+    link: [      
+      ['OptionStart Text OptionDelimit Identifier OptionEnd', '$$ = new yy.LinkNode($2, $4, @$);'],
+    ],
+
+    assignment: [
+      ['BeginCommand Set Variable EqualToOrAssign expression EndCommand', '$$ = new yy.SetVariableEqualToNode($3.substring(1), $5);'],
+      ['BeginCommand Set Variable AddAssign expression EndCommand', '$$ = new yy.SetVariableAddNode($3.substring(1), $5);'],
+      ['BeginCommand Set Variable MinusAssign expression EndCommand', '$$ = new yy.SetVariableMinusNode($3.substring(1), $5);'],
+      ['BeginCommand Set Variable MultiplyAssign expression EndCommand', '$$ = new yy.SetVariableMultipyNode($3.substring(1), $5);'],
+      ['BeginCommand Set Variable DivideAssign expression EndCommand', '$$ = new yy.SetVariableDivideNode($3.substring(1), $5);'],
     ],
 
     expression: [
@@ -96,20 +112,8 @@ const grammar = {
       ['functionResultExpression', '$$ = $1;'],
     ],
 
-    assignment: [
-      ['BeginCommand Set Variable EqualToOrAssign expression EndCommand', '$$ = new yy.SetVariableEqualToNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable AddAssign expression EndCommand', '$$ = new yy.SetVariableAddNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable MinusAssign expression EndCommand', '$$ = new yy.SetVariableMinusNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable MultiplyAssign expression EndCommand', '$$ = new yy.SetVariableMultipyNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable DivideAssign expression EndCommand', '$$ = new yy.SetVariableDivideNode($3.substring(1), $5);'],
-    ],
-
     functionResultExpression: [
       ['Identifier LeftParen arguments RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
-    ],
-
-    command: [
-      ['BeginCommand CommandCall EndCommand', '$$ = new yy.CommandNode($2, @$);'],
     ],
 
     arguments: [

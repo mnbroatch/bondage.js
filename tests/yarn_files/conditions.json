@@ -53,7 +53,7 @@
 	{
 		"title": "BasicIf",
 		"tags": "Tag",
-		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 321>>Inside if<<endif>>Text after",
+		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 321>>\nInside if\nInside if2<<endif>>Text after",
 		"position": {
 			"x": 449,
 			"y": 252
@@ -94,6 +94,16 @@
 		"title": "TextAfterOption",
 		"tags": "Tag",
 		"body": "Text before\n[[FinalOption|Objective]]\nText after",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
+		"title": "ConditionalOption",
+		"tags": "Tag",
+		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\n[[Cond Option|Objective]]\n<<endif>>\nText after\n",
 		"position": {
 			"x": 449,
 			"y": 252

@@ -150,6 +150,20 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
+  it('can parse a shortcut option containing an assignment', () => {
+    const results = parser.parse('text\n-> shortcut1\n\tshortcut text1\n-> shortcut2\n\tshortcut text2\n<<set $testvar to 6>>\nmore text');
+
+    const expected = [
+      new nodes.TextNode('text', { first_line: 1 }),
+      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }),
+      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('shortcut text2', { first_line: 5 })], { first_line: 4 }),
+			new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
+      new nodes.TextNode('more text', { first_line: 7 }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+	
   it('correctly ignores a double newline', () => {
     const results = parser.parse('some text\n\n<<commandtext>>');
 

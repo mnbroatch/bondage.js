@@ -188,29 +188,11 @@ describe('Lexer', () => {
     const lexer = new Lexer();
     lexer.setInput('This is a {$test} sentence');
 		
-/*		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-*/
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('BeginInlineExp');
+	expect(lexer.lex()).to.equal('Text');
+	expect(lexer.lex()).to.equal('BeginInlineExp');
     expect(lexer.lex()).to.equal('Variable');
     expect(lexer.lex()).to.equal('EndInlineExp');
-		expect(lexer.lex()).to.equal('Text');
+	expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 });

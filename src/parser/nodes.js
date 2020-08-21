@@ -22,7 +22,7 @@ module.exports = {
     Literal,
     Expression,
     Command,
-		InlineExpression,
+	InlineExpression,
   },
 
   RootNode: class {
@@ -385,7 +385,7 @@ module.exports = {
     }
   },
 	
-	  // /////////////// Inline Expression Nodes
+  // /////////////// Inline Expression Nodes
   InlineExpressionNode: class extends InlineExpression {
     constructor(variableName) {
       super();

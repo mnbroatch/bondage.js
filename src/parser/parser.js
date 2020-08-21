@@ -127,10 +127,10 @@ const grammar = {
       ['String', '$$ = new yy.StringLiteralNode($1);'],
       ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
     ],
-		
-		inlineExpression: [
-			['BeginInlineExp Variable EndInlineExp', '$$ = new yy.InlineExpressionNode($2.substring(1));'],
-		]
+
+	inlineExpression: [
+		['BeginInlineExp Variable EndInlineExp', '$$ = new yy.InlineExpressionNode($2.substring(1));'],
+	]
   },
 };
 

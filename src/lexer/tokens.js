@@ -94,8 +94,8 @@ const Tokens = {
   Text:                 /.*/,                      // a run of text until we hit other syntax.
 	
   // Braces are used for inline expressions
-  BeginInlineExp:				/\{/,											 // {
-  EndInlineExp:      		/\}/											 // }
+  BeginInlineExp:		/\{/,					   // {
+  EndInlineExp:     	/\}/					   // }
 };
 /* eslint-enable key-spacing */
 

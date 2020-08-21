@@ -186,7 +186,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 	
-	  it('can parse a single inline expression', () => {
+  it('can parse a single inline expression', () => {
     const results = parser.parse('{$testvar}');
 
     const expected = [
@@ -196,7 +196,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 	
-		  it('can parse a single inline expression within a sentence', () => {
+  it('can parse a single inline expression within a sentence', () => {
     const results = parser.parse('Hello there {$testvar}.');
 
     const expected = [

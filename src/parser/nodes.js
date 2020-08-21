@@ -9,6 +9,7 @@ class Assignment { }
 class Literal { }
 class Expression { }
 class Command { }
+class InlineExpression { }
 
 module.exports = {
   types: {
@@ -21,6 +22,7 @@ module.exports = {
     Literal,
     Expression,
     Command,
+		InlineExpression,
   },
 
   RootNode: class {
@@ -382,4 +384,13 @@ module.exports = {
       this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
+	
+	  // /////////////// Inline Expression Nodes
+  InlineExpressionNode: class extends InlineExpression {
+    constructor(variableName) {
+      super();
+      this.type = 'InlineExpression';
+      this.variableName = variableName;
+    }
+  }
 };

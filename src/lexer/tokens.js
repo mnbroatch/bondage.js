@@ -92,6 +92,10 @@ const Tokens = {
   CommandCall:          /([^>]|(?!>)[^>]+>)+(?=>>)/,// Command call
 
   Text:                 /.*/,                      // a run of text until we hit other syntax.
+	
+  // Braces are used for inline expressions
+  BeginInlineExp:				/\{/,											 // {
+  EndInlineExp:      		/\}/											 // }
 };
 /* eslint-enable key-spacing */
 

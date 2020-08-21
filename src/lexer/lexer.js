@@ -280,7 +280,7 @@ class Lexer {
    * @return {boolean}  `true` when yylloc indicates that the end of the line was reached.
    */
   isAtTheEndOfLine() {
-    return this.yylloc.last_column >= this.getCurrentLine().length;
+    return this.yylloc.last_column > this.getCurrentLine().length;
   }
 }
 

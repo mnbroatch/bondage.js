@@ -75,7 +75,7 @@ class LexerState {
   }
 
   /**
-   * setTrackNextIndentation - tell this state wether to track indentation.
+   * setTrackNextIndentation - tell this state whether to track indentation.
    *
    * @param  {boolean} track - `true` to track, `false` otherwise.
    * @return {Object} - returns the LexState itself for chaining.

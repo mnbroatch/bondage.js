@@ -185,4 +185,26 @@ describe('Parser', () => {
 
     expect(results).to.deep.equal(expected);
   });
+	
+	  it('can parse a single inline expression', () => {
+    const results = parser.parse('{$testvar}');
+
+    const expected = [
+      new nodes.InlineExpressionNode('testvar')
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+	
+		  it('can parse a single inline expression within a sentence', () => {
+    const results = parser.parse('Hello there {$testvar}.');
+
+    const expected = [
+      new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
+      new nodes.InlineExpressionNode('testvar'),
+			new nodes.TextNode('.', { first_line: results[2].lineNum })
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
 });

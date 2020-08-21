@@ -34,7 +34,7 @@ describe('Parser', () => {
     const results = parser.parse('[[option text|optiondest]]');
 
     const expected = [
-      new nodes.OptionNode('option text', 'optiondest', { first_line: results[0].lineNum }),
+      new nodes.LinkNode('option text', 'optiondest', { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -44,9 +44,9 @@ describe('Parser', () => {
     const results = parser.parse('[[text1|dest1]][[text2|dest2]]\n[[text3|dest3]]');
 
     const expected = [
-      new nodes.OptionNode('text1', 'dest1', { first_line: results[0].lineNum }),
-      new nodes.OptionNode('text2', 'dest2', { first_line: results[1].lineNum }),
-      new nodes.OptionNode('text3', 'dest3', { first_line: results[2].lineNum }),
+      new nodes.LinkNode('text1', 'dest1', { first_line: results[0].lineNum }),
+      new nodes.LinkNode('text2', 'dest2', { first_line: results[1].lineNum }),
+      new nodes.LinkNode('text3', 'dest3', { first_line: results[2].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -57,7 +57,7 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('some text ', { first_line: results[0].lineNum }),
-      new nodes.OptionNode('text1', 'dest1', { first_line: results[1].lineNum }),
+      new nodes.LinkNode('text1', 'dest1', { first_line: results[1].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -68,7 +68,7 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.OptionNode('text1', 'dest1', { first_line: results[1].lineNum }),
+      new nodes.LinkNode('text1', 'dest1', { first_line: results[1].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -121,8 +121,8 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('Text1', { first_line: 3 })], { first_line: 2 }),
-      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('Text2', { first_line: 5 })], { first_line: 4 }),
+      new nodes.DialogOptionNode('shortcut1', [new nodes.TextNode('Text1', { first_line: 3 })], { first_line: 2 }),
+      new nodes.DialogOptionNode('shortcut2', [new nodes.TextNode('Text2', { first_line: 5 })], { first_line: 4 }),
       new nodes.TextNode('more text', { first_line: 6 }),
     ];
 
@@ -134,36 +134,22 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [
+      new nodes.DialogOptionNode('shortcut1', [
         new nodes.TextNode('Text1', { first_line: 3 }),
-        new nodes.DialogShortcutNode('nestedshortcut1', [
+        new nodes.DialogOptionNode('nestedshortcut1', [
           new nodes.TextNode('NestedText1', { first_line: 5 }),
         ], { first_line: 4 }),
-        new nodes.DialogShortcutNode('nestedshortcut2', [
+        new nodes.DialogOptionNode('nestedshortcut2', [
           new nodes.TextNode('NestedText2', { first_line: 7 }),
         ], { first_line: 6 }),
       ], { first_line: 2 }),
-      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('Text2', { first_line: 9 })], { first_line: 8 }),
+      new nodes.DialogOptionNode('shortcut2', [new nodes.TextNode('Text2', { first_line: 9 })], { first_line: 8 }),
       new nodes.TextNode('more text', { first_line: 10 }),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-  it('can parse a shortcut option containing an assignment', () => {
-    const results = parser.parse('text\n-> shortcut1\n\tshortcut text1\n-> shortcut2\n\tshortcut text2\n<<set $testvar to 6>>\nmore text');
-
-    const expected = [
-      new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }),
-      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('shortcut text2', { first_line: 5 })], { first_line: 4 }),
-			new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
-      new nodes.TextNode('more text', { first_line: 7 }),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-	
   it('correctly ignores a double newline', () => {
     const results = parser.parse('some text\n\n<<commandtext>>');
 
@@ -186,7 +172,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 	
-	  it('can parse a single inline expression', () => {
+  it('can parse a single inline expression', () => {
     const results = parser.parse('{$testvar}');
 
     const expected = [
@@ -196,7 +182,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 	
-		  it('can parse a single inline expression within a sentence', () => {
+  it('can parse a single inline expression within a sentence', () => {
     const results = parser.parse('Hello there {$testvar}.');
 
     const expected = [

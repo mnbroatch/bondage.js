@@ -16,9 +16,9 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('Text');
   });
 
-  it('can tokenize a jump', () => {
+  it('can tokenize an option', () => {
     const lexer = new Lexer();
-    lexer.setInput('[[jump]]');
+    lexer.setInput('[[option]]');
 
     expect(lexer.lex()).to.equal('OptionStart');
     expect(lexer.lex()).to.equal('Text');
@@ -26,7 +26,7 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
-  it('can tokenize an option', () => {
+  it('can tokenize a named option', () => {
     const lexer = new Lexer();
     lexer.setInput('[[option|dest]]');
 
@@ -38,29 +38,29 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
-  it('can tokenize some text followed by a jump', () => {
+  it('can tokenize some text followed by an option', () => {
     const lexer = new Lexer();
-    lexer.setInput('text [[jump]]');
+    lexer.setInput('text [[option]]');
 
     expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('OptionStart');
     expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('OptionEnd');
-    expect(lexer.lex()).to.equal('EndOfInput');
-  });
-
-  it('can tokenize a jump followed by some text', () => {
-    const lexer = new Lexer();
-    lexer.setInput('[[jump]] text');
-
-    expect(lexer.lex()).to.equal('OptionStart');
-    expect(lexer.lex()).to.equal('Text');
-    expect(lexer.lex()).to.equal('OptionEnd');
-    expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
   it('can tokenize an option followed by some text', () => {
+    const lexer = new Lexer();
+    lexer.setInput('[[option]] text');
+
+    expect(lexer.lex()).to.equal('OptionStart');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('OptionEnd');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('can tokenize a named option followed by some text', () => {
     const lexer = new Lexer();
     lexer.setInput('[[option|blah]] text');
 
@@ -75,7 +75,7 @@ describe('Lexer', () => {
 
   it('can tokenize a command', () => {
     const lexer = new Lexer();
-    lexer.setInput('<<somecommand>>');
+    lexer.setInput('<<option>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('CommandCall');
@@ -188,29 +188,11 @@ describe('Lexer', () => {
     const lexer = new Lexer();
     lexer.setInput('This is a {$test} sentence');
 		
-/*		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-		console.log("------------------------");
-		console.log(lexer.lex());
-		console.log(lexer.yylloc, lexer.yytext);
-*/
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('BeginInlineExp');
+	expect(lexer.lex()).to.equal('Text');
+	expect(lexer.lex()).to.equal('BeginInlineExp');
     expect(lexer.lex()).to.equal('Variable');
     expect(lexer.lex()).to.equal('EndInlineExp');
-		expect(lexer.lex()).to.equal('Text');
+	expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 });

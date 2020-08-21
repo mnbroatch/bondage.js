@@ -84,127 +84,114 @@ class Runner {
   * evalNodes(nodes, yarnNodeData) {
     if (!nodes) return;
 
-    let optionNodes = [];
-		let shortcutNodes = [];
-		let prevnode = null;
-		
+    let selectableNodes = null;
+		let jumpNode = null;
+
+    // Either nodeTypes.Link or nodeTypes.Shortcut depending on which we're accumulating
+    // (Since we don't want to accidentally lump shortcuts in with links)
+    let selectionType = null;
+
     // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables into one list (hence some of
     //  the weirdness here)
     for (const node of nodes) {
 
-			if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
-				// Last shortcut in the series, so yield the shortcuts.					
-				yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
-				shortcutNodes = [];
-			}  
-
-			if (node instanceof nodeTypes.Jump) {
-				// It doesn't matter where we are or what other lines are remaining, a jump is executed immediately.
-				yield* this.run(node.identifier);
-				return;
-			} else if (node instanceof nodeTypes.Option) {
-					optionNodes.push(node);
-			} else if (node instanceof nodeTypes.Text) {
-				// Just text to be returned
-				yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
-			} else if (node instanceof nodeTypes.Shortcut) {
-				shortcutNodes.push(node);
-			} else if (node instanceof nodeTypes.Assignment) {
-				this.evaluateAssignment(node);
-			} else if (node instanceof nodeTypes.Conditional) {
-				// Get the results of the conditional
-				let evalResult = this.evaluateConditional(node);
-				if (evalResult) {
-					// Filter out the options
-					let otherNodes = [];
-					for(var i = 0; i < evalResult.length; i++) {
-						if (evalResult[i] instanceof nodeTypes.Option) {
-							optionNodes.push(evalResult[i]);
-						} else {
-							otherNodes.push(evalResult[i]);
-						}
-					}
-					// Run the remaining results
-					yield* this.evalNodes(otherNodes, yarnNodeData);
-				}
-			} else if (node instanceof nodeTypes.Command) {
-				if (node.command === 'stop') {
-					// Special command, halt execution
-					return;
-				}
-				yield new results.CommandResult(node.command, yarnNodeData, node.lineNum);
+			if (node instanceof nodeTypes.Jump){
+				jumpNode = node;
 			}
-		
-			prevnode = node;
+      else if (selectableNodes !== null && node instanceof selectionType) {
+        // We're accumulating selection nodes, so add this one to the list
+        // TODO: handle conditional option nodes
+        selectableNodes.push(node);
+        // This is not a selectable node, so yield the options first
+      } else {
+        if (selectableNodes !== null) {
+          // We're accumulating selections, but this isn't one, so we're done
+          // Need to yield the accumulated selections first
+          yield* this.handleSelections(selectableNodes);
+          selectableNodes = null;
+          selectionType = null;
+        }
+
+        if (node instanceof nodeTypes.Text) {
+          // Just text to be returned
+          yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
+        } else if (node instanceof nodeTypes.Link) {
+          // Start accumulating link nodes
+          selectionType = nodeTypes.Link;
+          selectableNodes = [node];
+        } else if (node instanceof nodeTypes.Shortcut) {
+          // Start accumulating shortcut nodes
+          selectionType = nodeTypes.Shortcut;
+          selectableNodes = [node];
+        } else if (node instanceof nodeTypes.Assignment) {
+          this.evaluateAssignment(node);
+        } else if (node instanceof nodeTypes.Conditional) {
+          // Run the results of the conditional
+          yield* this.evalNodes(this.evaluateConditional(node), yarnNodeData);
+        } else if (node instanceof nodeTypes.Command) {
+          if (node.command === 'stop') {
+            // Special command, halt execution
+            return;
+          }
+          yield new results.CommandResult(node.command, yarnNodeData, node.lineNum);
+        }
+      }
     }
 
-		// The last node might be a shortcut
-		if (shortcutNodes.length > 0){
-			yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+		if (jumpNode !== null) {
+			yield* this.run(jumpNode.identifier);
 		}
-
-		if (optionNodes.length > 0) {
+    else if (selectableNodes !== null) {
       // At the end of the node, but we still need to handle any final options
-      yield* this.handleOptions(optionNodes);
-    }		
+      yield* this.handleSelections(selectableNodes);
+    }
   }
 
-/**
+  /**
    * yield an options result then handle the subequent selection
    * @param {any[]} selections
    */
-  * handleOptions(options) {
-		const optionResults = new results.OptionsResult(options.map((s) => {
-			return s.text;
-		}), options.map((s) => {
-			return s.lineNum || -1;
-		}));
+  * handleSelections(selections) {
+    if (selections.length > 0 || selections[0] instanceof nodeTypes.Shortcut) {		  
+      // Multiple options to choose from (or just a single shortcut)
+      // Filter out any conditional dialog options that result to false
+      const filteredSelections = selections.filter((s) => {
+        if (s.type === 'ConditionalDialogOptionNode') {
+          return this.evaluateExpressionOrLiteral(s.conditionalExpression);
+        }
 
-		yield optionResults;
+        return true;
+      });
 
-		if (optionResults.selected !== -1) {
-			// Something was selected
-			const selectedOption = options[optionResults.selected];
-			yield* this.run(selectedOption.identifier);
-		}
-  }
-	
-  /**
-   * yield a shortcut result then handle the subequent selection
-   * @param {any[]} selections
-   */
-  * handleShortcuts(selections, yarnNodeData) {
-		// Multiple options to choose from (or just a single shortcut)
-		// Filter out any conditional dialog options that result to false
-		const filteredSelections = selections.filter((s) => {
-			if (s.type === 'ConditionalDialogShortcutNode') {
-				return this.evaluateExpressionOrLiteral(s.conditionalExpression);
-			}
-			return true;
-		});
+      if (filteredSelections.length === 0) {
+        // No options to choose anymore
+        return;
+      }
 
-		if (filteredSelections.length === 0) {
-			// No options to choose anymore
-			return;
-		}
+      const optionResults = new results.OptionsResult(filteredSelections.map((s) => {
+        return s.text;
+      }), filteredSelections.map((s) => {
+        return s.lineNum || -1;
+      }));
 
-		const optionResults = new results.OptionsResult(filteredSelections.map((s) => {
-			return s.text;
-		}), filteredSelections.map((s) => {
-			return s.lineNum || -1;
-		}));
+      yield optionResults;
 
-		yield optionResults;
-
-		if (optionResults.selected !== -1) {
-			// Something was selected
-			const selectedOption = filteredSelections[optionResults.selected];
-			if (selectedOption.content) {
-				// Recursively go through the nodes nested within
-				yield* this.evalNodes(selectedOption.content, yarnNodeData);
-			}
-		}
+      if (optionResults.selected !== -1) {
+        // Something was selected
+        const selectedOption = filteredSelections[optionResults.selected];
+        if (selectedOption.content) {
+          // Recursively go through the nodes nested within
+          yield* this.evalNodes(selectedOption.content);
+        } else if (selectedOption.identifier) {
+          // Run the new node
+          yield* this.run(selectedOption.identifier);
+        }
+      }
+    } else {
+      // If there's only one link option, automatically go to it
+      yield* this.run(selections[0].identifier);
+    }
   }
 
   /**

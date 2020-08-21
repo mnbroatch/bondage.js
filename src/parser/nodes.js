@@ -3,7 +3,7 @@
 class Text { }
 class Shortcut { }
 class Jump { }
-class Option { }
+class Link { }
 class Conditional { }
 class Assignment { }
 class Literal { }
@@ -16,13 +16,13 @@ module.exports = {
     Text,
     Shortcut,
 		Jump,
-    Option,
+    Link,
     Conditional,
     Assignment,
     Literal,
     Expression,
     Command,
-		InlineExpression,
+	InlineExpression,
   },
 
   RootNode: class {
@@ -42,20 +42,20 @@ module.exports = {
     }
   },
 
-  DialogShortcutNode: class extends Shortcut {
+  DialogOptionNode: class extends Shortcut {
     constructor(text, content, lineNo) {
       super();
-      this.type = 'DialogShortcutNode';
+      this.type = 'DialogOptionNode';
       this.text = text;
       this.content = content;
       this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
 
-  ConditionalDialogShortcutNode: class extends Shortcut {
+  ConditionalDialogOptionNode: class extends Shortcut {
     constructor(text, content, conditionalExpression, lineNo) {
       super();
-      this.type = 'ConditionalDialogShortcutNode';
+      this.type = 'ConditionalDialogOptionNode';
       this.text = text;
       this.content = content;
       this.conditionalExpression = conditionalExpression;
@@ -122,10 +122,10 @@ module.exports = {
     }
   },
   
-  OptionNode: class extends Option {
+  LinkNode: class extends Link {
     constructor(text, identifier, lineNo) {
       super();
-      this.type = 'OptionNode';
+      this.type = 'LinkNode';
       this.text = text || null;
       this.identifier = identifier || this.text; // [[Destination Text]]
       this.lineNum = lineNo ? lineNo.first_line : -1;
@@ -385,7 +385,7 @@ module.exports = {
     }
   },
 	
-	  // /////////////// Inline Expression Nodes
+  // /////////////// Inline Expression Nodes
   InlineExpressionNode: class extends InlineExpression {
     constructor(variableName) {
       super();

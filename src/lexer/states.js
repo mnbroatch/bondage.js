@@ -8,8 +8,8 @@ const LexerState = require('./lexer-state.js');
 function makeStates() {
   return {
     base: new LexerState().addTransition('BeginCommand', 'command', true)
-													.addTransition('BeginInlineExp', 'inlineExpression', true)
-                          .addTransition('OptionStart', 'option', true)
+                          .addTransition('OptionStart', 'link', true)
+						  .addTransition('BeginInlineExp', 'inlineExpression', true)
                           .addTransition('ShortcutOption', 'shortcutOption')
                           .addTextRule('Text'),
 
@@ -64,16 +64,16 @@ function makeStates() {
                                 .addTransition('Identifier')
                                 .addTextRule(),
 
-    option: new LexerState().addTransition('OptionEnd', 'base', true)
-                          .addTransition('OptionDelimit', 'optionDestination', true)
+    link: new LexerState().addTransition('OptionEnd', 'base', true)
+                          .addTransition('OptionDelimit', 'linkDestination', true)
                           .addTextRule('Text'),
 
-    optionDestination: new LexerState().addTransition('Identifier')
+    linkDestination: new LexerState().addTransition('Identifier')
                                      .addTransition('OptionEnd', 'base'),
-																		 
-		inlineExpression: new LexerState().addTransition('EndInlineExp', 'base')
-																			.addTransition('Variable')
-																			.addTextRule('Text', 'base')
+                                     
+    inlineExpression: new LexerState().addTransition('EndInlineExp', 'base')
+                                      .addTransition('Variable')
+                                      .addTextRule('Text', 'base')
   };
 }
 

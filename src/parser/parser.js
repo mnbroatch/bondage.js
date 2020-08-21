@@ -48,15 +48,14 @@ const grammar = {
       ['shortcut', '$$ = $1;'],
       ['command', '$$ = $1;'],
       ['jump', '$$ = $1;'],
-      ['option', '$$ = $1;'],
+      ['link', '$$ = $1;'],
       ['assignment', '$$ = $1;'],
       ['Text', '$$ = new yy.TextNode($1, @$);'],
-			['inlineExpression', '$$ = $1;'],
     ],
 
     shortcut: [
-      ['ShortcutOption Text Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
+      ['ShortcutOption Text Indent statements Dedent', '$$ = new yy.DialogOptionNode($2, $4, @$);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogOptionNode($2, $8, $5, @$);'],
     ],
 
     command: [
@@ -67,8 +66,8 @@ const grammar = {
 			['OptionStart Text OptionEnd', '$$ = new yy.JumpNode($2, @$);'],
 		],
 	
-    option: [      
-      ['OptionStart Text OptionDelimit Identifier OptionEnd', '$$ = new yy.OptionNode($2, $4, @$);'],
+    link: [      
+      ['OptionStart Text OptionDelimit Identifier OptionEnd', '$$ = new yy.LinkNode($2, $4, @$);'],
     ],
 
     assignment: [
@@ -127,10 +126,10 @@ const grammar = {
       ['String', '$$ = new yy.StringLiteralNode($1);'],
       ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
     ],
-		
-		inlineExpression: [
-			['BeginInlineExp Variable EndInlineExp', '$$ = new yy.InlineExpressionNode($2.substring(1));'],
-		]
+
+	inlineExpression: [
+		['BeginInlineExp Variable EndInlineExp', '$$ = new yy.InlineExpressionNode($2.substring(1));'],
+	]
   },
 };
 

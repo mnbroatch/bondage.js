@@ -184,7 +184,7 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 	
-	  it('can tokenize an inline expression in a sentence', () => {
+  it('can tokenize an inline expression in a sentence', () => {
     const lexer = new Lexer();
     lexer.setInput('This is a {$test} sentence');
 		

@@ -184,15 +184,29 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 	
-	  it('can tokenize an inline expression in a sentence', () => {
-    const lexer = new Lexer();
-    lexer.setInput('This is a {$test} sentence');
-		
-	expect(lexer.lex()).to.equal('Text');
-	expect(lexer.lex()).to.equal('BeginInlineExp');
-    expect(lexer.lex()).to.equal('Variable');
-    expect(lexer.lex()).to.equal('EndInlineExp');
-	expect(lexer.lex()).to.equal('Text');
-    expect(lexer.lex()).to.equal('EndOfInput');
-  });
+	it('can tokenize an inline expression in a sentence', () => {
+		const lexer = new Lexer();
+		lexer.setInput('This is a {$test} sentence');
+
+		expect(lexer.lex()).to.equal('Text');
+		expect(lexer.lex()).to.equal('BeginInlineExp');
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('EndInlineExp');
+		expect(lexer.lex()).to.equal('Text');
+		expect(lexer.lex()).to.equal('EndOfInput');
+	});
+
+	it('can tokenize an inline expression with addition in a sentence', () => {
+		const lexer = new Lexer();
+		lexer.setInput('This is a {$test + 1} sentence');
+	
+		expect(lexer.lex()).to.equal('Text');
+		expect(lexer.lex()).to.equal('BeginInlineExp');
+		expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('Add');
+    expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('EndInlineExp');
+		expect(lexer.lex()).to.equal('Text');
+		expect(lexer.lex()).to.equal('EndOfInput');
+	});
 });

@@ -9,7 +9,7 @@ function makeStates() {
   return {
     base: new LexerState().addTransition('BeginCommand', 'command', true)
                           .addTransition('OptionStart', 'option', true)
-						  .addTransition('BeginInlineExp', 'inlineExpression', true)
+													.addTransition('BeginInlineExp', 'inlineExpression', true)
                           .addTransition('ShortcutOption', 'shortcutOption')
                           .addTextRule('Text'),
 
@@ -72,7 +72,15 @@ function makeStates() {
                                        .addTransition('OptionEnd', 'base'),
 
     inlineExpression: new LexerState().addTransition('EndInlineExp', 'base')
+																			.addTransition('Number')
+																			.addTransition('String')
+																			.addTransition('LeftParen')
+																			.addTransition('RightParen')
                                       .addTransition('Variable')
+																			.addTransition('Add')
+																			.addTransition('Minus')
+																			.addTransition('Multiply')
+																			.addTransition('Divide')
                                       .addTextRule('Text', 'base')
   };
 }

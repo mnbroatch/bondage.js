@@ -22,7 +22,7 @@ module.exports = {
     Literal,
     Expression,
     Command,
-	InlineExpression,
+		InlineExpression,
   },
 
   RootNode: class {
@@ -385,12 +385,13 @@ module.exports = {
     }
   },
 	
-  // /////////////// Inline Expression Nodes
+  // /////////////// Inline Expression
   InlineExpressionNode: class extends InlineExpression {
-    constructor(variableName) {
+    constructor(expression, lineNo) {
       super();
-      this.type = 'InlineExpression';
-      this.variableName = variableName;
+      this.type = 'InlineExpressionNode';
+      this.expression = expression;
+      this.lineNum = lineNo ? lineNo.first_line : -1;
     }
-  }
+  },
 };

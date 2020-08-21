@@ -87,11 +87,13 @@ class Runner {
     let optionNodes = [];
 		let shortcutNodes = [];
 		let prevnode = null;
+		let textRun = null;
 		
     // Yield the individual user-visible results
-    // Need to accumulate all adjacent selectables into one list (hence some of
-    //  the weirdness here)
-    for (const node of nodes) {
+    // Need to accumulate all adjacent selectables into one list (hence some of the weirdness here)		
+    for (var nodeIdx = 0; nodeIdx < nodes.length; nodeIdx++) {
+			let node = nodes[nodeIdx];
+			let nextNode = nodes[nodeIdx+1];
 
 			if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
 				// Last shortcut in the series, so yield the shortcuts.					
@@ -106,8 +108,39 @@ class Runner {
 			} else if (node instanceof nodeTypes.Option) {
 					optionNodes.push(node);
 			} else if (node instanceof nodeTypes.Text) {
-				// Just text to be returned
-				yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
+				// If we are already appending text...
+				if (textRun){
+					textRun.text += node.text;
+					// If next node is null or not an inline expression or not on the same line as this node...
+					if (nextNode == null || (nextNode instanceof nodeTypes.InlineExpression)==false || node.lineNum !== nextNode.lineNum) {
+						yield textRun;
+						textRun = null;
+					}
+				} 
+				// Else if we are not appending text and the next node is an inline exp on the same line...
+				else if (nextNode && nextNode instanceof nodeTypes.InlineExpression && node.lineNum === nextNode.lineNum) {
+					textRun = new results.TextResult(node.text, yarnNodeData, node.lineNum);
+				} 
+				// Else not already appending and next node is not inline exp on same line.
+				else {
+					yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
+				}
+			} else if (node instanceof nodeTypes.InlineExpression) {
+				let expResult = this.evaluateExpressionOrLiteral(node.expression).toString();
+				
+				// If we are already appending text...
+				if (textRun){
+					textRun.text += expResult;
+					// If next node is an inline expression and on the same line as this node...
+					if (nextNode == null || (nextNode instanceof nodeTypes.Text) == false || node.lineNum !== nextNode.lineNum) {
+						yield textRun;
+						textRun = null;
+					}
+				} else if (nextNode && nextNode instanceof nodeTypes.Text && node.lineNum === nextNode.lineNum) {
+					textRun = new results.TextResult(expResult, yarnNodeData, node.lineNum);
+				} else {
+					yield new results.TextResult(expResult, yarnNodeData, node.lineNum);
+				}
 			} else if (node instanceof nodeTypes.Shortcut) {
 				shortcutNodes.push(node);
 			} else if (node instanceof nodeTypes.Assignment) {
@@ -116,6 +149,7 @@ class Runner {
 				// Get the results of the conditional
 				let evalResult = this.evaluateConditional(node);
 				if (evalResult) {
+					evalResult = evalResult;
 					// Filter out the options
 					let otherNodes = [];
 					for(var i = 0; i < evalResult.length; i++) {

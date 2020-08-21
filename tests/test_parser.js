@@ -186,23 +186,40 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 	
-  it('can parse a single inline expression', () => {
+  it('can parse a simple inline expression', () => {
     const results = parser.parse('{$testvar}');
 
     const expected = [
-      new nodes.InlineExpressionNode('testvar')
+      new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: results[0].lineNum })
     ];
 
     expect(results).to.deep.equal(expected);
   });
 	
-  it('can parse a single inline expression within a sentence', () => {
+  it('can parse a simple inline expression within a sentence', () => {
     const results = parser.parse('Hello there {$testvar}.');
 
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
-      new nodes.InlineExpressionNode('testvar'),
-			new nodes.TextNode('.', { first_line: results[2].lineNum })
+      new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: results[0].lineNum }),
+			new nodes.TextNode('.', { first_line: results[0].lineNum })
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+	
+  it('can parse an expression with addition within a sentence', () => {
+    const results = parser.parse('Hello there {$testvar + 1} test.');
+
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    const expected = [
+      new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
+      new nodes.InlineExpressionNode(new nodes.ArithmeticExpressionAddNode(
+				new nodes.VariableNode('testvar'),
+				new nodes.NumericLiteralNode('1'))
+				, { first_line: results[0].lineNum }),
+			new nodes.TextNode('test.', { first_line: results[0].lineNum })
     ];
 
     expect(results).to.deep.equal(expected);

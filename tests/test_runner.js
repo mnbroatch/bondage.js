@@ -15,6 +15,7 @@ describe('Dialogue', () => {
   let assignmentYarnData;
   let conditionalYarnData;
   let commandAndFunctionYarnData;
+	let inlineExpressionYarnData;
 
   let runner;
 
@@ -24,6 +25,7 @@ describe('Dialogue', () => {
     assignmentYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/assignment.json'));
     conditionalYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/conditions.json'));
     commandAndFunctionYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/commandsandfunctions.json'));
+    inlineExpressionYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/inlineexpression.json'));
   });
 
   beforeEach(() => {
@@ -513,4 +515,40 @@ it('Can handle text after an option', () => {
 
     expect(run.next().done).to.be.true;
   });	
+	
+	it('Can handle a simple inline expression', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('SimpleInlineExp');
+
+		runner.variables.set('firstvar', 1); // set the variables value
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('1', value.data, value.lineNum));
+
+    expect(run.next().done).to.be.true;
+  });
+
+	it('Can handle a simple inline expression in a sentence', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpSentence');
+
+		runner.variables.set('firstvar', 'test'); // set the variables value
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test.', value.data, value.lineNum));
+
+    expect(run.next().done).to.be.true;
+  });
+
+	it('Can handle a simple inline expression whitespace in a sentence', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpAddSentence');
+
+		runner.variables.set('firstvar', 1); // set the variables value
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a 2 sentence.', value.data, value.lineNum));
+
+    expect(run.next().done).to.be.true;
+  });
 });

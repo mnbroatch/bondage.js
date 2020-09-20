@@ -8,6 +8,7 @@ class Conditional { }
 class Assignment { }
 class Literal { }
 class Expression { }
+class FunctionCall { }
 class Command { }
 class InlineExpression { }
 
@@ -22,6 +23,7 @@ module.exports = {
     Literal,
     Expression,
     Command,
+    FunctionCall,
 		InlineExpression,
   },
 
@@ -367,12 +369,13 @@ module.exports = {
 
   // /////////////// Function Nodes
 
-  FunctionResultNode: class extends Literal {
+  FunctionResultNode: class extends FunctionCall {
     constructor(functionName, args) {
       super();
       this.type = 'FunctionResultNode';
       this.functionName = functionName;
       this.args = args;
+      this.lineNum = -1;
     }
   },
 

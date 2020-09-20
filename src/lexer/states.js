@@ -23,11 +23,19 @@ function makeStates() {
                              .addTransition('EndIf')
                              .addTransition('Set', 'assignment')
                              .addTransition('EndCommand', 'base', true)
-                             .addTransition('CommandCall', 'commandOrExpression')
+														 .addTransition('Identifier', 'commandOrExpression', true)
                              .addTextRule('Text'),
 
     commandOrExpression: new LexerState().addTransition('EndCommand', 'base', true)
-                                         .addTextRule('Text'),
+                                .addTransition('LeftParen')
+																.addTransition('Variable')
+                                .addTransition('Number')
+                                .addTransition('String')
+                                .addTransition('True')
+                                .addTransition('False')
+																.addTransition('Identifier')
+																.addTransition('Comma')
+                                .addTransition('RightParen'),
 
     assignment: new LexerState().addTransition('Variable')
                                 .addTransition('EqualToOrAssign', 'expression')

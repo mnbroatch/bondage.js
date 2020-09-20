@@ -19,15 +19,16 @@ class TextResult extends Result {
 class CommandResult extends Result {
   /**
    * Return a command string
-   * @param {string} [text] text to be displayed
-   * @param {int} [lineNum] line number of the result in the node
+   * @param {string[]} [name] the function name being called
+   * @param {[]} [args] the array of arguments for the function
+   * @param {int[]} [lineNum] list of the line numbers of options to be shown
    */
-  constructor(text, yarnNodeData, lineNum) {
+  constructor(name, args, result) {
     super();
-    this.text = text;
-    this.data = yarnNodeData;
-    this.lineNum = lineNum;
-  }
+		this.name = name;
+		this.args = args;
+		this.result = result;
+	}
 }
 
 class OptionsResult extends Result {

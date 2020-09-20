@@ -46,7 +46,7 @@ const grammar = {
 
     statement: [
       ['shortcut', '$$ = $1;'],
-      ['command', '$$ = $1;'],
+      ['functionCall', '$$ = $1;'],
       ['jump', '$$ = $1;'],
       ['option', '$$ = $1;'],
       ['assignment', '$$ = $1;'],
@@ -59,8 +59,11 @@ const grammar = {
       ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
     ],
 
-    command: [
-      ['BeginCommand CommandCall EndCommand', '$$ = new yy.CommandNode($2, @$);'],
+    functionCall: [
+      ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
+      ['BeginCommand Identifier LeftParen RightParen EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
+      ['BeginCommand Identifier LeftParen parenArguments RightParen EndCommand', '$$ = new yy.FunctionResultNode($2, $4);'],
+      ['BeginCommand Identifier openArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3);'],
     ],
 
 		jump: [
@@ -109,23 +112,33 @@ const grammar = {
       ['expression GreaterThanOrEqualTo expression', '$$ = new yy.GreaterThanOrEqualToExpressionNode($1, $3);'],
       ['expression LessThan expression', '$$ = new yy.LessThanExpressionNode($1, $3);'],
       ['expression LessThanOrEqualTo expression', '$$ = new yy.LessThanOrEqualToExpressionNode($1, $3);'],
-
-      ['functionResultExpression', '$$ = $1;'],
+			
+			['functionResultExpression', '$$ = $1;'],
     ],
 
     functionResultExpression: [
-      ['Identifier LeftParen arguments RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
+      ['Identifier LeftParen parenArguments RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
     ],
 
-    arguments: [
-      ['arguments Comma argument', '$$ = $1.concat([$3]);'],
+    parenArguments: [
+      ['parenArguments Comma argument', '$$ = $1.concat([$3]);'],
+      ['argument', '$$ = [$1];'],
+    ],
+
+    openArguments: [
+      ['openArguments argument', '$$ = $1.concat([$2]);'],
       ['argument', '$$ = [$1];'],
     ],
 
     argument: [
-      ['Number', '$$ = new yy.NumericLiteralNode($1);'],
-      ['String', '$$ = new yy.StringLiteralNode($1);'],
-      ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
+			//['expression', '$$ = $1'],			
+       ['Identifier', '$$ = new yy.TextNode($1);'],
+       ['Number', '$$ = new yy.NumericLiteralNode($1);'],
+       ['String', '$$ = new yy.StringLiteralNode($1);'],
+       ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
+       ['True', '$$ = new yy.BooleanLiteralNode($1);'],
+       ['False', '$$ = new yy.BooleanLiteralNode($1);'],
+       ['Null', '$$ = new yy.NullLiteralNode($1);'],
     ],
 
 	inlineExpression: [

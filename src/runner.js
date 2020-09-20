@@ -7,6 +7,7 @@ const nodeTypes = require('./parser/nodes.js').types;
 
 class Runner {
   constructor() {
+		var self = this;
     this.yarnNodes = {};
     this.variables = new DefaultVariableStorage();
     this.functions = {};
@@ -162,12 +163,18 @@ class Runner {
 					// Run the remaining results
 					yield* this.evalNodes(otherNodes, yarnNodeData);
 				}
-			} else if (node instanceof nodeTypes.Command) {
-				if (node.command === 'stop') {
+			} else if (node instanceof nodeTypes.FunctionCall) {
+				if (node.functionName === 'stop') {
 					// Special command, halt execution
 					return;
+				} else {
+					var funcResult = null
+						,funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];
+					if (this.functions[node.functionName]) {
+						funcResult = this.functions[node.functionName](funcArgs);
+					}				
+					yield new results.CommandResult(node.functionName, funcArgs, funcResult);
 				}
-				yield new results.CommandResult(node.command, yarnNodeData, node.lineNum);
 			}
 		
 			prevnode = node;
@@ -353,16 +360,15 @@ class Runner {
         return node.booleanLiteral === 'true';
       } else if (node.type === 'VariableNode') {
         return this.variables.get(node.variableName);
-      } else if (node.type === 'FunctionResultNode') {
-        if (this.functions[node.functionName]) {
-          return this.functions[node.functionName](node.args.map(this.evaluateExpressionOrLiteral));
-        }
-
-        throw new Error(`Function "${node.functionName}" not found`);
       }
 
       throw new Error(`I don't recognize literal type ${node.type}`);
-    } else {
+    } else if (node.type === 'FunctionResultNode') {
+			if (this.functions[node.functionName]) {
+				return this.functions[node.functionName](node.args.map(this.evaluateExpressionOrLiteral));
+			}
+			throw new Error(`Function "${node.functionName}" not found`);
+	} else {
       throw new Error(`I don't recognize expression/literal type ${node.type}`);
     }
   }

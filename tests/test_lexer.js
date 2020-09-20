@@ -78,11 +78,75 @@ describe('Lexer', () => {
     lexer.setInput('<<somecommand>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
-    expect(lexer.lex()).to.equal('CommandCall');
+    expect(lexer.lex()).to.equal('Identifier');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
+	it('can tokenize a command with paren no argument', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<somecommand()>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Identifier');
+		expect(lexer.lex()).to.equal('LeftParen');
+		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+it('can tokenize a command with an open argument', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<somecommand 2>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Identifier');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+
+it('can tokenize a command with two open arguments', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<somecommand 2 "face">>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Identifier');
+    expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('String');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+	
+	it('can tokenize a command with a paren argument', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<somecommand(2)>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Identifier');
+		expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+	
+		it('can tokenize a command with two paren arguments', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<somecommand(2, \"Face\")>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Identifier');
+		expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('Comma');
+    expect(lexer.lex()).to.equal('String');
+		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+	
   it('can tokenize shortcut options', () => {
     const lexer = new Lexer();
     lexer.setInput('text\n-> shortcut1\n\tText1\n-> shortcut2\n\tText2\nmore text');

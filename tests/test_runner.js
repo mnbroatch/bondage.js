@@ -322,6 +322,24 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+it('Can evaluate an assignment from one variable to another via an expression with self reference', () => {
+    runner.load(assignmentYarnData);
+    const run = runner.run('VariableExpression2');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', value.data, value.lineNum));
+
+    expect(runner.variables.get('firstvar')).to.be.undefined;
+    expect(runner.variables.get('secondvar')).to.be.undefined;
+
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', value.data, value.lineNum));
+
+    expect(runner.variables.get('firstvar')).to.equal(300);
+
+    expect(run.next().done).to.be.true;
+  });
+
   it('Can handle an if conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIf');
@@ -389,32 +407,58 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Returns a command to the user', () => {
+  it('Returns commands to the user', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('BasicCommands');
 
     let value = run.next().value;
-    expect(value.data).to.not.be.undefined;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', value.data, value.lineNum));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], null));
     value = run.next().value;
     expect(value.data).to.not.be.undefined;
     expect(value).to.deep.equal(new bondage.TextResult('text in between commands', value.data, value.lineNum));
     value = run.next().value;
-    expect(value.data).to.not.be.undefined;
-    expect(value).to.deep.equal(new bondage.CommandResult('command with space', value.data, value.lineNum));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with','space'], null));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Returns complex commands to the user', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('ComplexCommands');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], null));
     value = run.next().value;
     expect(value.data).to.not.be.undefined;
-    expect(value).to.deep.equal(new bondage.CommandResult('callFunction()', value.data, value.lineNum));
+    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', value.data, value.lineNum));
     value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with','space'], null));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('callAFunction', [], null));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Returns command with 3 arguments to the user', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('CommandsArgs');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('callAFunction', [1,2,true], null));
+    expect(run.next().done).to.be.true;
+  });
+	
+  it('Call command with variable argument', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('CommandWithVariable');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 100], null));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Text after command', value.data, value.lineNum));
     expect(value.data).to.not.be.undefined;
-    expect(value).to.deep.equal(new bondage.CommandResult('callFunctionWithParam(\"test\",true,1,12.5,[2,3])', value.data, value.lineNum));
   });
 
   it('Evaluates a function and uses it in a conditional', () => {
-    runner.load(commandAndFunctionYarnData);
-    const run = runner.run('FunctionConditional');
-
-    runner.registerFunction('testfunc', (args) => {
+		runner.registerFunction('testfunc', (args) => {
       if (args[0] === 'firstarg') {
         if (args[1] === 'secondarg') {
           // Test returning true
@@ -427,6 +471,9 @@ describe('Dialogue', () => {
       throw new Error(`Args ${args} were not expected in testfunc`);
     });
 
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('FunctionConditional');
+    
     let value = run.next().value;
     expect(value.data).to.not.be.undefined;
     expect(value).to.deep.equal(new bondage.TextResult('First line', value.data, value.lineNum));

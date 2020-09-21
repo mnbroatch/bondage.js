@@ -351,7 +351,9 @@ class Runner {
       }
 
       throw new Error(`I don't recognize expression type ${node.type}`);
-    } else if (node instanceof nodeTypes.Literal) {
+    } else if (node instanceof nodeTypes.Text) {
+			return node.text;
+		} else if (node instanceof nodeTypes.Literal) {
       if (node.type === 'NumericLiteralNode') {
         return parseFloat(node.numericLiteral);
       } else if (node.type === 'StringLiteralNode') {
@@ -365,10 +367,10 @@ class Runner {
       throw new Error(`I don't recognize literal type ${node.type}`);
     } else if (node.type === 'FunctionResultNode') {
 			if (this.functions[node.functionName]) {
-				return this.functions[node.functionName](node.args.map(this.evaluateExpressionOrLiteral));
+				return this.functions[node.functionName](node.args.map(this.evaluateExpressionOrLiteral, this));
 			}
 			throw new Error(`Function "${node.functionName}" not found`);
-	} else {
+		} else {
       throw new Error(`I don't recognize expression/literal type ${node.type}`);
     }
   }

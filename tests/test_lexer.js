@@ -237,6 +237,127 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
+
+  it('can tokenize an assignment with function call', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<set $testvar = visited(1)>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Set');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualToOrAssign');
+    expect(lexer.lex()).to.equal('Identifier');
+    expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+	
+  it('can tokenize a simple conditional expression', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<if true>>Hi<<endif>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('If');
+		expect(lexer.lex()).to.equal('True');
+		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('EndIf');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('can tokenize If expression equalto number', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<if $testvar == 1>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('If');
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('EqualTo');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('can tokenize If expression GreaterThanOrEqualTo number', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<if $testvar >= 10>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('If');
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+	
+  it('can tokenize If AND expression', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<if $testvar >= 10 && $testbool == true>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('If');
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('And');		
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('EqualTo');
+		expect(lexer.lex()).to.equal('True');
+		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('can tokenize If AND OR expression', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<if ($testvar >= 10 && $testbool == true) || $testvar == 100>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('If');
+		expect(lexer.lex()).to.equal('LeftParen');	
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('And');		
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('EqualTo');
+		expect(lexer.lex()).to.equal('True');
+		expect(lexer.lex()).to.equal('RightParen');	
+		expect(lexer.lex()).to.equal('Or');
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('EqualTo');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+	
+	  it('can tokenize ElseIf AND OR expression', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<elseif ($testvar >= 10 && $testbool == true) || $testvar == 100>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('ElseIf');
+		expect(lexer.lex()).to.equal('LeftParen');	
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('And');		
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('EqualTo');
+		expect(lexer.lex()).to.equal('True');
+		expect(lexer.lex()).to.equal('RightParen');	
+		expect(lexer.lex()).to.equal('Or');
+		expect(lexer.lex()).to.equal('Variable');
+		expect(lexer.lex()).to.equal('EqualTo');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
 	
   it('can tokenize a simple inline expression', () => {
     const lexer = new Lexer();

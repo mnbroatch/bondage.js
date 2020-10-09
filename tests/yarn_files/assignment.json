@@ -89,10 +89,40 @@
     },
     "colorID": 0
   },
-	{
+  {
     "title": "InlineExpression",
     "tags": "Tag",
     "body": "Test Line\n<<set $firstvar = 100>>\nTest Line After with firstvar={$firstvar}",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
+  {
+    "title": "AssignmentWithFunction",
+    "tags": "Tag",
+    "body": "Test Line\n<<set $testvar to visited(\"AssignmentWithFunction2\")>>\nTest Line2\n<<set $testvar to visited(\"AssignmentWithFunction\")>>",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
+  {
+    "title": "AssignmentWithFunction2",
+    "tags": "Tag",
+    "body": "Test Line\n<<set $testvar to visited(\"AssignmentWithFunction\")>>Test Line2[[AssignmentWithFunction]]",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
+  {
+    "title": "AssignmentWithDivision",
+    "tags": "Tag",
+    "body": "Test Line\n<<set $testvar to 100 / 5>>\nTest Line2",
     "position": {
       "x": 449,
       "y": 252

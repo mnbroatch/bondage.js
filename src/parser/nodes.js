@@ -213,8 +213,9 @@ module.exports = {
     }
   },
 
-  ArithmeticExpressionDivideNode: class {
+  ArithmeticExpressionDivideNode: class extends Expression {
     constructor(expression1, expression2) {
+      super();
       this.type = 'ArithmeticExpressionDivideNode';
       this.expression1 = expression1;
       this.expression2 = expression2;

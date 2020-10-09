@@ -141,9 +141,9 @@ const grammar = {
        ['Null', '$$ = new yy.NullLiteralNode($1);'],
     ],
 
-	inlineExpression: [
-		['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
-	]
+		inlineExpression: [
+			['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
+		]
   },
 };
 

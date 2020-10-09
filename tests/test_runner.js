@@ -98,6 +98,19 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
+	
+	  it('Automatically goes through two jump nodes', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('TwoJumpPassthrough');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Real First test line', value.data, value.lineNum));
+		value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('First test line', value.data, value.lineNum));
+		value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
 
   it('Does not group together options and shortcut options', () => {
     runner.load(linksYarnData);
@@ -218,6 +231,23 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Can evaluate a numeric assignment with division expression', () => {
+    runner.load(assignmentYarnData);
+    const run = runner.run('AssignmentWithDivision');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', value.data, value.lineNum));
+
+    expect(runner.variables.get('testvar')).to.be.undefined;
+
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line2', value.data, value.lineNum));
+
+    expect(runner.variables.get('testvar')).to.equal(100/5);
+
+    expect(run.next().done).to.be.true;
+  });
+
   it('Can evaluate an string assignment', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('String');
@@ -264,6 +294,24 @@ describe('Dialogue', () => {
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Test Line After', value.data, value.lineNum));
 
+    expect(runner.variables.get('testvar')).to.equal(true);
+
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Can evaluate a function boolean assignment', () => {
+    runner.load(assignmentYarnData);
+    const run = runner.run('AssignmentWithFunction');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', value.data, value.lineNum));
+    expect(runner.variables.get('testvar')).to.be.undefined;
+
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line2', value.data, value.lineNum));
+    expect(runner.variables.get('testvar')).to.equal(false);
+
+    value = run.next().value;
     expect(runner.variables.get('testvar')).to.equal(true);
 
     expect(run.next().done).to.be.true;
@@ -370,7 +418,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle an if else if conditional', () => {
+  it('Can handle an if elseif conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIfElseIf');
 
@@ -384,7 +432,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle an if else if else conditional', () => {
+  it('Can handle an if elseif else conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIfElseIfElse');
 
@@ -598,4 +646,21 @@ it('Can handle text after an option', () => {
 
     expect(run.next().done).to.be.true;
   });
+	
+  it('Can handle an if arithmetic expression elseif conditional', () => {
+    runner.load(conditionalYarnData);
+    const run = runner.run('ArithmeticExpressionConditional');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Text after', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Final text', value.data, value.lineNum));
+
+    expect(run.next().done).to.be.true;
+  });
+
+
+	
 });

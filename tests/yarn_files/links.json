@@ -59,6 +59,16 @@
 		},
 		"colorID": 0
 	},
+		{
+		"title": "TwoJumpPassthrough",
+		"tags": "",
+		"body": "Real First test line\n[[OneJumpPassthrough]]",
+		"position": {
+			"x": 774,
+			"y": 404
+		},
+		"colorID": 0
+	},
 	{
 		"title": "LinkAfterShortcuts",
 		"tags": "",

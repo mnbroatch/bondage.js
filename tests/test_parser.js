@@ -189,7 +189,18 @@ describe('Parser', () => {
     const results = parser.parse('<<set $testvar = 5>>');
 
     const expected = [
-      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
+      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it('can parse an assignment with function call', () => {
+    const results = parser.parse('<<set $testvar = visited(1)>>');
+
+    const expected = [
+      new nodes.SetVariableEqualToNode('testvar',
+        new nodes.FunctionResultNode('visited', [new nodes.NumericLiteralNode("1")]))
     ];
 
     expect(results).to.deep.equal(expected);
@@ -324,4 +335,64 @@ describe('Parser', () => {
 
     expect(results).to.deep.equal(expected);
   });
+
+  it('can parse a simple If expression', () => {
+    const results = parser.parse('<<if $testvar == true>>Hi<<endif>>');
+
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    const expected = [
+      new nodes.IfNode(
+				new nodes.EqualToExpressionNode(
+					new nodes.VariableNode('testvar'),
+					new nodes.BooleanLiteralNode('true')),
+				[new nodes.TextNode('Hi', { first_line: 1 })])
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it('can parse an AND OR If expression', () => {
+    const results = parser.parse('<<if ($testvar == true) || $override == true>>Hi<<endif>>');
+
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    const expected = [
+      new nodes.IfNode(
+				new nodes.BooleanOrExpressionNode(
+					new nodes.ArithmeticExpressionNode(
+						new nodes.EqualToExpressionNode(
+								new nodes.VariableNode('testvar'),
+								new nodes.BooleanLiteralNode('true'))),
+						new nodes.EqualToExpressionNode(
+								new nodes.VariableNode('override'),
+								new nodes.BooleanLiteralNode('true'))),
+				[new nodes.TextNode('Hi', { first_line: 1 })])
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+	
+  it('can parse an AND OR If expression2', () => {
+    const results = parser.parse('<<if ($testvar == true && $testvar2 > 1) || $override == true>>Hi<<endif>>');
+
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    const expected = [
+      new nodes.IfNode(
+				new nodes.BooleanOrExpressionNode(
+					new nodes.ArithmeticExpressionNode(
+						new nodes.BooleanAndExpressionNode(
+							new nodes.EqualToExpressionNode(
+								new nodes.VariableNode('testvar'),
+								new nodes.BooleanLiteralNode('true')),
+							new nodes.GreaterThanExpressionNode(
+								new nodes.VariableNode('testvar2'),
+								new nodes.NumericLiteralNode('1')))),
+					new nodes.EqualToExpressionNode(
+							new nodes.VariableNode('override'),
+							new nodes.BooleanLiteralNode('true'))),
+				[new nodes.TextNode('Hi', { first_line: 1 })])
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+	
 });

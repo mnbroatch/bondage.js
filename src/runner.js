@@ -55,7 +55,7 @@ class Runner {
   }
 
   /**
-  * Generator to return each sequential dialogue result starting from the given node
+  * Generator to return each sequential dialog result starting from the given node
   * @param {string} [startNode] - The name of the yarn node to begin at
   */
   * run(startNode) {
@@ -127,16 +127,16 @@ class Runner {
 					yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
 				}
 			} else if (node instanceof nodeTypes.InlineExpression) {
-				let expResult = this.evaluateExpressionOrLiteral(node.expression).toString();
+				let expResult = this.evaluateExpressionOrLiteral(node.expression,true).toString();
 				
 				// If we are already appending text...
 				if (textRun){
 					textRun.text += expResult;
-					// If next node is an inline expression and on the same line as this node...
 					if (nextNode == null || (nextNode instanceof nodeTypes.Text) == false || node.lineNum !== nextNode.lineNum) {
 						yield textRun;
 						textRun = null;
 					}
+				// If next node is an inline expression and on the same line as this node...
 				} else if (nextNode && nextNode instanceof nodeTypes.Text && node.lineNum === nextNode.lineNum) {
 					textRun = new results.TextResult(expResult, yarnNodeData, node.lineNum);
 				} else {
@@ -163,6 +163,7 @@ class Runner {
 					// Run the remaining results
 					yield* this.evalNodes(otherNodes, yarnNodeData);
 				}
+			// A function call
 			} else if (node instanceof nodeTypes.FunctionCall) {
 				if (node.functionName === 'stop') {
 					// Special command, halt execution
@@ -212,7 +213,7 @@ class Runner {
   }
 	
   /**
-   * yield a shortcut result then handle the subequent selection
+   * yield a shortcut result then handle the subsequent selection
    * @param {any[]} selections
    */
   * handleShortcuts(selections, yarnNodeData) {
@@ -298,8 +299,9 @@ class Runner {
 
   /**
    * Evaluates an expression or literal down to its final value
+	 * isDisplay only applies for evaluating a single variable.
    */
-  evaluateExpressionOrLiteral(node) {
+  evaluateExpressionOrLiteral(node, isDisplay) {
     if (node instanceof nodeTypes.Expression) {
       if (node.type === 'UnaryMinusExpressionNode') {
         return -1 * this.evaluateExpressionOrLiteral(node.expression);
@@ -345,7 +347,7 @@ class Runner {
       } else if (node.type === 'LessThanExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) <
                this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'LessThenOrEqualToExpressionNode') {
+      } else if (node.type === 'LessThanOrEqualToExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) <=
                this.evaluateExpressionOrLiteral(node.expression2);
       }
@@ -361,7 +363,11 @@ class Runner {
       } else if (node.type === 'BooleanLiteralNode') {
         return node.booleanLiteral === 'true';
       } else if (node.type === 'VariableNode') {
-        return this.variables.get(node.variableName);
+				if (isDisplay===true){
+					return this.variables.display(node.variableName);
+				} else {
+					return this.variables.get(node.variableName);
+				}
       }
 
       throw new Error(`I don't recognize literal type ${node.type}`);

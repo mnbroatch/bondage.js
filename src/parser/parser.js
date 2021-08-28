@@ -131,14 +131,14 @@ const grammar = {
     ],
 
     argument: [
-			//['expression', '$$ = $1'],			
-       ['Identifier', '$$ = new yy.TextNode($1);'],
-       ['Number', '$$ = new yy.NumericLiteralNode($1);'],
-       ['String', '$$ = new yy.StringLiteralNode($1);'],
-       ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
-       ['True', '$$ = new yy.BooleanLiteralNode($1);'],
-       ['False', '$$ = new yy.BooleanLiteralNode($1);'],
-       ['Null', '$$ = new yy.NullLiteralNode($1);'],
+			['expression', '$$ = $1;'],			
+			['Identifier', '$$ = new yy.TextNode($1);'],
+			['Number', '$$ = new yy.NumericLiteralNode($1);'],
+			['String', '$$ = new yy.StringLiteralNode($1);'],
+			['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
+			['True', '$$ = new yy.BooleanLiteralNode($1);'],
+			['False', '$$ = new yy.BooleanLiteralNode($1);'],
+			['Null', '$$ = new yy.NullLiteralNode($1);']			 
     ],
 
 		inlineExpression: [

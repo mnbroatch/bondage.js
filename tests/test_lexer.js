@@ -132,9 +132,9 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 	
-		it('can tokenize a command with two paren arguments', () => {
+	it('can tokenize a command with two paren arguments', () => {
     const lexer = new Lexer();
-    lexer.setInput('<<somecommand(2, \"Face\")>>');
+    lexer.setInput('<<somecommand(2, "Face")>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('Identifier');
@@ -142,6 +142,38 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('Number');
     expect(lexer.lex()).to.equal('Comma');
     expect(lexer.lex()).to.equal('String');
+		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+	it('can tokenize a command with an expression argument', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<somecommand(2 + 1)>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Identifier');
+		expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('Add');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+	it('can tokenize a command with an expression argument 2', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<somecommand((2 + 1))>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Identifier');
+		expect(lexer.lex()).to.equal('LeftParen');
+		expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('Add');
+		expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('RightParen');
 		expect(lexer.lex()).to.equal('RightParen');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
@@ -254,7 +286,6 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
-	
   it('can tokenize a simple conditional expression', () => {
     const lexer = new Lexer();
     lexer.setInput('<<if true>>Hi<<endif>>');

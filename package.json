@@ -5,6 +5,9 @@
   "main": "src/bondage.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha tests --recursive",
+		"testlexer": "node node_modules/mocha/bin/mocha tests/test_lexer.js",
+		"testparser": "node node_modules/mocha/bin/mocha tests/test_parser.js",
+		"testrunner": "node node_modules/mocha/bin/mocha tests/test_runner.js",
     "lint": "node_modules/.bin/eslint .",
     "build": "node_modules/.bin/gulp"
   },

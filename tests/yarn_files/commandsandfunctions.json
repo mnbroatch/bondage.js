@@ -51,7 +51,7 @@
 	{
 		"title": "FunctionConditional",
 		"tags": "Tag",
-		"body": "First line\n<<if testfunc(\"firstarg\")>>This shouldn't show<<elseif testfunc(\"firstarg\", \"secondarg\")>>This should show<<endif>>After both",
+		"body": "First line\n<<if testfunc(\"firstarg\")>>\nThis shouldn't show\n<<elseif testfunc(\"firstarg\", \"secondarg\")>>\nThis should show\n<<endif>>\nAfter both",
 		"position": {
 			"x": 449,
 			"y": 252
@@ -71,7 +71,7 @@
 	{
 		"title": "VisitedFunctionStart",
 		"tags": "Tag",
-		"body": "Hello[[VisitedFunction]]",
+		"body": "Hello\n[[VisitedFunction]]",
 		"position": {
 			"x": 449,
 			"y": 252

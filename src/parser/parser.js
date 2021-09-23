@@ -36,12 +36,16 @@ const grammar = {
     conditionalStatement: [
       ['BeginCommand If expression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($3, $5);'],
       ['BeginCommand If expression EndCommand statements additionalConditionalStatements', '$$ = new yy.IfElseNode($3, $5, $6);'],
+			['BeginCommand If functionResultExpression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($3, $5);'],
+      ['BeginCommand If functionResultExpression EndCommand statements additionalConditionalStatements', '$$ = new yy.IfElseNode($3, $5, $6);'],
     ],
 
     additionalConditionalStatements: [
       ['BeginCommand Else EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseNode($4);'],
       ['BeginCommand ElseIf expression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseIfNode($3, $5);'],
       ['BeginCommand ElseIf expression EndCommand statements additionalConditionalStatements', '$$ = new yy.ElseIfNode($3, $5, $6);'],
+      ['BeginCommand ElseIf functionResultExpression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseIfNode($3, $5);'],
+      ['BeginCommand ElseIf functionResultExpression EndCommand statements additionalConditionalStatements', '$$ = new yy.ElseIfNode($3, $5, $6);'],
     ],
 
     statement: [
@@ -61,8 +65,9 @@ const grammar = {
 
     functionCall: [
       ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
-      ['BeginCommand Identifier LeftParen RightParen EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
-      ['BeginCommand Identifier LeftParen parenArguments RightParen EndCommand', '$$ = new yy.FunctionResultNode($2, $4);'],
+      //['BeginCommand Identifier LeftParen RightParen EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
+      //['BeginCommand Identifier LeftParen parenArguments RightParen EndCommand', '$$ = new yy.FunctionResultNode($2, $4);'],
+			['BeginCommand functionResultExpression EndCommand', '$$ = $2;'],
       ['BeginCommand Identifier openArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3);'],
     ],
 
@@ -76,6 +81,7 @@ const grammar = {
 
     assignment: [
       ['BeginCommand Set Variable EqualToOrAssign expression EndCommand', '$$ = new yy.SetVariableEqualToNode($3.substring(1), $5);'],
+      ['BeginCommand Set Variable EqualToOrAssign functionResultExpression EndCommand', '$$ = new yy.SetVariableEqualToNode($3.substring(1), $5);'],
       ['BeginCommand Set Variable AddAssign expression EndCommand', '$$ = new yy.SetVariableAddNode($3.substring(1), $5);'],
       ['BeginCommand Set Variable MinusAssign expression EndCommand', '$$ = new yy.SetVariableMinusNode($3.substring(1), $5);'],
       ['BeginCommand Set Variable MultiplyAssign expression EndCommand', '$$ = new yy.SetVariableMultipyNode($3.substring(1), $5);'],
@@ -112,18 +118,25 @@ const grammar = {
       ['expression GreaterThanOrEqualTo expression', '$$ = new yy.GreaterThanOrEqualToExpressionNode($1, $3);'],
       ['expression LessThan expression', '$$ = new yy.LessThanExpressionNode($1, $3);'],
       ['expression LessThanOrEqualTo expression', '$$ = new yy.LessThanOrEqualToExpressionNode($1, $3);'],
-			
-			['functionResultExpression', '$$ = $1;'],
+
+			//['functionResultExpression', '$$ = $1;'],
     ],
 
     functionResultExpression: [
-      ['Identifier LeftParen parenArguments RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
+			['Identifier LeftParen RightParen', '$$ = new yy.FunctionResultNode($1, []);'],
+      //['Identifier LeftParen parenArguments RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
+      ['Identifier LeftParen parenExpressionArgs RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
     ],
 
-    parenArguments: [
+    parenExpressionArgs: [
+			['parenExpressionArgs Comma expression', '$$ = $1.concat([$3]);'],
+			['expression', '$$ = [$1];'],		
+    ],
+
+/*     parenArguments: [
       ['parenArguments Comma argument', '$$ = $1.concat([$3]);'],
       ['argument', '$$ = [$1];'],
-    ],
+    ], */
 
     openArguments: [
       ['openArguments argument', '$$ = $1.concat([$2]);'],
@@ -131,14 +144,14 @@ const grammar = {
     ],
 
     argument: [
-			['expression', '$$ = $1;'],			
 			['Identifier', '$$ = new yy.TextNode($1);'],
-			['Number', '$$ = new yy.NumericLiteralNode($1);'],
+ 			['Number', '$$ = new yy.NumericLiteralNode($1);'],
 			['String', '$$ = new yy.StringLiteralNode($1);'],
 			['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
 			['True', '$$ = new yy.BooleanLiteralNode($1);'],
 			['False', '$$ = new yy.BooleanLiteralNode($1);'],
-			['Null', '$$ = new yy.NullLiteralNode($1);']			 
+			['Null', '$$ = new yy.NullLiteralNode($1);'],
+			//['expression', '$$ = $1;'],
     ],
 
 		inlineExpression: [

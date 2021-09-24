@@ -13,7 +13,7 @@ const grammar = {
       ['left', 'Xor'],
       ['left', 'EqualTo', 'GreaterThan', 'GreaterThanOrEqualTo', 'LessThan', 'LessThanOrEqualTo', 'NotEqualTo'],
       ['left', 'Add', 'Minus'],
-      ['left', 'Multiply', 'Divide'],
+      ['left', 'Multiply', 'Exponent', 'Divide'],
       ['left', 'Not'],
       ['left', 'UMINUS'],
       ['left', 'LeftParen', 'RightParen'],
@@ -65,8 +65,6 @@ const grammar = {
 
     functionCall: [
       ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
-      //['BeginCommand Identifier LeftParen RightParen EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
-      //['BeginCommand Identifier LeftParen parenArguments RightParen EndCommand', '$$ = new yy.FunctionResultNode($2, $4);'],
 			['BeginCommand functionResultExpression EndCommand', '$$ = $2;'],
       ['BeginCommand Identifier openArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3);'],
     ],
@@ -106,6 +104,7 @@ const grammar = {
       ['expression Add expression', '$$ = new yy.ArithmeticExpressionAddNode($1, $3);'],
       ['expression Minus expression', '$$ = new yy.ArithmeticExpressionMinusNode($1, $3);'],
       ['expression Multiply expression', '$$ = new yy.ArithmeticExpressionMultiplyNode($1, $3);'],
+      ['expression Exponent expression', '$$ = new yy.ArithmeticExpressionExponentNode($1, $3);'],
       ['expression Divide expression', '$$ = new yy.ArithmeticExpressionDivideNode($1, $3);'],
 
       ['expression Or expression', '$$ = new yy.BooleanOrExpressionNode($1, $3);'],

@@ -19,6 +19,16 @@
     },
     "colorID": 0
   },
+	{
+    "title": "ExponentExpression",
+    "tags": "Tag",
+    "body": "Test Line\n<<set $testvar = 2 ** 2>>\nTest Line After",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
   {
     "title": "String",
     "tags": "Tag",

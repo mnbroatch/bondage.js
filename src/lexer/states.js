@@ -75,6 +75,7 @@ function makeStates() {
 			.addTransition('LessThan')
 			.addTransition('Add')
 			.addTransition('Minus')
+			.addTransition('Exponent')
 			.addTransition('Multiply')
 			.addTransition('Divide')
 			.addTransition('And')
@@ -108,6 +109,7 @@ function makeStates() {
 			.addTransition('Add')
 			.addTransition('Minus')
 			.addTransition('Multiply')
+			.addTransition('Exponent')
 			.addTransition('Divide')
 			.addTextRule('Text', 'base')
   };

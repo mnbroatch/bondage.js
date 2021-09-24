@@ -313,6 +313,9 @@ class Runner {
       } else if (node.type === 'ArithmeticExpressionMinusNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) -
                this.evaluateExpressionOrLiteral(node.expression2);
+      } else if (node.type === 'ArithmeticExpressionExponentNode') {
+        return Math.pow(this.evaluateExpressionOrLiteral(node.expression1),
+						this.evaluateExpressionOrLiteral(node.expression2));
       } else if (node.type === 'ArithmeticExpressionMultiplyNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) *
                this.evaluateExpressionOrLiteral(node.expression2);

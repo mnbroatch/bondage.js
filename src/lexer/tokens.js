@@ -77,6 +77,7 @@ const Tokens = {
 
   Add:                  /\+/,                      // +
   Minus:                /-/,                       // -
+  Exponent:             /\*\*/,                    // **
   Multiply:             /\*/,                      // *
   Divide:               /\//,                      // /
 

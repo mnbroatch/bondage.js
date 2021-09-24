@@ -496,5 +496,34 @@ describe('Parser', () => {
     ];
 
     expect(results).to.deep.equal(expected);
+  });
+	
+  it('can parse an assignment involving exponent', () => {
+    const results = parser.parse('<<set $testvar = 2 ** 2>>');
+
+    const expected = [
+      new nodes.SetVariableEqualToNode(
+        'testvar',
+        new nodes.ArithmeticExpressionExponentNode(
+          new nodes.NumericLiteralNode('2'),
+          new nodes.NumericLiteralNode('2')))
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });	
+	
+	  it('can parse an assignment involving exponent 2', () => {
+    const results = parser.parse('<<set $testvar = (2 ** 2)>>');
+
+    const expected = [
+      new nodes.SetVariableEqualToNode(
+        'testvar',
+				new nodes.ArithmeticExpressionNode(
+					new nodes.ArithmeticExpressionExponentNode(
+						new nodes.NumericLiteralNode('2'),
+						new nodes.NumericLiteralNode('2'))))
+    ];
+
+    expect(results).to.deep.equal(expected);
   });	
 });

@@ -661,6 +661,20 @@ it('Can handle text after an option', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Can evaluate a numeric assignment with exponent expression', () => {
+    runner.load(assignmentYarnData);
+    const run = runner.run('ExponentExpression');
 
-	
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', value.data, value.lineNum));
+
+    expect(runner.variables.get('testvar')).to.be.undefined;
+
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', value.data, value.lineNum));
+
+    expect(runner.variables.get('testvar')).to.equal(Math.pow(2,2));
+
+    expect(run.next().done).to.be.true;
+  });
 });

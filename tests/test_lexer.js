@@ -270,6 +270,23 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
+  it('can tokenize assignment with Exponent', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<set $testvar = (2 ** 2)>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Set');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualToOrAssign');
+    expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('Exponent');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+	
   it('can tokenize an assignment with function call', () => {
     const lexer = new Lexer();
     lexer.setInput('<<set $testvar = visited(1)>>');

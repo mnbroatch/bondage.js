@@ -103,8 +103,8 @@ const grammar = {
 
       ['expression Add expression', '$$ = new yy.ArithmeticExpressionAddNode($1, $3);'],
       ['expression Minus expression', '$$ = new yy.ArithmeticExpressionMinusNode($1, $3);'],
-      ['expression Multiply expression', '$$ = new yy.ArithmeticExpressionMultiplyNode($1, $3);'],
       ['expression Exponent expression', '$$ = new yy.ArithmeticExpressionExponentNode($1, $3);'],
+      ['expression Multiply expression', '$$ = new yy.ArithmeticExpressionMultiplyNode($1, $3);'],
       ['expression Divide expression', '$$ = new yy.ArithmeticExpressionDivideNode($1, $3);'],
 
       ['expression Or expression', '$$ = new yy.BooleanOrExpressionNode($1, $3);'],
@@ -117,13 +117,10 @@ const grammar = {
       ['expression GreaterThanOrEqualTo expression', '$$ = new yy.GreaterThanOrEqualToExpressionNode($1, $3);'],
       ['expression LessThan expression', '$$ = new yy.LessThanExpressionNode($1, $3);'],
       ['expression LessThanOrEqualTo expression', '$$ = new yy.LessThanOrEqualToExpressionNode($1, $3);'],
-
-			//['functionResultExpression', '$$ = $1;'],
     ],
 
     functionResultExpression: [
 			['Identifier LeftParen RightParen', '$$ = new yy.FunctionResultNode($1, []);'],
-      //['Identifier LeftParen parenArguments RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
       ['Identifier LeftParen parenExpressionArgs RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
     ],
 
@@ -131,11 +128,6 @@ const grammar = {
 			['parenExpressionArgs Comma expression', '$$ = $1.concat([$3]);'],
 			['expression', '$$ = [$1];'],		
     ],
-
-/*     parenArguments: [
-      ['parenArguments Comma argument', '$$ = $1.concat([$3]);'],
-      ['argument', '$$ = [$1];'],
-    ], */
 
     openArguments: [
       ['openArguments argument', '$$ = $1.concat([$2]);'],
@@ -150,7 +142,6 @@ const grammar = {
 			['True', '$$ = new yy.BooleanLiteralNode($1);'],
 			['False', '$$ = new yy.BooleanLiteralNode($1);'],
 			['Null', '$$ = new yy.NullLiteralNode($1);'],
-			//['expression', '$$ = $1;'],
     ],
 
 		inlineExpression: [

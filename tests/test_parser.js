@@ -512,7 +512,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });	
 	
-	  it('can parse an assignment involving exponent 2', () => {
+	it('can parse an assignment involving exponent 2', () => {
     const results = parser.parse('<<set $testvar = (2 ** 2)>>');
 
     const expected = [
@@ -522,6 +522,22 @@ describe('Parser', () => {
 					new nodes.ArithmeticExpressionExponentNode(
 						new nodes.NumericLiteralNode('2'),
 						new nodes.NumericLiteralNode('2'))))
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });	
+	
+  it('can parse an inline expression with exponent within a sentence', () => {
+    const results = parser.parse('Hello there {2 ** 2} test.');
+
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    const expected = [
+      new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
+      new nodes.InlineExpressionNode(new nodes.ArithmeticExpressionExponentNode(
+				new nodes.NumericLiteralNode('2'),
+				new nodes.NumericLiteralNode('2'))
+				, { first_line: results[0].lineNum }),
+			new nodes.TextNode('test.', { first_line: results[0].lineNum })
     ];
 
     expect(results).to.deep.equal(expected);

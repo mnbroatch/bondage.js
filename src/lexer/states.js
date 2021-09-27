@@ -108,8 +108,8 @@ function makeStates() {
 			.addTransition('Variable')
 			.addTransition('Add')
 			.addTransition('Minus')
-			.addTransition('Multiply')
 			.addTransition('Exponent')
+			.addTransition('Multiply')
 			.addTransition('Divide')
 			.addTextRule('Text', 'base')
   };

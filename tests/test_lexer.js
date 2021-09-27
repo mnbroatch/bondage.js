@@ -442,4 +442,18 @@ it('can tokenize a command with two open arguments', () => {
 		expect(lexer.lex()).to.equal('Text');
 		expect(lexer.lex()).to.equal('EndOfInput');
 	});
+
+	it('can tokenize an inline expression with exponent in a sentence', () => {
+		const lexer = new Lexer();
+		lexer.setInput('This is a {2 ** 2} sentence');
+	
+		expect(lexer.lex()).to.equal('Text');
+		expect(lexer.lex()).to.equal('BeginInlineExp');
+		expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('Exponent');
+    expect(lexer.lex()).to.equal('Number');
+		expect(lexer.lex()).to.equal('EndInlineExp');
+		expect(lexer.lex()).to.equal('Text');
+		expect(lexer.lex()).to.equal('EndOfInput');
+	});
 });

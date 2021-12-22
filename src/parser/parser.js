@@ -1,22 +1,22 @@
 'use strict';
 
 const Parser = require('jison').Parser;
-const Nodes = require('./nodes.js');
-const Lexer = require('../lexer/lexer.js');
+const Nodes = require('./nodes');
+const Lexer = require('../lexer/lexer');
 
 const grammar = {
   operators: [
-      ['left', 'Comma'],
-      ['left', 'EqualToOrAssign', 'AddAssign', 'MinusAssign', 'MultiplyAssign', 'DivideAssign'],
-      ['left', 'Or'],
-      ['left', 'And'],
-      ['left', 'Xor'],
-      ['left', 'EqualTo', 'GreaterThan', 'GreaterThanOrEqualTo', 'LessThan', 'LessThanOrEqualTo', 'NotEqualTo'],
-      ['left', 'Add', 'Minus'],
-      ['left', 'Multiply', 'Exponent', 'Divide'],
-      ['left', 'Not'],
-      ['left', 'UMINUS'],
-      ['left', 'LeftParen', 'RightParen'],
+    ['left', 'Comma'],
+    ['left', 'EqualToOrAssign', 'AddAssign', 'MinusAssign', 'MultiplyAssign', 'DivideAssign'],
+    ['left', 'Or'],
+    ['left', 'And'],
+    ['left', 'Xor'],
+    ['left', 'EqualTo', 'GreaterThan', 'GreaterThanOrEqualTo', 'LessThan', 'LessThanOrEqualTo', 'NotEqualTo'],
+    ['left', 'Add', 'Minus'],
+    ['left', 'Multiply', 'Exponent', 'Divide'],
+    ['left', 'Not'],
+    ['left', 'UMINUS'],
+    ['left', 'LeftParen', 'RightParen'],
   ],
 
   start: ['node'],
@@ -36,7 +36,7 @@ const grammar = {
     conditionalStatement: [
       ['BeginCommand If expression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($3, $5);'],
       ['BeginCommand If expression EndCommand statements additionalConditionalStatements', '$$ = new yy.IfElseNode($3, $5, $6);'],
-			['BeginCommand If functionResultExpression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($3, $5);'],
+      ['BeginCommand If functionResultExpression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($3, $5);'],
       ['BeginCommand If functionResultExpression EndCommand statements additionalConditionalStatements', '$$ = new yy.IfElseNode($3, $5, $6);'],
     ],
 
@@ -55,7 +55,7 @@ const grammar = {
       ['option', '$$ = $1;'],
       ['assignment', '$$ = $1;'],
       ['Text', '$$ = new yy.TextNode($1, @$);'],
-			['inlineExpression', '$$ = $1;'],
+      ['inlineExpression', '$$ = $1;'],
     ],
 
     shortcut: [
@@ -65,15 +65,15 @@ const grammar = {
 
     functionCall: [
       ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
-			['BeginCommand functionResultExpression EndCommand', '$$ = $2;'],
+      ['BeginCommand functionResultExpression EndCommand', '$$ = $2;'],
       ['BeginCommand Identifier openArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3);'],
     ],
 
-		jump: [
-			['OptionStart Text OptionEnd', '$$ = new yy.JumpNode($2, @$);'],
-		],
-	
-    option: [      
+    jump: [
+      ['OptionStart Text OptionEnd', '$$ = new yy.JumpNode($2, @$);'],
+    ],
+
+    option: [
       ['OptionStart Text OptionDelimit Identifier OptionEnd', '$$ = new yy.OptionNode($2, $4, @$);'],
     ],
 
@@ -120,13 +120,13 @@ const grammar = {
     ],
 
     functionResultExpression: [
-			['Identifier LeftParen RightParen', '$$ = new yy.FunctionResultNode($1, []);'],
+      ['Identifier LeftParen RightParen', '$$ = new yy.FunctionResultNode($1, []);'],
       ['Identifier LeftParen parenExpressionArgs RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
     ],
 
     parenExpressionArgs: [
-			['parenExpressionArgs Comma expression', '$$ = $1.concat([$3]);'],
-			['expression', '$$ = [$1];'],		
+      ['parenExpressionArgs Comma expression', '$$ = $1.concat([$3]);'],
+      ['expression', '$$ = [$1];'],
     ],
 
     openArguments: [
@@ -135,18 +135,18 @@ const grammar = {
     ],
 
     argument: [
-			['Identifier', '$$ = new yy.TextNode($1);'],
- 			['Number', '$$ = new yy.NumericLiteralNode($1);'],
-			['String', '$$ = new yy.StringLiteralNode($1);'],
-			['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
-			['True', '$$ = new yy.BooleanLiteralNode($1);'],
-			['False', '$$ = new yy.BooleanLiteralNode($1);'],
-			['Null', '$$ = new yy.NullLiteralNode($1);'],
+      ['Identifier', '$$ = new yy.TextNode($1);'],
+      ['Number', '$$ = new yy.NumericLiteralNode($1);'],
+      ['String', '$$ = new yy.StringLiteralNode($1);'],
+      ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
+      ['True', '$$ = new yy.BooleanLiteralNode($1);'],
+      ['False', '$$ = new yy.BooleanLiteralNode($1);'],
+      ['Null', '$$ = new yy.NullLiteralNode($1);'],
     ],
 
-		inlineExpression: [
-			['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
-		]
+    inlineExpression: [
+      ['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
+    ],
   },
 };
 

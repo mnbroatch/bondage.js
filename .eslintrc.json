@@ -6,6 +6,7 @@
     "rules": {
         "object-shorthand": "off",
         "strict": "off",
-        "arrow-body-style": ["error", "always"]
+        "arrow-body-style": ["error", "always"],
+        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
     }
 }

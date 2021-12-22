@@ -3,7 +3,7 @@
 // Syncs with YarnSpinner@e0f6807,
 // see https://github.com/thesecretlab/YarnSpinner/blob/master/YarnSpinner/Lexer.cs
 
-const StateMaker = require('./states.js');
+const StateMaker = require('./states');
 
 // As opposed to the original C# implemntation which, tokenize the entire input, before emiting
 // a list of tokens, this parser will emit a token each time `lex()` is called. This change
@@ -94,7 +94,7 @@ class Lexer {
     const thisIndentation = this.getCurrentLineIndentation();
 
     if (this.shouldTrackNextIndentation &&
-        thisIndentation > this.previousLevelOfIndentation) {
+      thisIndentation > this.previousLevelOfIndentation) {
       this.indentation.push([thisIndentation, true]);
       this.shouldTrackNextIndentation = false;
 
@@ -123,56 +123,56 @@ class Lexer {
       return this.lexNextLine();
     }
 
-    for (const rule of this.getState().transitions) {
+    const transitions = this.getState().transitions;
+    for (let i = 0, len = transitions.length; i < len; i++) {
+      const rule = transitions[i];
       const match = this.getCurrentLine()
-                        .substring(this.yylloc.last_column - 1)
-                        .match(rule.regex);
+        .substring(this.yylloc.last_column - 1)
+        .match(rule.regex);
 
       // Only accept valid matches that are at the beginning of the text
-      if (match === null || match.index !== 0) {
-        continue;
-      }
+      if ((match && match.index) === 0) {
+        // Take the matched text off the front of this.text
+        const matchedText = match[0];
 
-      // Take the matched text off the front of this.text
-      const matchedText = match[0];
+        // Tell the parser what the text for this token is
+        this.yytext = this.getCurrentLine().substr(this.yylloc.last_column - 1, matchedText.length);
 
-      // Tell the parser what the text for this token is
-      this.yytext = this.getCurrentLine().substr(this.yylloc.last_column - 1, matchedText.length);
+        if (rule.token === 'String') {
+          // If that's a String, we're removing the quotes and
+          // un-escaping double-escaped characters.
+          this.yytext = this.yytext.substring(1, this.yytext.length - 1)
+            .replace(/\\/g, '');
+        }
 
-      if (rule.token === 'String') {
-        // If that's a String, we're removing the quotes and
-        // un-escaping double-escaped characters.
-        this.yytext = this.yytext.substring(1, this.yytext.length - 1)
-                                 .replace(/\\/g, '');
-      }
+        // Update our line and column info
+        this.yylloc.first_column = this.yylloc.last_column;
+        this.yylloc.last_column += matchedText.length;
 
-      // Update our line and column info
-      this.yylloc.first_column = this.yylloc.last_column;
-      this.yylloc.last_column += matchedText.length;
+        // If the rule points to a new state, change it now
+        if (rule.state) {
+          this.setState(rule.state);
 
-      // If the rule points to a new state, change it now
-      if (rule.state) {
-        this.setState(rule.state);
-
-        if (this.shouldTrackNextIndentation) {
-          if (this.getLastRecordedIndentation()[0] < thisIndentation) {
-            this.indentation.push([thisIndentation, false]);
+          if (this.shouldTrackNextIndentation) {
+            if (this.getLastRecordedIndentation()[0] < thisIndentation) {
+              this.indentation.push([thisIndentation, false]);
+            }
           }
         }
-      }
-			
-			// Remove leading whitespace characters.
-      const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
 
-			if (spaceMatch.length !== 0) {
-        if (spaceMatch[0].length == 2) {
-          this.yylloc.last_column += 1;
-        } else {
-          this.yylloc.last_column += spaceMatch[0].length;
+        // Remove leading whitespace characters.
+        const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
+
+        if (spaceMatch.length !== 0) {
+          if (spaceMatch[0].length === 2) {
+            this.yylloc.last_column += 1;
+          } else {
+            this.yylloc.last_column += spaceMatch[0].length;
+          }
         }
-      }
 
-      return rule.token;
+        return rule.token;
+      }
     }
 
     // Something went wrong. TODO: Throw exception?
@@ -277,7 +277,7 @@ class Lexer {
    */
   isAtTheEndOfText() {
     return this.isAtTheEndOfLine() &&
-           this.yylloc.first_line >= this.lines.length;
+      this.yylloc.first_line >= this.lines.length;
   }
 
   /**

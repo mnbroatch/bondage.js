@@ -16,7 +16,7 @@ module.exports = {
   types: {
     Text,
     Shortcut,
-		Jump,
+    Jump,
     Option,
     Conditional,
     Assignment,
@@ -24,7 +24,7 @@ module.exports = {
     Expression,
     Command,
     FunctionCall,
-		InlineExpression,
+    InlineExpression,
   },
 
   RootNode: class {
@@ -123,7 +123,7 @@ module.exports = {
       this.selectable = true;
     }
   },
-  
+
   OptionNode: class extends Option {
     constructor(text, identifier, lineNo) {
       super();
@@ -213,7 +213,7 @@ module.exports = {
     }
   },
 
-	ArithmeticExpressionExponentNode: class extends Expression {
+  ArithmeticExpressionExponentNode: class extends Expression {
     constructor(expression1, expression2) {
       super();
       this.type = 'ArithmeticExpressionExponentNode';
@@ -221,7 +221,7 @@ module.exports = {
       this.expression2 = expression2;
     }
   },
-	
+
   ArithmeticExpressionDivideNode: class extends Expression {
     constructor(expression1, expression2) {
       super();
@@ -397,7 +397,7 @@ module.exports = {
       this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
-	
+
   // /////////////// Inline Expression
   InlineExpressionNode: class extends InlineExpression {
     constructor(expression, lineNo) {

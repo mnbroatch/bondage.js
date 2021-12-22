@@ -15,7 +15,7 @@ describe('Dialogue', () => {
   let assignmentYarnData;
   let conditionalYarnData;
   let commandAndFunctionYarnData;
-	let inlineExpressionYarnData;
+  let inlineExpressionYarnData;
 
   let runner;
 
@@ -36,7 +36,7 @@ describe('Dialogue', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNode');
 
-    let value = run.next().value;
+    const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
@@ -45,7 +45,7 @@ describe('Dialogue', () => {
     runner.load(linksYarnData);
     const run = runner.run('Option2');
 
-    let value = run.next().value;
+    const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is Option2\'s test line', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
@@ -98,16 +98,16 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
-	
-	  it('Automatically goes through two jump nodes', () => {
+
+  it('Automatically goes through two jump nodes', () => {
     runner.load(linksYarnData);
     const run = runner.run('TwoJumpPassthrough');
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Real First test line', value.data, value.lineNum));
-		value = run.next().value;
+    value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('First test line', value.data, value.lineNum));
-		value = run.next().value;
+    value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
@@ -243,7 +243,7 @@ describe('Dialogue', () => {
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Test Line2', value.data, value.lineNum));
 
-    expect(runner.variables.get('testvar')).to.equal(100/5);
+    expect(runner.variables.get('testvar')).to.equal(100 / 5);
 
     expect(run.next().done).to.be.true;
   });
@@ -370,7 +370,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-it('Can evaluate an assignment from one variable to another via an expression with self reference', () => {
+  it('Can evaluate an assignment from one variable to another via an expression with self reference', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('VariableExpression2');
 
@@ -450,7 +450,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('StopCommand');
 
-    let value = run.next().value;
+    const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('First line', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
@@ -465,7 +465,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     expect(value.data).to.not.be.undefined;
     expect(value).to.deep.equal(new bondage.TextResult('text in between commands', value.data, value.lineNum));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with','space'], null));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], null));
     expect(run.next().done).to.be.true;
   });
 
@@ -479,7 +479,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     expect(value.data).to.not.be.undefined;
     expect(value).to.deep.equal(new bondage.TextResult('text in between commands', value.data, value.lineNum));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with','space'], null));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], null));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.CommandResult('callAFunction', [], null));
     expect(run.next().done).to.be.true;
@@ -489,11 +489,11 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('CommandsArgs');
 
-    let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('callAFunction', [1,2,true], null));
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('callAFunction', [1, 2, true], null));
     expect(run.next().done).to.be.true;
   });
-	
+
   it('Call command with variable argument', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('CommandWithVariable');
@@ -506,7 +506,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
   });
 
   it('Evaluates a function and uses it in a conditional', () => {
-		runner.registerFunction('testfunc', (args) => {
+    runner.registerFunction('testfunc', (args) => {
       if (args[0] === 'firstarg') {
         if (args[1] === 'secondarg') {
           // Test returning true
@@ -521,7 +521,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
 
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('FunctionConditional');
-    
+
     let value = run.next().value;
     expect(value.data).to.not.be.undefined;
     expect(value).to.deep.equal(new bondage.TextResult('First line', value.data, value.lineNum));
@@ -547,7 +547,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     expect(run.next().done).to.be.true;
   });
 
-it('Can handle text after an option', () => {
+  it('Can handle text after an option', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('TextAfterOption');
 
@@ -561,8 +561,8 @@ it('Can handle text after an option', () => {
 
     expect(run.next().done).to.be.true;
   });
-	
-	it('Can handle an if conditional with unconditional option after', () => {
+
+  it('Can handle an if conditional with unconditional option after', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterSuccessConditional');
 
@@ -578,8 +578,8 @@ it('Can handle text after an option', () => {
 
     expect(run.next().done).to.be.true;
   });
-	
-	it('Can handle an if conditional option', () => {
+
+  it('Can handle an if conditional option', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('ConditionalOption');
 
@@ -593,8 +593,8 @@ it('Can handle text after an option', () => {
 
     expect(run.next().done).to.be.true;
   });
-	
-	it('Can handle an if conditional option with unconditional option after', () => {
+
+  it('Can handle an if conditional option with unconditional option after', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterOptionWithinConditional');
 
@@ -609,44 +609,44 @@ it('Can handle text after an option', () => {
     expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Give key', 'FinalOption'], [5, 8]));
 
     expect(run.next().done).to.be.true;
-  });	
-	
-	it('Can handle a simple inline expression', () => {
+  });
+
+  it('Can handle a simple inline expression', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('SimpleInlineExp');
 
-		runner.variables.set('firstvar', 1); // set the variables value
+    runner.variables.set('firstvar', 1); // set the variables value
 
-    let value = run.next().value;
+    const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('1', value.data, value.lineNum));
 
     expect(run.next().done).to.be.true;
   });
 
-	it('Can handle a simple inline expression in a sentence', () => {
+  it('Can handle a simple inline expression in a sentence', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpSentence');
 
-		runner.variables.set('firstvar', 'test'); // set the variables value
+    runner.variables.set('firstvar', 'test'); // set the variables value
 
-    let value = run.next().value;
+    const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test.', value.data, value.lineNum));
 
     expect(run.next().done).to.be.true;
   });
 
-	it('Can handle a simple inline expression whitespace in a sentence', () => {
+  it('Can handle a simple inline expression whitespace in a sentence', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpAddSentence');
 
-		runner.variables.set('firstvar', 1); // set the variables value
+    runner.variables.set('firstvar', 1); // set the variables value
 
-    let value = run.next().value;
+    const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a 2 sentence.', value.data, value.lineNum));
 
     expect(run.next().done).to.be.true;
   });
-	
+
   it('Can handle an if arithmetic expression elseif conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('ArithmeticExpressionConditional');
@@ -673,7 +673,7 @@ it('Can handle text after an option', () => {
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Test Line After', value.data, value.lineNum));
 
-    expect(runner.variables.get('testvar')).to.equal(Math.pow(2,2));
+    expect(runner.variables.get('testvar')).to.equal(2 ** 2);
 
     expect(run.next().done).to.be.true;
   });

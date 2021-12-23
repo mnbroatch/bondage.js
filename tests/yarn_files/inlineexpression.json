@@ -22,7 +22,7 @@
   {
     "title": "InlineExpAddSentence",
     "tags": "Tag",
-    "body": "This is a {$firstvar + 1}  sentence.",
+    "body": "This is a {$firstvar + 1} sentence.",
     "position": {
       "x": 449,
       "y": 252

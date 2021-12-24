@@ -368,7 +368,7 @@ describe('Parser', () => {
         new nodes.VariableNode('testvar'),
         new nodes.NumericLiteralNode('1'))
         , { first_line: results[0].lineNum }),
-      new nodes.TextNode('test.', { first_line: results[0].lineNum }),
+      new nodes.TextNode(' test.', { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);

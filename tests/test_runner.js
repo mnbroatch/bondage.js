@@ -50,7 +50,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can run through an option to another node', () => {
+  it('Can run through a first option to another node', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeNodes');
 
@@ -60,7 +60,7 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is another test line', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['First choice', 'Second choice'], [2, 3]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['First choice', 'Second choice'], [3, 5]));
 
     optionResult.select(0);
     value = run.next().value;
@@ -69,9 +69,9 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can run through an option to another node', () => {
+  it('Can run through a second option to another node', () => {
     runner.load(linksYarnData);
-    const run = runner.run('Link');
+    const run = runner.run('ThreeNodes');
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
@@ -79,7 +79,7 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is another test line', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['First choice', 'Second choice'], [3, 4]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['First choice', 'Second choice'], [3, 5]));
 
     optionResult.select(1);
     value = run.next().value;
@@ -109,30 +109,6 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('First test line', value.data, value.lineNum));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', value.data, value.lineNum));
-    expect(run.next().done).to.be.true;
-  });
-
-  it('Does not group together options and shortcut options', () => {
-    runner.load(linksYarnData);
-    const run = runner.run('LinkAfterShortcuts');
-
-    let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('First test line', value.data, value.lineNum));
-
-    let optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Shortcut 1', 'Shortcut 2'], [2, 4]));
-
-    optionResult.select(1);
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is the second shortcut', value.data, value.lineNum));
-
-    optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['First link', 'Second link'], [6, 6]));
-
-    optionResult.select(0);
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', value.data, value.lineNum));
-
     expect(run.next().done).to.be.true;
   });
 

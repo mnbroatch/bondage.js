@@ -20,38 +20,6 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  it('can parse a jump', () => {
-    const results = parser.parse('[[optiondest]]');
-
-    const expected = [
-      new nodes.JumpNode('optiondest', { first_line: results[0].lineNum }),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
-  it('can parse a named option', () => {
-    const results = parser.parse('[[option text|optiondest]]');
-
-    const expected = [
-      new nodes.OptionNode('option text', 'optiondest', { first_line: results[0].lineNum }),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
-  it('can parse several named options', () => {
-    const results = parser.parse('[[text1|dest1]][[text2|dest2]]\n[[text3|dest3]]');
-
-    const expected = [
-      new nodes.OptionNode('text1', 'dest1', { first_line: results[0].lineNum }),
-      new nodes.OptionNode('text2', 'dest2', { first_line: results[1].lineNum }),
-      new nodes.OptionNode('text3', 'dest3', { first_line: results[2].lineNum }),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
   it('can parse some text followed by an option', () => {
     const results = parser.parse('some text [[text1|dest1]]');
 

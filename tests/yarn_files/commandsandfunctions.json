@@ -71,7 +71,7 @@
 	{
 		"title": "VisitedFunctionStart",
 		"tags": "Tag",
-		"body": "Hello\n[[VisitedFunction]]",
+		"body": "Hello\n<<jump VisitedFunction>>",
 		"position": {
 			"x": 449,
 			"y": 252

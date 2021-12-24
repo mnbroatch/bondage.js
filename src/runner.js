@@ -101,12 +101,7 @@ class Runner {
         shortcutNodes = [];
       }
 
-      if (node instanceof nodeTypes.Jump) {
-        // It doesn't matter where we are or what other lines are remaining,
-        // a jump is executed immediately.
-        yield* this.run(node.identifier);
-        return;
-      } else if (node instanceof nodeTypes.Option) {
+      if (node instanceof nodeTypes.Option) {
         optionNodes.push(node);
       } else if (node instanceof nodeTypes.Text) {
         // If we are already appending text...
@@ -179,6 +174,11 @@ class Runner {
         }
       // A function call
       } else if (node instanceof nodeTypes.FunctionCall) {
+        if (node.functionName === 'jump') {
+          // Special command, jump to node
+          yield* this.run(node.args[0].text);
+          return;
+        }
         if (node.functionName === 'stop') {
           // Special command, halt execution
           return;

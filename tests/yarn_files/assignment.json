@@ -122,7 +122,7 @@
   {
     "title": "AssignmentWithFunction2",
     "tags": "Tag",
-    "body": "Test Line\n<<set $testvar to visited(\"AssignmentWithFunction\")>>Test Line2[[AssignmentWithFunction]]",
+    "body": "Test Line\n<<set $testvar to visited(\"AssignmentWithFunction\")>>Test Line2<<jump AssignmentWithFunction>>",
     "position": {
       "x": 449,
       "y": 252

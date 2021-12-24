@@ -12,7 +12,7 @@
 	{
 		"title": "ThreeNodes",
 		"tags": "",
-		"body": "This is a test line\nThis is another test line[[First choice|Option1]]\n[[Second choice|Option2]]",
+		"body": "This is a test line\nThis is another test line\n-> First choice\n\t<<jump Option1>>\n-> Second choice\n\t<<jump Option2>>",
 		"position": {
 			"x": 449,
 			"y": 252
@@ -40,19 +40,9 @@
 		"colorID": 0
 	},
 	{
-		"title": "Link",
-		"tags": "",
-		"body": "This is a test line\nThis is another test line\n[[First choice|Option1]]\n[[Second choice|Option2]]",
-		"position": {
-			"x": 774,
-			"y": 404
-		},
-		"colorID": 0
-	},
-	{
 		"title": "OneJumpPassthrough",
 		"tags": "",
-		"body": "First test line\n[[Option1]]",
+		"body": "First test line\n<<jump Option1>>",
 		"position": {
 			"x": 774,
 			"y": 404
@@ -62,7 +52,7 @@
 		{
 		"title": "TwoJumpPassthrough",
 		"tags": "",
-		"body": "Real First test line\n[[OneJumpPassthrough]]",
+		"body": "Real First test line\n<<jump OneJumpPassthrough>>",
 		"position": {
 			"x": 774,
 			"y": 404
@@ -72,7 +62,7 @@
 	{
 		"title": "LinkAfterShortcuts",
 		"tags": "",
-		"body": "First test line\n-> Shortcut 1\n\tThis is the first shortcut\n-> Shortcut 2\n\tThis is the second shortcut\n[[First link|Option1]][[Second link|Option2]]",
+		"body": "First test line\n-> Shortcut 1\n\tThis is the first shortcut\n-> Shortcut 2\n\tThis is the second shortcut\n-> First link\n\t<<Option1>>\n-> Second link\n\t<<Option2>>",
 		"position": {
 			"x": 774,
 			"y": 404

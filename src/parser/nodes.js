@@ -2,7 +2,6 @@
 
 class Text { }
 class Shortcut { }
-class Option { }
 class Conditional { }
 class Assignment { }
 class Literal { }
@@ -15,7 +14,6 @@ module.exports = {
   types: {
     Text,
     Shortcut,
-    Option,
     Conditional,
     Assignment,
     Literal,
@@ -108,18 +106,6 @@ module.exports = {
       this.type = 'TextNode';
       this.text = text;
       this.lineNum = lineNo ? lineNo.first_line : -1;
-    }
-  },
-
-  OptionNode: class extends Option {
-    constructor(text, identifier, lineNo) {
-      super();
-      this.type = 'OptionNode';
-      this.text = text || null;
-      this.identifier = identifier || this.text; // [[Destination Text]]
-      this.lineNum = lineNo ? lineNo.first_line : -1;
-
-      this.selectable = true;
     }
   },
 

@@ -2,54 +2,13 @@
 	{
 		"title": "Start",
 		"tags": "Tag",
-		"body": "What are you?\n-> A troll\n    <<set $troll to true >>\n-> A nice person\n    <<set $troll to false >>\n[[Objective]]",
+		"body": "What are you?\n-> A troll\n    <<set $troll to true >>\n-> A nice person\n    <<set $troll to false >>\n<<jump Objective>>",
 		"position": {
 			"x": 449,
 			"y": 252
 		},
 		"colorID": 0
 	},
-	{
-		"title": "Objective",
-		"tags": "Tag",
-		"body": "<<if $repeat >= 3>>\nBye…\n<<else>>\nIs your objective clear?\n[[Yes|Objective.Yes]]\n[[No|Objective.No]]\n<<if $troll == true>>\n[[Maybe|Objective.Maybe]]\n<<endif>>\n<<endif>>\n",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
-	},
-	{
-		"title": "Objective.No",
-		"tags": "Tag",
-		"body": "Blah blah blah blah\n[[Objective]]",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
-	},
-	{
-		"title": "Objective.Yes",
-		"tags": "Tag",
-		"body": "Good let's start the mission.",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
-	},
-	{
-		"title": "Objective.Maybe",
-		"tags": "Tag",
-		"body": "Are you trolling me?\n[[Objective]]",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
-	},
-
 	{
 		"title": "BasicIf",
 		"tags": "Tag",
@@ -91,19 +50,9 @@
 		"colorID": 0
 	},
 	{
-		"title": "TextAfterOption",
-		"tags": "Tag",
-		"body": "Text before\n[[FinalOption|Objective]]\nText after",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
-	},
-	{
 		"title": "ConditionalOption",
 		"tags": "Tag",
-		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\n[[Cond Option|Objective]]\n<<endif>>\nText after\n",
+		"body": "<<set $haskey to true>>\nText before\n-> Cond Option <<if $haskey == true>>\n<<jump Objective>>\nText after\n",
 		"position": {
 			"x": 449,
 			"y": 252
@@ -113,7 +62,7 @@
 	{
 		"title": "OptionAfterSuccessConditional",
 		"tags": "Tag",
-		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n<<endif>>\nText after\n[[FinalOption|Objective]]",
+		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n<<endif>>\nText after\n-> FinalOption\n\t<<jump Objective>>",
 		"position": {
 			"x": 449,
 			"y": 252
@@ -123,7 +72,7 @@
 	{
 		"title": "OptionAfterOptionWithinConditional",
 		"tags": "Tag",
-		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n[[Give key|give.key]]\n<<endif>>\nText after\n[[FinalOption|Objective]]",
+		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n-> Give key\n\t<<jump give.key>>\n<<endif>>\nText after\n-> FinalOption|\n\t<<jump Objective>>",
 		"position": {
 			"x": 449,
 			"y": 252

@@ -31,11 +31,6 @@ const Tokens = {
   // Shortcut syntax ("->")
   ShortcutOption:       /->/,
 
-  // Option syntax ("[[Let's go here|Destination]]")
-  OptionStart:          /\[\[/,                    // [[
-  OptionDelimit:        /\|/,                      // |
-  OptionEnd:            /\]\]/,                    // ]]
-
   // Command types (specially recognised command word)
   If:                   /if(?!\w)/,
   ElseIf:               /elseif(?!\w)/,

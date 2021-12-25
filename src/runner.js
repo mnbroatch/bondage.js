@@ -84,7 +84,6 @@ class Runner {
   * evalNodes(nodes, yarnNodeData) {
     if (!nodes) return;
 
-    const optionNodes = [];
     let shortcutNodes = [];
     let prevnode = null;
     let textRun = null;
@@ -99,10 +98,6 @@ class Runner {
         // Last shortcut in the series, so yield the shortcuts.
         yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
         shortcutNodes = [];
-      }
-
-      if (node instanceof nodeTypes.Option) {
-        optionNodes.push(node);
       } else if (node instanceof nodeTypes.Text) {
         // If we are already appending text...
         if (textRun) {
@@ -160,17 +155,7 @@ class Runner {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
-          // Filter out the options
-          const otherNodes = [];
-          for (let i = 0; i < evalResult.length; i++) {
-            if (evalResult[i] instanceof nodeTypes.Option) {
-              optionNodes.push(evalResult[i]);
-            } else {
-              otherNodes.push(evalResult[i]);
-            }
-          }
-          // Run the remaining results
-          yield* this.evalNodes(otherNodes, yarnNodeData);
+          yield* this.evalNodes(evalResult, yarnNodeData);
         }
       // A function call
       } else if (node instanceof nodeTypes.FunctionCall) {
@@ -198,31 +183,6 @@ class Runner {
     if (shortcutNodes.length > 0) {
       yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
     }
-
-    if (optionNodes.length > 0) {
-      // At the end of the node, but we still need to handle any final options
-      yield* this.handleOptions(optionNodes);
-    }
-  }
-
-/**
-   * yield an options result then handle the subequent selection
-   * @param {any[]} selections
-   */
-  * handleOptions(options) {
-    const optionResults = new results.OptionsResult(options.map((s) => {
-      return s.text;
-    }), options.map((s) => {
-      return s.lineNum || -1;
-    }));
-
-    yield optionResults;
-
-    if (optionResults.selected !== -1) {
-      // Something was selected
-      const selectedOption = options[optionResults.selected];
-      yield* this.run(selectedOption.identifier);
-    }
   }
 
   /**
@@ -232,11 +192,14 @@ class Runner {
   * handleShortcuts(selections, yarnNodeData) {
     // Multiple options to choose from (or just a single shortcut)
     // Filter out any conditional dialog options that result to false
-    const filteredSelections = selections.filter((s) => {
-      if (s.type === 'ConditionalDialogShortcutNode') {
-        return this.evaluateExpressionOrLiteral(s.conditionalExpression);
+    const filteredSelections = selections.map((s) => {
+      if (
+        s.type === 'ConditionalDialogShortcutNode'
+        && !this.evaluateExpressionOrLiteral(s.conditionalExpression)
+      ) {
+        return Object.assign(s, { isDisabled: true });
       }
-      return true;
+      return s;
     });
 
     if (filteredSelections.length === 0) {

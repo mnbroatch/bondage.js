@@ -20,28 +20,6 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  it('can parse some text followed by an option', () => {
-    const results = parser.parse('some text [[text1|dest1]]');
-
-    const expected = [
-      new nodes.TextNode('some text ', { first_line: results[0].lineNum }),
-      new nodes.OptionNode('text1', 'dest1', { first_line: results[1].lineNum }),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
-  it('can parse some text followed by a newline and an option', () => {
-    const results = parser.parse('some text\n[[text1|dest1]]');
-
-    const expected = [
-      new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.OptionNode('text1', 'dest1', { first_line: results[1].lineNum }),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
   it('can parse a simple function call', () => {
     const results = parser.parse('<<commandtext>>');
 

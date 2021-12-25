@@ -51,7 +51,6 @@ const grammar = {
     statement: [
       ['shortcut', '$$ = $1;'],
       ['functionCall', '$$ = $1;'],
-      ['option', '$$ = $1;'],
       ['assignment', '$$ = $1;'],
       ['Text', '$$ = new yy.TextNode($1, @$);'],
       ['inlineExpression', '$$ = $1;'],
@@ -66,10 +65,6 @@ const grammar = {
       ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
       ['BeginCommand functionResultExpression EndCommand', '$$ = $2;'],
       ['BeginCommand Identifier openArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3);'],
-    ],
-
-    option: [
-      ['OptionStart Text OptionDelimit Identifier OptionEnd', '$$ = new yy.OptionNode($2, $4, @$);'],
     ],
 
     assignment: [

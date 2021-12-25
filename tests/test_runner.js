@@ -124,8 +124,10 @@ describe('Dialogue', () => {
 
     optionResult.select(1);
     value = run.next().value;
+    console.log('value', value)
     expect(value).to.deep.equal(new bondage.TextResult('This is the second option', value.data, value.lineNum));
     value = run.next().value;
+    console.log('value2', value)
     expect(value).to.deep.equal(new bondage.TextResult('This is after both options', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
@@ -523,21 +525,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle text after an option', () => {
-    runner.load(conditionalYarnData);
-    const run = runner.run('TextAfterOption');
-
-    let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', value.data, value.lineNum));
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', value.data, value.lineNum));
-
-    const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['FinalOption'], [2]));
-
-    expect(run.next().done).to.be.true;
-  });
-
   it('Can handle an if conditional with unconditional option after', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterSuccessConditional');
@@ -559,11 +546,24 @@ describe('Dialogue', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('ConditionalOption');
 
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', value.data, value.lineNum));
+
+    const optionResult = run.next().value;
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Cond Option'], [4]));
+
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Can handle an if conditional option with unconditional option after', () => {
+    runner.load(conditionalYarnData);
+    const run = runner.run('OptionAfterOptionWithinConditional');
+
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Text before', value.data, value.lineNum));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', value.data, value.lineNum));
-
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', value.data, value.lineNum));
+    value = run.next().value;
     const optionResult = run.next().value;
     expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Cond Option'], [4]));
 

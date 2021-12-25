@@ -379,6 +379,11 @@ class Runner {
 				return this.functions[node.functionName](node.args.map(this.evaluateExpressionOrLiteral, this));
 			}
 			throw new Error(`Function "${node.functionName}" not found`);
+    } else if (node.type === 'NegatedFunctionResultNode') {
+			if (this.functions[node.functionName]) {
+				return !this.functions[node.functionName](node.args.map(this.evaluateExpressionOrLiteral, this));
+			}
+			throw new Error(`Function "${node.functionName}" not found`);
 		} else {
       throw new Error(`I don't recognize expression/literal type ${node.type}`);
     }

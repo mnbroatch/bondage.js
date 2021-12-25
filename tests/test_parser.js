@@ -497,6 +497,40 @@ describe('Parser', () => {
 
     expect(results).to.deep.equal(expected);
   });
+
+	it('can parse a function call within an If not expression', () => {
+    const results = parser.parse('<<if not visited("testnode")>>\nHi\n<<set $testvar to 5>>\n<<endif>>');
+
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    const expected = [
+      new nodes.IfNode(
+				new nodes.NegatedFunctionResultNode('visited', [
+					new nodes.StringLiteralNode('testnode')
+				]),
+				[
+					new nodes.TextNode('Hi', { first_line: 2 }),
+					new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))
+				])
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+	it('can parse a function negated boolean expression', () => {
+    const results = parser.parse('<<if not true>>\nHi\n<<set $testvar to 5>>\n<<endif>>');
+
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    const expected = [
+      new nodes.IfNode(
+				new nodes.NegatedBooleanExpressionNode(new nodes.BooleanLiteralNode('true')),
+				[
+					new nodes.TextNode('Hi', { first_line: 2 }),
+					new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))
+				])
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
 	
   it('can parse an assignment involving exponent', () => {
     const results = parser.parse('<<set $testvar = 2 ** 2>>');

@@ -12,6 +12,10 @@ Installation: `npm install -g bondage`
 
 Now you can use the `bondage` command to run through Yarn files from the command line. You can load one or multiple files at a time. If you load multiple files and a two nodes are encountered with the same name, the node will be overwritten.
 
+** Testing **
+
+npm run test
+
 **Examples**
 
 * Running a single file from the default start node (named "Start"): `bondage run yarnfile.json`

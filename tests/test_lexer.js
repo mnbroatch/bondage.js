@@ -317,6 +317,22 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
+	
+  it('can tokenize a != conditional expression', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<if not true>>Hi<<endif>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('If');
+		expect(lexer.lex()).to.equal('Not');
+		expect(lexer.lex()).to.equal('True');
+		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('EndIf');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
 
   it('can tokenize If expression equalto number', () => {
     const lexer = new Lexer();

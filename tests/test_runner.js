@@ -547,7 +547,19 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     expect(run.next().done).to.be.true;
   });
 
-it('Can handle text after an option', () => {
+  it('Correctly handles not visited()', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('NotVisitedFunction');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Hello', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('you have not visited VisitedFunctionStart!', value.data, value.lineNum));
+
+    expect(run.next().done).to.be.true;
+  });
+
+	it('Can handle text after an option', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('TextAfterOption');
 

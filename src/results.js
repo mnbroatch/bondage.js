@@ -25,10 +25,10 @@ class CommandResult extends Result {
    */
   constructor(name, args, result) {
     super();
-		this.name = name;
-		this.args = args;
-		this.result = result;
-	}
+    this.name = name;
+    this.args = args;
+    this.result = result;
+  }
 }
 
 class OptionsResult extends Result {

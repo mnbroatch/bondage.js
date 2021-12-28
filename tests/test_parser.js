@@ -4,8 +4,8 @@
 'use strict';
 
 const chai = require('chai');
-const parser = require('../src/parser/parser.js');
-const nodes = require('../src/parser/nodes.js');
+const parser = require('../src/parser/parser');
+const nodes = require('../src/parser/nodes');
 
 const expect = chai.expect;
 
@@ -24,7 +24,7 @@ describe('Parser', () => {
     const results = parser.parse('[[optiondest]]');
 
     const expected = [
-      new nodes.JumpNode('optiondest',  { first_line: results[0].lineNum }),
+      new nodes.JumpNode('optiondest', { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -94,93 +94,94 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-	it('can parse a function call with one paren arg', () => {
+  it('can parse a function call with one paren arg', () => {
     const results = parser.parse('<<commandtext(1)>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode("1")]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('1')]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-	it('can parse a function call with one variable paren arg', () => {
+  it('can parse a function call with one variable paren arg', () => {
     const results = parser.parse('<<commandtext($somevar)>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.VariableNode("somevar")]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.VariableNode('somevar')]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
-	it('can parse a function call with two paren arg', () => {
-    const results = parser.parse('<<commandtext(2, \"face\")>>');
+
+  it('can parse a function call with two paren arg', () => {
+    const results = parser.parse('<<commandtext(2, "face")>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode("2"), new nodes.StringLiteralNode("face")]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('2'), new nodes.StringLiteralNode('face')]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-	it('can parse a function call with one open arg', () => {
+  it('can parse a function call with one open arg', () => {
     const results = parser.parse('<<commandtext 1>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode("1")]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('1')]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
-	it('can parse a function call with one variable open arg', () => {
+
+  it('can parse a function call with one variable open arg', () => {
     const results = parser.parse('<<commandtext $somevar>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.VariableNode("somevar")]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.VariableNode('somevar')]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-	it('can parse a function call with two open args', () => {
-    const results = parser.parse('<<commandtext 2 \"face\">>');
+  it('can parse a function call with two open args', () => {
+    const results = parser.parse('<<commandtext 2 "face">>');
 
     const expected = [
       new nodes.FunctionResultNode('commandtext', [
-					new nodes.NumericLiteralNode("2"), 
-					new nodes.StringLiteralNode("face")
-				]),
+        new nodes.NumericLiteralNode('2'),
+        new nodes.StringLiteralNode('face'),
+      ]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-	it('can parse a function call with three open args', () => {
-    const results = parser.parse('<<commandtext 2 \"face\" true>>');
+  it('can parse a function call with three open args', () => {
+    const results = parser.parse('<<commandtext 2 "face" true>>');
 
     const expected = [
       new nodes.FunctionResultNode('commandtext', [
-					new nodes.NumericLiteralNode("2"), 
-					new nodes.StringLiteralNode("face"), 
-					new nodes.BooleanLiteralNode("true")
-				]),
+        new nodes.NumericLiteralNode('2'),
+        new nodes.StringLiteralNode('face'),
+        new nodes.BooleanLiteralNode('true'),
+      ]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-	/*it('can parse a function call with multiple identifiers', () => {
+  // TODO
+  it.skip('can parse a function call with multiple identifiers', () => {
     const results = parser.parse('<<commandtext ident1 ident2 true>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.TextNode("ident1"), new nodes.TextNode("ident2"), new nodes.BooleanLiteralNode("true")]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.TextNode('ident1'), new nodes.TextNode('ident2'), new nodes.BooleanLiteralNode('true')]),
     ];
 
     expect(results).to.deep.equal(expected);
-  });*/
-	
+  });
+
   it('can parse some text followed by a newline and a command', () => {
     const results = parser.parse('some text\n<<commandtext>>');
 
@@ -196,7 +197,7 @@ describe('Parser', () => {
     const results = parser.parse('<<set $testvar = 5>>');
 
     const expected = [
-      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))
+      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -207,36 +208,36 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.SetVariableEqualToNode('testvar',
-        new nodes.FunctionResultNode('visited', [new nodes.NumericLiteralNode("1")]))
+        new nodes.FunctionResultNode('visited', [new nodes.NumericLiteralNode('1')])),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
-		it('can parse an assignment with function call containing expression', () => {
+
+  it('can parse an assignment with function call containing expression', () => {
     const results = parser.parse('<<set $testvar = visited(1 + 2)>>');
 
     const expected = [
       new nodes.SetVariableEqualToNode('testvar',
         new nodes.FunctionResultNode('visited', [new nodes.ArithmeticExpressionAddNode(
-                  new nodes.NumericLiteralNode('1'),
-                  new nodes.NumericLiteralNode('2'))]))
+          new nodes.NumericLiteralNode('1'),
+          new nodes.NumericLiteralNode('2'))])),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
-	it('can parse an assignment with function call containing expression 2', () => {
+
+  it('can parse an assignment with function call containing expression 2', () => {
     const results = parser.parse('<<set $testvar = visited((1 + 2))>>');
 
     const expected = [
       new nodes.SetVariableEqualToNode('testvar',
         new nodes.FunctionResultNode('visited', [
-					new nodes.ArithmeticExpressionNode(
-						new nodes.ArithmeticExpressionAddNode(
-							new nodes.NumericLiteralNode('1'),
-							new nodes.NumericLiteralNode('2')))
-				]))
+          new nodes.ArithmeticExpressionNode(
+            new nodes.ArithmeticExpressionAddNode(
+              new nodes.NumericLiteralNode('1'),
+              new nodes.NumericLiteralNode('2'))),
+        ])),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -304,13 +305,13 @@ describe('Parser', () => {
       new nodes.TextNode('text', { first_line: 1 }),
       new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }),
       new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('shortcut text2', { first_line: 5 })], { first_line: 4 }),
-			new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
+      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
       new nodes.TextNode('more text', { first_line: 7 }),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
+
   it('correctly ignores a double newline', () => {
     const results = parser.parse('some text\n\n<<commandtext>>');
 
@@ -332,12 +333,12 @@ describe('Parser', () => {
 
     expect(results).to.deep.equal(expected);
   });
-	
+
   it('can parse a simple inline expression', () => {
     const results = parser.parse('{$testvar}');
 
     const expected = [
-      new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: results[0].lineNum })
+      new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -347,52 +348,55 @@ describe('Parser', () => {
     const results = parser.parse('\\{testtext\\}');
 
     const expected = [
-			new nodes.TextNode('{testtext}', { first_line: 1 })
+      new nodes.TextNode('{testtext}', { first_line: 1 }),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
+
   it('can parse a simple inline expression within a sentence', () => {
     const results = parser.parse('Hello there {$testvar}.');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
       new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: results[0].lineNum }),
-			new nodes.TextNode('.', { first_line: results[0].lineNum })
+      new nodes.TextNode('.', { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
- 	it('can parse inline expression with function call', () => {
+
+  it('can parse inline expression with function call', () => {
     const results = parser.parse('Hello there {testfunc(1,2)}.');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
-			new nodes.InlineExpressionNode(new nodes.FunctionResultNode('testfunc', [
-					new nodes.NumericLiteralNode('1')
-					, new nodes.NumericLiteralNode('2')
-				]), { first_line: results[0].lineNum }),
-			new nodes.TextNode('.', { first_line: results[0].lineNum })
+      new nodes.InlineExpressionNode(new nodes.FunctionResultNode('testfunc', [
+        new nodes.NumericLiteralNode('1'),
+        new nodes.NumericLiteralNode('2'),
+      ]), { first_line: results[0].lineNum }),
+      new nodes.TextNode('.', { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
+
   it('can parse inline expression with addition within a sentence', () => {
     const results = parser.parse('Hello there {$testvar + 1} test.');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
       new nodes.InlineExpressionNode(new nodes.ArithmeticExpressionAddNode(
-				new nodes.VariableNode('testvar'),
-				new nodes.NumericLiteralNode('1'))
-				, { first_line: results[0].lineNum }),
-			new nodes.TextNode(' test.', { first_line: results[0].lineNum })
+        new nodes.VariableNode('testvar'),
+        new nodes.NumericLiteralNode('1'))
+        , { first_line: results[0].lineNum }),
+      new nodes.TextNode(' test.', { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -401,106 +405,112 @@ describe('Parser', () => {
   it('can parse a simple If expression', () => {
     const results = parser.parse('<<if $testvar == true>>Hi<<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-				new nodes.EqualToExpressionNode(
-					new nodes.VariableNode('testvar'),
-					new nodes.BooleanLiteralNode('true')),
-				[new nodes.TextNode('Hi', { first_line: 1 })])
+        new nodes.EqualToExpressionNode(
+          new nodes.VariableNode('testvar'),
+          new nodes.BooleanLiteralNode('true')),
+        [new nodes.TextNode('Hi', { first_line: 1 })]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
-	it('can parse a nested If expression', () => {
+
+  it('can parse a nested If expression', () => {
     const results = parser.parse('<<if $testvar == true>><<if $testvar2 == false>>Hi<<endif>><<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar')
-				, new nodes.BooleanLiteralNode('true'))
-				, [new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar2')
-					, new nodes.BooleanLiteralNode('false'))
-					,	[new nodes.TextNode('Hi', { first_line: 1 })])
-					])			
+        , new nodes.BooleanLiteralNode('true'))
+        , [new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar2')
+          , new nodes.BooleanLiteralNode('false'))
+          , [new nodes.TextNode('Hi', { first_line: 1 })]),
+        ]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
+
   it('can parse an assignment within an If expression', () => {
     const results = parser.parse('<<if $testvar == true>>Hi\n<<set $testvar to 5>><<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-				new nodes.EqualToExpressionNode(
-					new nodes.VariableNode('testvar'),
-					new nodes.BooleanLiteralNode('true')),
-				[new nodes.TextNode('Hi', { first_line: 1 }),
-				new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))])
+        new nodes.EqualToExpressionNode(
+          new nodes.VariableNode('testvar'),
+          new nodes.BooleanLiteralNode('true')),
+        [new nodes.TextNode('Hi', { first_line: 1 }),
+          new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-	it('can parse am assignment within nested If expression', () => {
+  it('can parse am assignment within nested If expression', () => {
     const results = parser.parse('<<if $testvar == true>><<if $testvar2 == false>>Hi\n<<set $testvar to 5>><<endif>><<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar')
-				, new nodes.BooleanLiteralNode('true'))
-				, [new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar2')
-					, new nodes.BooleanLiteralNode('false'))
-					,	[new nodes.TextNode('Hi', { first_line: 1 }), 
-						new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))])
-					])			
+        , new nodes.BooleanLiteralNode('true'))
+        , [new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar2')
+          , new nodes.BooleanLiteralNode('false'))
+          , [new nodes.TextNode('Hi', { first_line: 1 }),
+            new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))]),
+        ]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
+
   it('can parse an AND OR If expression', () => {
     const results = parser.parse('<<if ($testvar == true) || $override == true>>Hi<<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-				new nodes.BooleanOrExpressionNode(
-					new nodes.ArithmeticExpressionNode(
-						new nodes.EqualToExpressionNode(
-								new nodes.VariableNode('testvar'),
-								new nodes.BooleanLiteralNode('true'))),
-						new nodes.EqualToExpressionNode(
-								new nodes.VariableNode('override'),
-								new nodes.BooleanLiteralNode('true'))),
-				[new nodes.TextNode('Hi', { first_line: 1 })])
+        new nodes.BooleanOrExpressionNode(
+          new nodes.ArithmeticExpressionNode(
+            new nodes.EqualToExpressionNode(
+              new nodes.VariableNode('testvar'),
+              new nodes.BooleanLiteralNode('true'))),
+          new nodes.EqualToExpressionNode(
+            new nodes.VariableNode('override'),
+            new nodes.BooleanLiteralNode('true'))),
+        [new nodes.TextNode('Hi', { first_line: 1 })]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
+
   it('can parse an AND OR If expression2', () => {
     const results = parser.parse('<<if ($testvar == true && $testvar2 > 1) || $override == true>>Hi<<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-				new nodes.BooleanOrExpressionNode(
-					new nodes.ArithmeticExpressionNode(
-						new nodes.BooleanAndExpressionNode(
-							new nodes.EqualToExpressionNode(
-								new nodes.VariableNode('testvar'),
-								new nodes.BooleanLiteralNode('true')),
-							new nodes.GreaterThanExpressionNode(
-								new nodes.VariableNode('testvar2'),
-								new nodes.NumericLiteralNode('1')))),
-					new nodes.EqualToExpressionNode(
-							new nodes.VariableNode('override'),
-							new nodes.BooleanLiteralNode('true'))),
-				[new nodes.TextNode('Hi', { first_line: 1 })])
+        new nodes.BooleanOrExpressionNode(
+          new nodes.ArithmeticExpressionNode(
+            new nodes.BooleanAndExpressionNode(
+              new nodes.EqualToExpressionNode(
+                new nodes.VariableNode('testvar'),
+                new nodes.BooleanLiteralNode('true')),
+              new nodes.GreaterThanExpressionNode(
+                new nodes.VariableNode('testvar2'),
+                new nodes.NumericLiteralNode('1')))),
+          new nodes.EqualToExpressionNode(
+            new nodes.VariableNode('override'),
+            new nodes.BooleanLiteralNode('true'))),
+        [new nodes.TextNode('Hi', { first_line: 1 })]),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -509,55 +519,58 @@ describe('Parser', () => {
   it('can parse a function call within an If expression', () => {
     const results = parser.parse('<<if visited("testnode")>>\nHi\n<<set $testvar to 5>>\n<<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-				new nodes.FunctionResultNode('visited', [
-					new nodes.StringLiteralNode('testnode')
-				]),
-				[
-					new nodes.TextNode('Hi', { first_line: 2 }),
-					new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))
-				])
+        new nodes.FunctionResultNode('visited', [
+          new nodes.StringLiteralNode('testnode'),
+        ]),
+        [
+          new nodes.TextNode('Hi', { first_line: 2 }),
+          new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
+        ]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-	it('can parse a function call within an If not expression', () => {
+  it('can parse a function call within an If not expression', () => {
     const results = parser.parse('<<if not visited("testnode")>>\nHi\n<<set $testvar to 5>>\n<<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-				new nodes.NegatedFunctionResultNode('visited', [
-					new nodes.StringLiteralNode('testnode')
-				]),
-				[
-					new nodes.TextNode('Hi', { first_line: 2 }),
-					new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))
-				])
+        new nodes.NegatedFunctionResultNode('visited', [
+          new nodes.StringLiteralNode('testnode'),
+        ]),
+        [
+          new nodes.TextNode('Hi', { first_line: 2 }),
+          new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
+        ]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
-	it('can parse a function negated boolean expression', () => {
+  it('can parse a function negated boolean expression', () => {
     const results = parser.parse('<<if not true>>\nHi\n<<set $testvar to 5>>\n<<endif>>');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-				new nodes.NegatedBooleanExpressionNode(new nodes.BooleanLiteralNode('true')),
-				[
-					new nodes.TextNode('Hi', { first_line: 2 }),
-					new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))
-				])
+        new nodes.NegatedBooleanExpressionNode(new nodes.BooleanLiteralNode('true')),
+        [
+          new nodes.TextNode('Hi', { first_line: 2 }),
+          new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
+        ]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
-	
+
   it('can parse an assignment involving exponent', () => {
     const results = parser.parse('<<set $testvar = 2 ** 2>>');
 
@@ -566,40 +579,41 @@ describe('Parser', () => {
         'testvar',
         new nodes.ArithmeticExpressionExponentNode(
           new nodes.NumericLiteralNode('2'),
-          new nodes.NumericLiteralNode('2')))
+          new nodes.NumericLiteralNode('2'))),
     ];
 
     expect(results).to.deep.equal(expected);
-  });	
-	
-	it('can parse an assignment involving exponent 2', () => {
+  });
+
+  it('can parse an assignment involving exponent 2', () => {
     const results = parser.parse('<<set $testvar = (2 ** 2)>>');
 
     const expected = [
       new nodes.SetVariableEqualToNode(
         'testvar',
-				new nodes.ArithmeticExpressionNode(
-					new nodes.ArithmeticExpressionExponentNode(
-						new nodes.NumericLiteralNode('2'),
-						new nodes.NumericLiteralNode('2'))))
+        new nodes.ArithmeticExpressionNode(
+          new nodes.ArithmeticExpressionExponentNode(
+            new nodes.NumericLiteralNode('2'),
+            new nodes.NumericLiteralNode('2')))),
     ];
 
     expect(results).to.deep.equal(expected);
-  });	
-	
+  });
+
   it('can parse an inline expression with exponent within a sentence', () => {
     const results = parser.parse('Hello there {2 ** 2} test.');
 
-		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
       new nodes.InlineExpressionNode(new nodes.ArithmeticExpressionExponentNode(
-				new nodes.NumericLiteralNode('2'),
-				new nodes.NumericLiteralNode('2'))
-				, { first_line: results[0].lineNum }),
-			new nodes.TextNode(' test.', { first_line: results[0].lineNum })
+        new nodes.NumericLiteralNode('2'),
+        new nodes.NumericLiteralNode('2'))
+        , { first_line: results[0].lineNum }),
+      new nodes.TextNode(' test.', { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
-  });	
+  });
 });

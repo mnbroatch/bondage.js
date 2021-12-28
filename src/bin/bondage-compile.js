@@ -4,8 +4,8 @@
 
 const fs = require('fs');
 const program = require('commander');
-const Lexer = require('../lexer/lexer.js');
-const Parser = require('../parser/parser.js');
+const Lexer = require('../lexer/lexer');
+const Parser = require('../parser/parser');
 
 function showTokens(files) {
   // First, load all of the files that we were given
@@ -21,7 +21,7 @@ function showTokens(files) {
         const yytext = lexer.yytext !== '' ? `(${lexer.yytext}) ` : '';
         console.log(`${token} ${yytext}at ${lexer.yylineno}:${lexer.yylloc.first_column} ( line ${lexer.yylineno})`);
       }
-      console.log("");
+      console.log('');
     });
   });
 }

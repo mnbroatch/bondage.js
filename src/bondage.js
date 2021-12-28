@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = require('./runner.js');
+module.exports = require('./runner');

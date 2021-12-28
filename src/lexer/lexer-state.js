@@ -1,6 +1,6 @@
 'use strict';
 
-const Tokens = require('./tokens.js');
+const Tokens = require('./tokens');
 
 /**
  * A LexState object represents one of the states in which the lexer can be.

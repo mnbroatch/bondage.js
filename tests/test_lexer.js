@@ -4,7 +4,7 @@
 'use strict';
 
 const chai = require('chai');
-const Lexer = require('../src/lexer/lexer.js');
+const Lexer = require('../src/lexer/lexer');
 
 const expect = chai.expect;
 
@@ -83,19 +83,19 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
-	it('can tokenize a command with paren no argument', () => {
+  it('can tokenize a command with paren no argument', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand()>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('Identifier');
-		expect(lexer.lex()).to.equal('LeftParen');
-		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('RightParen');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
-it('can tokenize a command with an open argument', () => {
+  it('can tokenize a command with an open argument', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand 2>>');
 
@@ -107,78 +107,78 @@ it('can tokenize a command with an open argument', () => {
   });
 
 
-it('can tokenize a command with two open arguments', () => {
+  it('can tokenize a command with two open arguments', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand 2 "face">>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('Identifier');
     expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('String');
+    expect(lexer.lex()).to.equal('String');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
-	it('can tokenize a command with a paren argument', () => {
+
+  it('can tokenize a command with a paren argument', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand(2)>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('Identifier');
-		expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('LeftParen');
     expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('RightParen');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
-	it('can tokenize a command with two paren arguments', () => {
+
+  it('can tokenize a command with two paren arguments', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand(2, "Face")>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('Identifier');
-		expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('LeftParen');
     expect(lexer.lex()).to.equal('Number');
     expect(lexer.lex()).to.equal('Comma');
     expect(lexer.lex()).to.equal('String');
-		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('RightParen');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
-	it('can tokenize a command with an expression argument', () => {
+  it('can tokenize a command with an expression argument', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand(2 + 1)>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('Identifier');
-		expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('LeftParen');
     expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('Add');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('Add');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('RightParen');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
-	it('can tokenize a command with an expression argument 2', () => {
+  it('can tokenize a command with an expression argument 2', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand((2 + 1))>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('Identifier');
-		expect(lexer.lex()).to.equal('LeftParen');
-		expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('LeftParen');
     expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('Add');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('RightParen');
-		expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('Add');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('RightParen');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
+
   it('can tokenize shortcut options', () => {
     const lexer = new Lexer();
     lexer.setInput('text\n-> shortcut1\n\tText1\n-> shortcut2\n\tText2\nmore text');
@@ -286,7 +286,7 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
+
   it('can tokenize an assignment with function call', () => {
     const lexer = new Lexer();
     lexer.setInput('<<set $testvar = visited(1)>>');
@@ -309,24 +309,24 @@ it('can tokenize a command with two open arguments', () => {
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('If');
-		expect(lexer.lex()).to.equal('True');
-		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('True');
+    expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('EndIf');
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
+
   it('can tokenize a != conditional expression', () => {
     const lexer = new Lexer();
     lexer.setInput('<<if not true>>Hi<<endif>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('If');
-		expect(lexer.lex()).to.equal('Not');
-		expect(lexer.lex()).to.equal('True');
-		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('Not');
+    expect(lexer.lex()).to.equal('True');
+    expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('EndIf');
@@ -340,10 +340,10 @@ it('can tokenize a command with two open arguments', () => {
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('If');
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('EqualTo');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualTo');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
@@ -353,27 +353,27 @@ it('can tokenize a command with two open arguments', () => {
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('If');
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
+
   it('can tokenize If AND expression', () => {
     const lexer = new Lexer();
     lexer.setInput('<<if $testvar >= 10 && $testbool == true>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('If');
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('And');		
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('EqualTo');
-		expect(lexer.lex()).to.equal('True');
-		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('And');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualTo');
+    expect(lexer.lex()).to.equal('True');
+    expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
@@ -383,51 +383,51 @@ it('can tokenize a command with two open arguments', () => {
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('If');
-		expect(lexer.lex()).to.equal('LeftParen');	
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('And');		
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('EqualTo');
-		expect(lexer.lex()).to.equal('True');
-		expect(lexer.lex()).to.equal('RightParen');	
-		expect(lexer.lex()).to.equal('Or');
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('EqualTo');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('And');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualTo');
+    expect(lexer.lex()).to.equal('True');
+    expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('Or');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualTo');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
-	  it('can tokenize ElseIf AND OR expression', () => {
+
+  it('can tokenize ElseIf AND OR expression', () => {
     const lexer = new Lexer();
     lexer.setInput('<<elseif ($testvar >= 10 && $testbool == true) || $testvar == 100>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('ElseIf');
-		expect(lexer.lex()).to.equal('LeftParen');	
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('And');		
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('EqualTo');
-		expect(lexer.lex()).to.equal('True');
-		expect(lexer.lex()).to.equal('RightParen');	
-		expect(lexer.lex()).to.equal('Or');
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('EqualTo');
-		expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('LeftParen');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('GreaterThanOrEqualTo');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('And');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualTo');
+    expect(lexer.lex()).to.equal('True');
+    expect(lexer.lex()).to.equal('RightParen');
+    expect(lexer.lex()).to.equal('Or');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualTo');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
+
   it('can tokenize a simple inline expression', () => {
     const lexer = new Lexer();
     lexer.setInput('{$test}');
-		
-		expect(lexer.lex()).to.equal('BeginInlineExp');
+
+    expect(lexer.lex()).to.equal('BeginInlineExp');
     expect(lexer.lex()).to.equal('Variable');
     expect(lexer.lex()).to.equal('EndInlineExp');
     expect(lexer.lex()).to.equal('EndOfInput');
@@ -436,63 +436,63 @@ it('can tokenize a command with two open arguments', () => {
   it('can tokenize an escaped curly brace', () => {
     const lexer = new Lexer();
     lexer.setInput('\\{test\\}');
-		
-		expect(lexer.lex()).to.equal('Text');
+
+    expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
-	
-	it('can tokenize an inline expression in a sentence', () => {
-		const lexer = new Lexer();
-		lexer.setInput('This is a {$test} sentence');
 
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('BeginInlineExp');
-		expect(lexer.lex()).to.equal('Variable');
-		expect(lexer.lex()).to.equal('EndInlineExp');
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('EndOfInput');
-	});
+  it('can tokenize an inline expression in a sentence', () => {
+    const lexer = new Lexer();
+    lexer.setInput('This is a {$test} sentence');
 
-	it('can tokenize an inline expression with addition in a sentence', () => {
-		const lexer = new Lexer();
-		lexer.setInput('This is a {$test + 1} sentence');
-	
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('BeginInlineExp');
-		expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('BeginInlineExp');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EndInlineExp');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('can tokenize an inline expression with addition in a sentence', () => {
+    const lexer = new Lexer();
+    lexer.setInput('This is a {$test + 1} sentence');
+
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('BeginInlineExp');
+    expect(lexer.lex()).to.equal('Variable');
     expect(lexer.lex()).to.equal('Add');
     expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('EndInlineExp');
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('EndOfInput');
-	});
+    expect(lexer.lex()).to.equal('EndInlineExp');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
 
-	it('can tokenize an inline expression with function call', () => {
-		const lexer = new Lexer();
-		lexer.setInput('This is a {getName($player1)} sentence');
-	
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('BeginInlineExp');
-		expect(lexer.lex()).to.equal('Identifier');
+  it('can tokenize an inline expression with function call', () => {
+    const lexer = new Lexer();
+    lexer.setInput('This is a {getName($player1)} sentence');
+
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('BeginInlineExp');
+    expect(lexer.lex()).to.equal('Identifier');
     expect(lexer.lex()).to.equal('LeftParen');
-		expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('Variable');
     expect(lexer.lex()).to.equal('RightParen');
-		expect(lexer.lex()).to.equal('EndInlineExp');
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('EndOfInput');
-	});
-	
-	it('can tokenize an inline expression with exponent in a sentence', () => {
-		const lexer = new Lexer();
-		lexer.setInput('This is a {2 ** 2} sentence');
-	
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('BeginInlineExp');
-		expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('EndInlineExp');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('can tokenize an inline expression with exponent in a sentence', () => {
+    const lexer = new Lexer();
+    lexer.setInput('This is a {2 ** 2} sentence');
+
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('BeginInlineExp');
+    expect(lexer.lex()).to.equal('Number');
     expect(lexer.lex()).to.equal('Exponent');
     expect(lexer.lex()).to.equal('Number');
-		expect(lexer.lex()).to.equal('EndInlineExp');
-		expect(lexer.lex()).to.equal('Text');
-		expect(lexer.lex()).to.equal('EndOfInput');
-	});
+    expect(lexer.lex()).to.equal('EndInlineExp');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
 });

@@ -127,7 +127,8 @@ class Runner {
 					yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
 				}
 			} else if (node instanceof nodeTypes.InlineExpression) {
-				let expResult = this.evaluateExpressionOrLiteral(node.expression,true).toString();
+				let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
+				expResult = expResult ? expResult.toString(): null;
 				
 				// If we are already appending text...
 				if (textRun){

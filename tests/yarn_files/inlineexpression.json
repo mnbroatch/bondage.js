@@ -32,7 +32,7 @@
   {
     "title": "InlineExpFunctionResult",
     "tags": "Tag",
-    "body": "This results are {testfunc()}.",
+    "body": "The results are {testfunc(\"frank\",2)}.",
     "position": {
       "x": 449,
       "y": 252
@@ -42,7 +42,7 @@
   {
     "title": "InlineExpFunctionResultExp",
     "tags": "Tag",
-    "body": "This results are {testfunc() == false}.",
+    "body": "The results are {testfunc() == false}.",
     "position": {
       "x": 449,
       "y": 252

@@ -692,14 +692,22 @@ it('Can evaluate an assignment from one variable to another via an expression wi
 	
 	it('Can handle inline expression containing function call', () => {
 		runner.registerFunction('testfunc', (args) => {
-			// Test returning true
-			return true;
-    });
+      if (args[0] === 'frank') {
+        if (args[1] === 2) {
+          // Test returning true
+          return true;
+        }
+        // Test returning false
+        return false;
+      }
+
+      throw new Error(`Args ${args} were not expected in testfunc`);
+		});
 		
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpFunctionResult');
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This results are true.', value.data, value.lineNum));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are true.', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
 

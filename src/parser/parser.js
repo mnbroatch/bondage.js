@@ -93,7 +93,7 @@ const grammar = {
       ['String', '$$ = new yy.StringLiteralNode($1);'],
       ['Null', '$$ = new yy.NullLiteralNode($1);'],
       ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
-
+			
       ['UnaryMinus Number %prec UnaryMinus', '$$ = new yy.UnaryMinusExpressionNode($2);'],
       ['UnaryMinus Variable %prec UnaryMinus', '$$ = new yy.UnaryMinusExpressionNode($2.substring(1));'],
 
@@ -148,6 +148,7 @@ const grammar = {
 
 		inlineExpression: [
 			['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
+			['BeginInlineExp functionResultExpression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
 		]
   },
 };

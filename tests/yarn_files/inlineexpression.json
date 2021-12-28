@@ -28,5 +28,25 @@
       "y": 252
     },
     "colorID": 0
+  },
+  {
+    "title": "InlineExpFunctionResult",
+    "tags": "Tag",
+    "body": "This results are {testfunc()}.",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
+  {
+    "title": "InlineExpFunctionResultExp",
+    "tags": "Tag",
+    "body": "This results are {testfunc() == false}.",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
   }
 ]

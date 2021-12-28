@@ -364,9 +364,25 @@ describe('Parser', () => {
     ];
 
     expect(results).to.deep.equal(expected);
-  });	
+  });
 	
-  it('can parse an expression with addition within a sentence', () => {
+ 	it('can parse inline expression with function call', () => {
+    const results = parser.parse('Hello there {testfunc(1,2)}.');
+
+		// They should all be on the same line. Runner aggregates text and expression value for same line.
+    const expected = [
+      new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
+			new nodes.InlineExpressionNode(new nodes.FunctionResultNode('testfunc', [
+					new nodes.NumericLiteralNode('1')
+					, new nodes.NumericLiteralNode('2')
+				]), { first_line: results[0].lineNum }),
+			new nodes.TextNode('.', { first_line: results[0].lineNum })
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+	
+  it('can parse inline expression with addition within a sentence', () => {
     const results = parser.parse('Hello there {$testvar + 1} test.');
 
 		// They should all be on the same line. Runner aggregates text and expression value for same line.

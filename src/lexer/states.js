@@ -111,6 +111,8 @@ function makeStates() {
 			.addTransition('Exponent')
 			.addTransition('Multiply')
 			.addTransition('Divide')
+			.addTransition('Identifier')
+			.addTransition('Comma')
 			.addTextRule('Text', 'base')
   };
 }

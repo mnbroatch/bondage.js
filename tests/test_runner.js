@@ -689,4 +689,30 @@ it('Can evaluate an assignment from one variable to another via an expression wi
 
     expect(run.next().done).to.be.true;
   });
+	
+	it('Can handle inline expression containing function call', () => {
+		runner.registerFunction('testfunc', (args) => {
+			// Test returning true
+			return true;
+    });
+		
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpFunctionResult');
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This results are true.', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
+
+/* 	it('Can handle inline expression containing function call and expression', () => {
+		runner.registerFunction('testfunc', (args) => {
+			// Test returning true
+			return true;
+    });
+		
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpFunctionResultExp');
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This results are false.', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });	 */
 });

@@ -392,7 +392,7 @@ describe('Parser', () => {
 				new nodes.VariableNode('testvar'),
 				new nodes.NumericLiteralNode('1'))
 				, { first_line: results[0].lineNum }),
-			new nodes.TextNode('test.', { first_line: results[0].lineNum })
+			new nodes.TextNode(' test.', { first_line: results[0].lineNum })
     ];
 
     expect(results).to.deep.equal(expected);
@@ -597,7 +597,7 @@ describe('Parser', () => {
 				new nodes.NumericLiteralNode('2'),
 				new nodes.NumericLiteralNode('2'))
 				, { first_line: results[0].lineNum }),
-			new nodes.TextNode('test.', { first_line: results[0].lineNum })
+			new nodes.TextNode(' test.', { first_line: results[0].lineNum })
     ];
 
     expect(results).to.deep.equal(expected);

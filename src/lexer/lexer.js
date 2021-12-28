@@ -162,16 +162,23 @@ class Lexer {
       }
 			
 			// Remove leading whitespace characters.
-      const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
-
-			if (spaceMatch.length !== 0) {
+      //const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
+			/*if (spaceMatch.length !== 0) {
         if (spaceMatch[0].length == 2) {
           this.yylloc.last_column += 1;
         } else {
           this.yylloc.last_column += spaceMatch[0].length;
         }
-      }
+      }*/
 
+			if (rule.token !== 'EndInlineExp') {
+				// Remove leading whitespace characters
+				const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
+				if (spaceMatch.length !== 0) {
+					this.yylloc.last_column += spaceMatch[0].length;
+				}
+			}
+				
       return rule.token;
     }
 

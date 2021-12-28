@@ -342,6 +342,16 @@ describe('Parser', () => {
 
     expect(results).to.deep.equal(expected);
   });
+
+  it('can parse an escaped curly brace', () => {
+    const results = parser.parse('\\{testtext\\}');
+
+    const expected = [
+			new nodes.TextNode('{testtext}', { first_line: 1 })
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
 	
   it('can parse a simple inline expression within a sentence', () => {
     const results = parser.parse('Hello there {$testvar}.');
@@ -354,7 +364,7 @@ describe('Parser', () => {
     ];
 
     expect(results).to.deep.equal(expected);
-  });
+  });	
 	
   it('can parse an expression with addition within a sentence', () => {
     const results = parser.parse('Hello there {$testvar + 1} test.');

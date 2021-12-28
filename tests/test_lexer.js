@@ -432,6 +432,14 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndInlineExp');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
+
+  it('can tokenize an escaped curly brace', () => {
+    const lexer = new Lexer();
+    lexer.setInput('\\{test\\}');
+		
+		expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
 	
 	it('can tokenize an inline expression in a sentence', () => {
 		const lexer = new Lexer();

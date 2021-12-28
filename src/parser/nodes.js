@@ -108,7 +108,7 @@ module.exports = {
     constructor(text, lineNo) {
       super();
       this.type = 'TextNode';
-      this.text = text;
+      this.text = text.replace(/\\/g,''); // strip out escape characters
       this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },

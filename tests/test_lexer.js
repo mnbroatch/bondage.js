@@ -260,6 +260,22 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndCommand');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
+	
+  it('can tokenize a != conditional expression', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<if not true>>Hi<<endif>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('If');
+		expect(lexer.lex()).to.equal('Not');
+		expect(lexer.lex()).to.equal('True');
+		expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('EndIf');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
 
   it('can tokenize If expression equalto number', () => {
     const lexer = new Lexer();
@@ -359,6 +375,14 @@ it('can tokenize a command with two open arguments', () => {
     expect(lexer.lex()).to.equal('EndInlineExp');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
+
+  it('can tokenize an escaped curly brace', () => {
+    const lexer = new Lexer();
+    lexer.setInput('\\{test\\}');
+		
+		expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
 	
 	it('can tokenize an inline expression in a sentence', () => {
 		const lexer = new Lexer();
@@ -386,6 +410,21 @@ it('can tokenize a command with two open arguments', () => {
 		expect(lexer.lex()).to.equal('EndOfInput');
 	});
 
+	it('can tokenize an inline expression with function call', () => {
+		const lexer = new Lexer();
+		lexer.setInput('This is a {getName($player1)} sentence');
+	
+		expect(lexer.lex()).to.equal('Text');
+		expect(lexer.lex()).to.equal('BeginInlineExp');
+		expect(lexer.lex()).to.equal('Identifier');
+    expect(lexer.lex()).to.equal('LeftParen');
+		expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('RightParen');
+		expect(lexer.lex()).to.equal('EndInlineExp');
+		expect(lexer.lex()).to.equal('Text');
+		expect(lexer.lex()).to.equal('EndOfInput');
+	});
+	
 	it('can tokenize an inline expression with exponent in a sentence', () => {
 		const lexer = new Lexer();
 		lexer.setInput('This is a {2 ** 2} sentence');

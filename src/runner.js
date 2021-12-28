@@ -104,7 +104,7 @@ class Runner {
         && prevnode.content[0]
         && prevnode.content[0].functionName === 'jump'
       ) {
-        console.log('prevnode', prevnode)
+        console.log('prevnode', prevnode);
         return;
       }
 
@@ -119,9 +119,9 @@ class Runner {
             || (nextNode instanceof nodeTypes.InlineExpression) === false
             || node.lineNum !== nextNode.lineNum
         ) {
-            console.log('2', 2)
+            console.log('2', 2);
             yield textRun;
-            console.log('222', 222)
+            console.log('222', 222);
             textRun = null;
           }
         } else if (
@@ -133,12 +133,13 @@ class Runner {
           textRun = new results.TextResult(node.text, yarnNodeData, node.lineNum);
         } else {
           // Else not already appending and next node is not inline exp on same line.
-          console.log('3', 3)
+          console.log('3', 3);
           yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
-          console.log('333', 333)
+          console.log('333', 333);
         }
       } else if (node instanceof nodeTypes.InlineExpression) {
-        const expResult = this.evaluateExpressionOrLiteral(node.expression, true).toString();
+        let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
+        expResult = expResult ? expResult.toString() : null;
 
         // If we are already appending text...
         if (textRun) {
@@ -148,9 +149,9 @@ class Runner {
             || (nextNode instanceof nodeTypes.Text) === false
             || node.lineNum !== nextNode.lineNum
         ) {
-            console.log('4', 4)
+            console.log('4', 4);
             yield textRun;
-            console.log('444', 444)
+            console.log('444', 444);
             textRun = null;
           }
           // If next node is an inline expression and on the same line as this node...
@@ -161,9 +162,9 @@ class Runner {
         ) {
           textRun = new results.TextResult(expResult, yarnNodeData, node.lineNum);
         } else {
-          console.log('5', 5)
+          console.log('5', 5);
           yield new results.TextResult(expResult, yarnNodeData, node.lineNum);
-          console.log('555', 555)
+          console.log('555', 555);
         }
       } else if (node instanceof nodeTypes.Shortcut) {
         shortcutNodes.push(node);
@@ -173,22 +174,22 @@ class Runner {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
-          console.log('6', 6)
+          console.log('6', 6);
           yield* this.evalNodes(evalResult, yarnNodeData);
-          console.log('prevNode2', prevnode)
-          console.log('nextNode', nextNode)
-          console.log('node2', node)
-          console.log('666', 666)
+          console.log('prevNode2', prevnode);
+          console.log('nextNode', nextNode);
+          console.log('node2', node);
+          console.log('666', 666);
         }
       // A function call
       } else if (node instanceof nodeTypes.FunctionCall) {
         if (node.functionName === 'jump') {
           // Special command, jump to node
-          console.log('beforejump')
-          console.log('7', 7)
+          console.log('beforejump');
+          console.log('7', 7);
           yield* this.run(node.args[0].text);
-          console.log('777', 777)
-          console.log('afterjump')
+          console.log('777', 777);
+          console.log('afterjump');
           return;
         }
         if (node.functionName === 'stop') {
@@ -200,9 +201,9 @@ class Runner {
         if (this.functions[node.functionName]) {
           funcResult = this.functions[node.functionName](funcArgs);
         }
-        console.log('8', 8)
+        console.log('8', 8);
         yield new results.CommandResult(node.functionName, funcArgs, funcResult);
-        console.log('888', 888)
+        console.log('888', 888);
       }
 
       prevnode = node;
@@ -210,9 +211,9 @@ class Runner {
 
     // The last node might be a shortcut
     if (shortcutNodes.length > 0) {
-      console.log('9', 9)
+      console.log('9', 9);
       yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
-      console.log('999', 999)
+      console.log('999', 999);
     }
   }
 
@@ -239,16 +240,16 @@ class Runner {
       return;
     }
     const optionsResult = new results.OptionsResult(filteredSelections);
-    console.log('10', 10)
+    console.log('10', 10);
     yield optionsResult;
-    console.log('101010', 101010)
+    console.log('101010', 101010);
     if (optionsResult.selected !== -1) {
       const selectedOption = filteredSelections[optionsResult.selected];
       if (selectedOption.content) {
         // Recursively go through the nodes nested within
-        console.log('11', 11)
+        console.log('11', 11);
         yield* this.evalNodes(selectedOption.content, yarnNodeData);
-        console.log('111111', 111111)
+        console.log('111111', 111111);
       }
     }
   }
@@ -378,9 +379,17 @@ class Runner {
 
       throw new Error(`I don't recognize literal type ${node.type}`);
     } else if (node.type === 'FunctionResultNode') {
-      const func = this.functions[node.functionName];
-      if (func) {
-        return func(node.args.map(this.evaluateExpressionOrLiteral, this));
+      if (this.functions[node.functionName]) {
+        return this.functions[node.functionName](
+          node.args.map(this.evaluateExpressionOrLiteral, this),
+        );
+      }
+      throw new Error(`Function "${node.functionName}" not found`);
+    } else if (node.type === 'NegatedFunctionResultNode') {
+      if (this.functions[node.functionName]) {
+        return !this.functions[node.functionName](
+          node.args.map(this.evaluateExpressionOrLiteral, this),
+        );
       }
       throw new Error(`Function "${node.functionName}" not found`);
     } else {

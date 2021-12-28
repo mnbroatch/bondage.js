@@ -77,5 +77,15 @@
 			"y": 252
 		},
 		"colorID": 0
+	},
+	{
+		"title": "NotVisitedFunction",
+		"tags": "Tag",
+		"body": "Hello\n<<if not visited(\"VisitedFunctionStart\")>>you have not visited VisitedFunctionStart!<<endif>>",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
 	}
 ]

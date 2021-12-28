@@ -31,7 +31,12 @@ const Tokens = {
   // Shortcut syntax ("->")
   ShortcutOption:       /->/,
 
-  // Command types (specially recognised command word)
+  // Option syntax ("[[Let's go here|Destination]]")
+  OptionStart:          /\[\[/,                    // [[
+  OptionDelimit:        /\|/,                      // |
+  OptionEnd:            /\]\]/,                    // ]]
+
+  // Command types (specially recognized command word)
   If:                   /if(?!\w)/,
   ElseIf:               /elseif(?!\w)/,
   Else:                 /else(?!\w)/,
@@ -82,16 +87,17 @@ const Tokens = {
   DivideAssign:         /\/=/,                     // /=
 
   Comment:              '//',                      // a run of text that we ignore
-
+	
   Identifier:           /[a-zA-Z0-9_:.]+/,         // a single word (used for functions)
 
   CommandCall:          /([^>]|(?!>)[^>]+>)+(?=>>)/, // Command call
 
   Text:                 /.*/,                      // a run of text until we hit other syntax.
-
-  // Braces are used for inline expressions
-  BeginInlineExp:      /\{/,                       // {
-  EndInlineExp:        /\}/,                       // }
+	
+  // Braces are used for inline expressions. Ignore escaped braces
+  // TODO: doesn't work ios
+  BeginInlineExp:       /(?<!\\)\{/,					   // {
+  EndInlineExp:         /(?<!\\)\}/					   // }
 };
 /* eslint-enable key-spacing */
 

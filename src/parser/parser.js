@@ -8,13 +8,13 @@ const grammar = {
   operators: [
     ['left', 'Comma'],
     ['left', 'EqualToOrAssign', 'AddAssign', 'MinusAssign', 'MultiplyAssign', 'DivideAssign'],
+    ['left', 'Not'],
     ['left', 'Or'],
     ['left', 'And'],
     ['left', 'Xor'],
     ['left', 'EqualTo', 'GreaterThan', 'GreaterThanOrEqualTo', 'LessThan', 'LessThanOrEqualTo', 'NotEqualTo'],
     ['left', 'Add', 'Minus'],
     ['left', 'Multiply', 'Exponent', 'Divide'],
-    ['left', 'Not'],
     ['left', 'UMINUS'],
     ['left', 'LeftParen', 'RightParen'],
   ],
@@ -112,6 +112,8 @@ const grammar = {
     functionResultExpression: [
       ['Identifier LeftParen RightParen', '$$ = new yy.FunctionResultNode($1, []);'],
       ['Identifier LeftParen parenExpressionArgs RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
+      ['Not Identifier LeftParen RightParen', '$$ = new yy.NegatedFunctionResultNode($2, []);'],
+      ['Not Identifier LeftParen parenExpressionArgs RightParen', '$$ = new yy.NegatedFunctionResultNode($2, $4);'],
     ],
 
     parenExpressionArgs: [
@@ -136,6 +138,7 @@ const grammar = {
 
     inlineExpression: [
       ['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
+      ['BeginInlineExp functionResultExpression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
     ],
   },
 };

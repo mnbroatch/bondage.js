@@ -5,7 +5,7 @@
 
 const fs = require('fs');
 const chai = require('chai');
-const bondage = require('../src/bondage.js');
+const bondage = require('../src/bondage');
 
 const expect = chai.expect;
 
@@ -124,14 +124,12 @@ describe('Dialogue', () => {
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
-    console.log('test')
 
     const optionResult = run.next().value;
     expect(optionResult).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1', lineNum: 2 },
       { text: 'Option 2', lineNum: 4 },
     ]));
-    console.log('options')
 
     optionResult.select(1);
     value = run.next().value;
@@ -545,6 +543,18 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Correctly handles not visited()', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('NotVisitedFunction');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Hello', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('you have not visited VisitedFunctionStart!', value.data, value.lineNum));
+
+    expect(run.next().done).to.be.true;
+  });
+
   it('Can handle an if conditional with unconditional option after 1', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterSuccessConditional');
@@ -623,7 +633,6 @@ describe('Dialogue', () => {
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('You give the key to the troll.', value.data, value.lineNum));
     value = run.next().value;
-    console.log('value', value)
 
     expect(run.next().done).to.be.true;
   });
@@ -694,4 +703,41 @@ describe('Dialogue', () => {
 
     expect(run.next().done).to.be.true;
   });
+
+  it('Can handle inline expression containing function call', () => {
+    runner.registerFunction('testfunc', (args) => {
+      if (args[0] === 'frank') {
+        if (args[1] === 2) {
+          // Test returning true
+          return true;
+        }
+        // Test returning false
+        return false;
+      }
+
+      throw new Error(`Args ${args} were not expected in testfunc`);
+    });
+
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpFunctionResult');
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('The results are true.', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
+
+/* it('Can handle inline expression containing function call and expression', () => {
+  runner.registerFunction('testfunc', (args) => {
+          // Test returning true
+          return true;
+    });
+
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpFunctionResultExp');
+    let value = run.next().value;
+    expect(value).to.deep.equal(
+      new bondage.TextResult('This results are false.', value.data, value.lineNum)
+    );
+    expect(run.next().done).to.be.true;
+  });
+*/
 });

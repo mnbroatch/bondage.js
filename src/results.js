@@ -31,16 +31,32 @@ class CommandResult extends Result {
   }
 }
 
+class OptionResult extends Result {
+  /**
+   * Strip down Conditional option for presentation
+   * @param {ConditionalDialogShortcutNode[]} [selection] relevant option
+   */
+  constructor({
+    text,
+    lineNum,
+    isAvailable = true,
+  }) {
+    super();
+    this.text = text;
+    this.lineNum = lineNum;
+    this.isAvailable = isAvailable;
+  }
+}
+
 class OptionsResult extends Result {
   /**
    * Create a selectable list of options from the given list of text
-   * @param {string[]} [options] list of the text of options to be shown
+   * @param {string[]} [selections] list of the text of options to be shown
    * @param {int[]} [lineNum] list of the line numbers of options to be shown
    */
-  constructor(options, lineNum) {
+  constructor(options) {
     super();
-    this.options = options;
-    this.lineNum = lineNum;
+    this.options = options.map(s => new OptionResult(s));
     this.selected = -1;
   }
 

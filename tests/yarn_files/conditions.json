@@ -52,7 +52,7 @@
 	{
 		"title": "ConditionalOption",
 		"tags": "Tag",
-		"body": "<<set $haskey to true>>\nText before\n-> Cond Option <<if $haskey == true>>\n<<jump Objective>>\nText after\n",
+		"body": "<<set $haskey to true>>\nText before\n-> Cond Option<<if $haskey == true>>\n\t<<jump Objective>>\nText after\n",
 		"position": {
 			"x": 449,
 			"y": 252
@@ -70,9 +70,19 @@
 		"colorID": 0
 	},
 	{
+		"title": "TextAfterJumpAfterOption",
+		"tags": "Tag",
+		"body": "<<set $haskey to true>>\nText before\nInside if\n-> Give key\n\t<<jump give.key>>\nText after\n",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
 		"title": "OptionAfterOptionWithinConditional",
 		"tags": "Tag",
-		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n-> Give key\n\t<<jump give.key>>\n<<endif>>\nText after\n-> FinalOption|\n\t<<jump Objective>>",
+		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n-> Give key\n\t<<jump give.key>>\n-> You keep the key.\n\tThe troll is displeased.\n<<endif>>\nText after\n-> FinalOption\n\t<<jump Objective>>",
 		"position": {
 			"x": 449,
 			"y": 252
@@ -89,6 +99,16 @@
 		},
 		"colorID": 0
 	},	
+	{
+		"title": "Objective",
+		"tags": "Tag",
+		"body": "You reach the objective.",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
 	{
 		"title": "give.key",
 		"tags": "Tag",

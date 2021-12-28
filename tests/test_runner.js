@@ -60,7 +60,10 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is another test line', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['First choice', 'Second choice'], [3, 5]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'First choice', lineNum: 3 },
+      { text: 'Second choice', lineNum: 5 },
+    ]));
 
     optionResult.select(0);
     value = run.next().value;
@@ -79,7 +82,10 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is another test line', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['First choice', 'Second choice'], [3, 5]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'First choice', lineNum: 3 },
+      { text: 'Second choice', lineNum: 5 },
+    ]));
 
     optionResult.select(1);
     value = run.next().value;
@@ -118,16 +124,20 @@ describe('Dialogue', () => {
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
+    console.log('test')
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Option 1', 'Option 2'], [2, 4]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1', lineNum: 2 },
+      { text: 'Option 2', lineNum: 4 },
+    ]));
+    console.log('options')
 
     optionResult.select(1);
     value = run.next().value;
-    console.log('value', value)
     expect(value).to.deep.equal(new bondage.TextResult('This is the second option', value.data, value.lineNum));
+
     value = run.next().value;
-    console.log('value2', value)
     expect(value).to.deep.equal(new bondage.TextResult('This is after both options', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
@@ -140,14 +150,20 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('text', value.data, value.lineNum));
 
     let optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['shortcut1a', 'shortcut2a'], [2, 8]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'shortcut1a', lineNum: 2 },
+      { text: 'shortcut2a', lineNum: 8 },
+    ]));
 
     optionResult.select(0);
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Text1', value.data, value.lineNum));
 
     optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['nestedshortcut1', 'nestedshortcut2'], [4, 6]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'nestedshortcut1', lineNum: 4 },
+      { text: 'nestedshortcut2', lineNum: 6 },
+    ]));
 
     optionResult.select(1);
     value = run.next().value;
@@ -165,9 +181,13 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Option 1', 'Option 3'], [2, 6]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1', lineNum: 2 },
+      { text: 'Option 2', lineNum: 4, isAvailable: false },
+      { text: 'Option 3', lineNum: 6 },
+    ]));
 
-    optionResult.select(1);
+    optionResult.select(2);
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is the third option', value.data, value.lineNum));
     value = run.next().value;
@@ -525,7 +545,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle an if conditional with unconditional option after', () => {
+  it('Can handle an if conditional with unconditional option after 1', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterSuccessConditional');
 
@@ -537,25 +557,54 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('Text after', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['FinalOption'], [7]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'FinalOption', lineNum: 7 },
+    ]));
 
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle an if conditional option', () => {
+  it('Should ignore text after a jump after an option', () => {
+    runner.load(conditionalYarnData);
+    const run = runner.run('TextAfterJumpAfterOption');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', value.data, value.lineNum));
+
+    const optionResult = run.next().value;
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Give key', lineNum: 4 },
+    ]));
+
+    optionResult.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('You give the key to the troll.', value.data, value.lineNum));
+
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Should ignore text after a jump after a conditional option', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('ConditionalOption');
 
-    const value = run.next().value;
+    let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Text before', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Cond Option'], [4]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Cond Option', lineNum: 3 },
+    ]));
+
+    optionResult.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('You reach the objective.', value.data, value.lineNum));
 
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle an if conditional option with unconditional option after', () => {
+  it.only('Can handle an if conditional option with unconditional option after 3', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterOptionWithinConditional');
 
@@ -563,26 +612,18 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('Text before', value.data, value.lineNum));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Inside if', value.data, value.lineNum));
-    value = run.next().value;
-    const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Cond Option'], [4]));
-
-    expect(run.next().done).to.be.true;
-  });
-
-  it('Can handle an if conditional option with unconditional option after', () => {
-    runner.load(conditionalYarnData);
-    const run = runner.run('OptionAfterOptionWithinConditional');
-
-    let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', value.data, value.lineNum));
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside if', value.data, value.lineNum));
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', value.data, value.lineNum));
 
     const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult(['Give key', 'FinalOption'], [5, 8]));
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Give key', lineNum: 5 },
+      { text: 'You keep the key.', lineNum: 7 },
+    ]));
+
+    optionResult.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('You give the key to the troll.', value.data, value.lineNum));
+    value = run.next().value;
+    console.log('value', value)
 
     expect(run.next().done).to.be.true;
   });

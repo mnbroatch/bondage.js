@@ -12,7 +12,9 @@ class Runner {
     this.functions = {};
     this.visited = {}; // Which nodes have been visited
 
-    this.registerFunction('visited', (args) => { return !!this.visited[args[0]]; });
+    this.registerFunction('visited', (args) => {
+      return !!this.visited[args[0]];
+    });
   }
 
   /**
@@ -71,7 +73,7 @@ class Runner {
       tags: yarnNode.tags.split(' '),
       body: yarnNode.body,
     };
-    yield* this.evalNodes(parserNodes, yarnNodeData, 'run');
+    yield* this.evalNodes(parserNodes, yarnNodeData);
   }
 
   /**
@@ -79,13 +81,8 @@ class Runner {
    * the user. Calls itself recursively if that is required by nested nodes
    * @param {any[]} nodes
    */
-  * evalNodes(nodes, yarnNodeData, lastThing) {
+  * evalNodes(nodes, yarnNodeData) {
     if (!nodes) return;
-      console.log('============')
-      console.log('============')
-      console.log('============')
-      console.log('============')
-    console.log('nodes', nodes)
 
     let shortcutNodes = [];
     let prevnode = null;
@@ -93,14 +90,10 @@ class Runner {
     // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables
     // into one list (hence some of the weirdness here)
-    for (let nodeIdx = 0, len = nodes.length; nodeIdx < len; nodeIdx += 1) {
+    for (let nodeIdx = 0; nodeIdx < nodes.length; nodeIdx += 1) {
       const node = nodes[nodeIdx];
       const nextNode = nodes[nodeIdx + 1];
-      console.log('============')
-      console.log('node', node)
-      console.log('nextNode', nextNode)
-      console.log('prevnode', prevnode)
-    console.log('lastThing', lastThing)
+
       if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
         // Last shortcut in the series, so yield the shortcuts.
         yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
@@ -109,7 +102,6 @@ class Runner {
         if (prevnode.content[0].functionName === 'jump') {
           // we have already recursively handled this
           // and we want to ignore everything after the jump
-          console.log('weird return')
           return;
         }
       }
@@ -129,11 +121,12 @@ class Runner {
             textRun = null;
           }
         } else if (
-          // Else if we are not appending text
-          // and the next node is an inline exp on the same line...
-          nextNode && nextNode instanceof nodeTypes.InlineExpression
+          nextNode
+          && nextNode instanceof nodeTypes.InlineExpression
           && node.lineNum === nextNode.lineNum
         ) {
+          // Else if we are not appending text
+          // and the next node is an inline exp on the same line...
           textRun = new results.TextResult(node.text, yarnNodeData, node.lineNum);
         } else {
           // Else not already appending and next node is not inline exp on same line.
@@ -141,7 +134,7 @@ class Runner {
         }
       } else if (node instanceof nodeTypes.InlineExpression) {
         let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
-        expResult = expResult ? expResult.toString() : null;
+        expResult = expResult !== null ? expResult.toString() : null;
 
         // If we are already appending text...
         if (textRun) {
@@ -150,7 +143,7 @@ class Runner {
             nextNode == null
             || (nextNode instanceof nodeTypes.Text) === false
             || node.lineNum !== nextNode.lineNum
-        ) {
+          ) {
             yield textRun;
             textRun = null;
           }
@@ -172,19 +165,17 @@ class Runner {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
-          yield* this.evalNodes(evalResult, yarnNodeData, 'conditional');
+          yield* this.evalNodes(evalResult, yarnNodeData);
         }
-      // A function call
+        // A function call
       } else if (node instanceof nodeTypes.FunctionCall) {
         if (node.functionName === 'jump') {
           // Special command, jump to node
           yield* this.run(node.args[0].text);
-          console.log('return after jump')
           return;
         }
         if (node.functionName === 'stop') {
           // Special command, halt execution
-          console.log('stop return ')
           return;
         }
         let funcResult = null;
@@ -232,7 +223,7 @@ class Runner {
       const selectedOption = filteredSelections[optionsResult.selected];
       if (selectedOption.content) {
         // Recursively go through the nodes nested within
-        yield* this.evalNodes(selectedOption.content, yarnNodeData, 'handleoptions');
+        yield* this.evalNodes(selectedOption.content, yarnNodeData);
       }
     }
   }

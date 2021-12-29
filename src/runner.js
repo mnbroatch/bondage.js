@@ -87,6 +87,7 @@ class Runner {
     let shortcutNodes = [];
     let prevnode = null;
     let textRun = null;
+
     // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables
     // into one list (hence some of the weirdness here)
@@ -95,13 +96,12 @@ class Runner {
       const nextNode = nodes[nodeIdx + 1];
 
       if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
-        // Last shortcut in the series, so yield the shortcuts.
-        yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
         shortcutNodes = [];
-
-        if (prevnode.content[0].functionName === 'jump') {
-          // we have already recursively handled this
-          // and we want to ignore everything after the jump
+        // Last shortcut in the series, so yield the shortcuts.
+        const result = this.handleShortcuts(shortcutNodes, yarnNodeData).next().value;
+        console.log('result', result)
+        yield result;
+        if (result.stopBranch) {
           return;
         }
       }
@@ -165,7 +165,12 @@ class Runner {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
-          yield* this.evalNodes(evalResult, yarnNodeData);
+          const result = this.evalNodes(evalResult, yarnNodeData).next().value;
+          console.log('result', result)
+          yield result;
+          if (result.stopBranch) {
+            return;
+          }
         }
         // A function call
       } else if (node instanceof nodeTypes.FunctionCall) {
@@ -191,7 +196,7 @@ class Runner {
 
     // The last node might be a shortcut
     if (shortcutNodes.length > 0) {
-      yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+      yield this.handleShortcuts(shortcutNodes, yarnNodeData);
     }
   }
 

@@ -455,7 +455,7 @@ it('Can evaluate an assignment from one variable to another via an expression wi
     expect(run.next().done).to.be.true;
   });
 
-  it('Halts when given the <<stop>> command after going through multiple options', () => {
+  it('Ignores content after jumps when going through multiple options', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('Option1');
     let value = run.next().value;

@@ -74,7 +74,7 @@ class Runner {
       tags:yarnNode.tags.split(" "),
       body:yarnNode.body,
     }
-    yield* this.evalNodes(parserNodes, yarnNodeData);
+    return yield* this.evalNodes(parserNodes, yarnNodeData);
   }
 
   /**
@@ -98,14 +98,15 @@ class Runner {
 
 			if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
 				// Last shortcut in the series, so yield the shortcuts.					
-				yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+				const result = yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+        if (result && result.stop) return { stop: true }
 				shortcutNodes = [];
 			}  
 
 			if (node instanceof nodeTypes.Jump) {
 				// It doesn't matter where we are or what other lines are remaining, a jump is executed immediately.
 				yield* this.run(node.identifier);
-				return;
+        return { stop: true }
 			} else if (node instanceof nodeTypes.Option) {
 					optionNodes.push(node);
 			} else if (node instanceof nodeTypes.Text) {
@@ -162,13 +163,14 @@ class Runner {
 						}
 					}
 					// Run the remaining results
-					yield* this.evalNodes(otherNodes, yarnNodeData);
+					const result = yield* this.evalNodes(otherNodes, yarnNodeData);
+                                        if (result && result.stop) return { stop: true }
 				}
 			// A function call
 			} else if (node instanceof nodeTypes.FunctionCall) {
 				if (node.functionName === 'stop') {
 					// Special command, halt execution
-					return;
+					return { stop: true };
 				} else {
 					var funcResult = null
 						,funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];
@@ -184,12 +186,13 @@ class Runner {
 
 		// The last node might be a shortcut
 		if (shortcutNodes.length > 0){
-			yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+			const result = yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+        if (result && result.stop) return { stop: true }
 		}
 
 		if (optionNodes.length > 0) {
       // At the end of the node, but we still need to handle any final options
-      yield* this.handleOptions(optionNodes);
+      return yield* this.handleOptions(optionNodes);
     }		
   }
 
@@ -209,7 +212,7 @@ class Runner {
 		if (optionResults.selected !== -1) {
 			// Something was selected
 			const selectedOption = options[optionResults.selected];
-			yield* this.run(selectedOption.identifier);
+			return yield* this.run(selectedOption.identifier);
 		}
   }
 	
@@ -245,7 +248,7 @@ class Runner {
 			const selectedOption = filteredSelections[optionResults.selected];
 			if (selectedOption.content) {
 				// Recursively go through the nodes nested within
-				yield* this.evalNodes(selectedOption.content, yarnNodeData);
+				return yield* this.evalNodes(selectedOption.content, yarnNodeData);
 			}
 		}
   }

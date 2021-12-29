@@ -38,7 +38,48 @@
 			"y": 252
 		},
 		"colorID": 0
-	},	{
+	},	
+        {
+		"title": "Jump1",
+		"tags": "Tag",
+		"body": "Text1\n[[Jump2]]\nThis shouldn't show",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+        {
+		"title": "Jump2",
+		"tags": "Tag",
+		"body": "Text2\n[[StopCommand]]\nThis shouldn't show",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+        {
+		"title": "Option1",
+		"tags": "Tag",
+		"body": "Prompt1\n-> Option 1\n\t[[Option2]]\nThis shouldn't show",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+        {
+		"title": "Option2",
+		"tags": "Tag",
+		"body": "Prompt2\n-> Option 2\n\t[[StopCommand]]\nThis shouldn't show",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+        {
 		"title": "StopCommand",
 		"tags": "Tag",
 		"body": "First line\n<<stop>>\nThis shouldn't show",

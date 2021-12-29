@@ -12,7 +12,7 @@ class Runner {
     this.functions = {};
     this.visited = {}; // Which nodes have been visited
 
-    this.registerFunction('visited', args => !!this.visited[args[0]]);
+    this.registerFunction('visited', (args) => { return !!this.visited[args[0]]; });
   }
 
   /**

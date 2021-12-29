@@ -56,7 +56,7 @@ class OptionsResult extends Result {
    */
   constructor(options) {
     super();
-    this.options = options.map(s => new OptionResult(s));
+    this.options = options.map((s) => { return new OptionResult(s); });
     this.selected = -1;
   }
 

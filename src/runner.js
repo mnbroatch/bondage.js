@@ -90,7 +90,8 @@ class Runner {
     let textRun = null;
 
     // Yield the individual user-visible results
-    // Need to accumulate all adjacent selectables into one list (hence some of the weirdness here)
+    // Need to accumulate all adjacent selectables
+    // into one list (hence some of the weirdness here)
     for (let nodeIdx = 0; nodeIdx < nodes.length; nodeIdx += 1) {
       const node = nodes[nodeIdx];
       const nextNode = nodes[nodeIdx + 1];
@@ -102,8 +103,8 @@ class Runner {
       }
 
       if (node instanceof nodeTypes.Jump) {
-        // It doesn't matter where we are
-        // or what other lines are remaining, a jump is executed immediately.
+        // It doesn't matter where we are or what other lines are remaining,
+        // a jump is executed immediately.
         yield* this.run(node.identifier);
         return;
       } else if (node instanceof nodeTypes.Option) {
@@ -112,19 +113,19 @@ class Runner {
         // If we are already appending text...
         if (textRun) {
           textRun.text += node.text;
-          // If next node is null
-          // or not an inline expression or not on the same line as this node...
+          // If next node is null or not an inline expression
+          // or not on the same line as this node...
           if (
             nextNode == null
             || (nextNode instanceof nodeTypes.InlineExpression) === false
             || node.lineNum !== nextNode.lineNum
-        ) {
+          ) {
             yield textRun;
             textRun = null;
           }
         } else if (
-          nextNode &&
-          nextNode instanceof nodeTypes.InlineExpression
+          nextNode
+          && nextNode instanceof nodeTypes.InlineExpression
           && node.lineNum === nextNode.lineNum
         ) {
           // Else if we are not appending text
@@ -135,8 +136,8 @@ class Runner {
           yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
         }
       } else if (node instanceof nodeTypes.InlineExpression) {
-        let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
-        expResult = expResult ? expResult.toString() : null;
+        let expResult = this.evaluateExpressionOrLiteral(node.expression);
+        expResult = expResult !== null ? expResult.toString() : null;
 
         // If we are already appending text...
         if (textRun) {
@@ -149,13 +150,12 @@ class Runner {
             yield textRun;
             textRun = null;
           }
+          // If next node is an inline expression and on the same line as this node...
         } else if (
           nextNode
           && nextNode instanceof nodeTypes.Text
           && node.lineNum === nextNode.lineNum
         ) {
-          // If next node is an inline expression
-          // and on the same line as this node...
           textRun = new results.TextResult(expResult, yarnNodeData, node.lineNum);
         } else {
           yield new results.TextResult(expResult, yarnNodeData, node.lineNum);
@@ -186,6 +186,7 @@ class Runner {
           // Special command, halt execution
           return;
         }
+
         let funcResult = null;
         const funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];
         if (this.functions[node.functionName]) {
@@ -315,9 +316,8 @@ class Runner {
 
   /**
    * Evaluates an expression or literal down to its final value
-   * isDisplay only applies for evaluating a single variable.
    */
-  evaluateExpressionOrLiteral(node, isDisplay) {
+  evaluateExpressionOrLiteral(node) {
     if (node instanceof nodeTypes.Expression) {
       if (node.type === 'UnaryMinusExpressionNode') {
         return -1 * this.evaluateExpressionOrLiteral(node.expression);
@@ -382,9 +382,6 @@ class Runner {
       } else if (node.type === 'BooleanLiteralNode') {
         return node.booleanLiteral === 'true';
       } else if (node.type === 'VariableNode') {
-        if (isDisplay === true) {
-          return this.variables.display(node.variableName);
-        }
         return this.variables.get(node.variableName);
       }
 

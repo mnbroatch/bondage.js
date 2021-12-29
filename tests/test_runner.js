@@ -453,6 +453,22 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Ignores content after jumps when going through multiple options', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('Option1');
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Prompt1', value.data, value.lineNum));
+    value = run.next().value;
+    value.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Prompt2', value.data, value.lineNum));
+    value = run.next().value;
+    value.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('First line', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
+
   it('Returns commands to the user', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('BasicCommands');
@@ -616,8 +632,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it.only('Can handle an if conditional option with unconditional option after (3)', () => {
-  // it('Can handle an if conditional option with unconditional option after (3)', () => {
+  it('Can handle an if conditional option with unconditional option after (3)', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterOptionWithinConditional');
 

@@ -38,7 +38,28 @@
 			"y": 252
 		},
 		"colorID": 0
-	},	{
+	},	
+        {
+		"title": "Option1",
+		"tags": "Tag",
+		"body": "Prompt1\n-> Option 1\n\t<< jump Option2>>\nThis shouldn't show",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+        {
+		"title": "Option2",
+		"tags": "Tag",
+		"body": "Prompt2\n-> Option 2\n\t<<jump StopCommand>>\nThis shouldn't show",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+        {
 		"title": "StopCommand",
 		"tags": "Tag",
 		"body": "First line\n<<stop>>\nThis shouldn't show",

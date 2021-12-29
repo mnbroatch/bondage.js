@@ -73,7 +73,7 @@ class Runner {
       tags: yarnNode.tags.split(' '),
       body: yarnNode.body,
     };
-    yield* this.evalNodes(parserNodes, yarnNodeData);
+    return yield* this.evalNodes(parserNodes, yarnNodeData);
   }
 
   /**
@@ -82,7 +82,7 @@ class Runner {
    * @param {any[]} nodes
    */
   * evalNodes(nodes, yarnNodeData) {
-    if (!nodes) return;
+    if (!nodes) return { stop: false };
 
     let shortcutNodes = [];
     let prevnode = null;
@@ -96,14 +96,13 @@ class Runner {
       const nextNode = nodes[nodeIdx + 1];
 
       if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
-        shortcutNodes = [];
         // Last shortcut in the series, so yield the shortcuts.
-        const result = this.handleShortcuts(shortcutNodes, yarnNodeData).next().value;
-        console.log('result', result)
-        yield result;
-        if (result.stopBranch) {
-          return;
+        const result = yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+        if (result && result.stop) {
+          return result;
         }
+
+        shortcutNodes = [];
       }
 
       if (node instanceof nodeTypes.Text) {
@@ -165,11 +164,10 @@ class Runner {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
-          const result = this.evalNodes(evalResult, yarnNodeData).next().value;
-          console.log('result', result)
-          yield result;
-          if (result.stopBranch) {
-            return;
+          // Run the remaining results
+          const result = yield* this.evalNodes(evalResult, yarnNodeData);
+          if (result && result.stop) {
+            return result;
           }
         }
         // A function call
@@ -177,11 +175,11 @@ class Runner {
         if (node.functionName === 'jump') {
           // Special command, jump to node
           yield* this.run(node.args[0].text);
-          return;
+          return { stop: true };
         }
         if (node.functionName === 'stop') {
           // Special command, halt execution
-          return;
+          return { stop: true };
         }
         let funcResult = null;
         const funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];
@@ -196,8 +194,10 @@ class Runner {
 
     // The last node might be a shortcut
     if (shortcutNodes.length > 0) {
-      yield this.handleShortcuts(shortcutNodes, yarnNodeData);
+      return yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
     }
+
+    return { stop: false };
   }
 
   /**
@@ -220,7 +220,7 @@ class Runner {
 
     if (filteredSelections.length === 0) {
       // No options to choose anymore
-      return;
+      return { stop: false };
     }
     const optionsResult = new results.OptionsResult(filteredSelections);
     yield optionsResult;
@@ -228,9 +228,11 @@ class Runner {
       const selectedOption = filteredSelections[optionsResult.selected];
       if (selectedOption.content) {
         // Recursively go through the nodes nested within
-        yield* this.evalNodes(selectedOption.content, yarnNodeData);
+        return yield* this.evalNodes(selectedOption.content, yarnNodeData);
       }
     }
+
+    return { stop: false };
   }
 
   /**

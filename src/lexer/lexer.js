@@ -123,15 +123,15 @@ class Lexer {
       return this.lexNextLine();
     }
 
-    const transitions = this.getState().transitions;
-    for (let i = 0, len = transitions.length; i < len; i++) {
-      const rule = transitions[i];
+    const rules = this.getState().transitions;
+    for (let i = 0, len = rules.length; i < len; i += 1) {
+      const rule = rules[i];
       const match = this.getCurrentLine()
         .substring(this.yylloc.last_column - 1)
         .match(rule.regex);
 
       // Only accept valid matches that are at the beginning of the text
-      if ((match && match.index) === 0) {
+      if (match !== null && match.index === 0) {
         // Take the matched text off the front of this.text
         const matchedText = match[0];
 
@@ -160,25 +160,17 @@ class Lexer {
           }
         }
 
+
         if (rule.token !== 'EndInlineExp') {
           // Remove leading whitespace characters
           const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
-
           if (spaceMatch.length !== 0) {
             this.yylloc.last_column += spaceMatch[0].length;
           }
         }
-      }
 
-      if (rule.token !== 'EndInlineExp') {
-        // Remove leading whitespace characters
-        const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
-        if (spaceMatch.length !== 0) {
-          this.yylloc.last_column += spaceMatch[0].length;
-        }
+        return rule.token;
       }
-
-      return rule.token;
     }
 
     // Something went wrong. TODO: Throw exception?

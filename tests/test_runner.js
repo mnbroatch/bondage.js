@@ -555,7 +555,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle an if conditional with unconditional option after 1', () => {
+  it('Can handle an if conditional with unconditional option after (1)', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterSuccessConditional');
 
@@ -614,7 +614,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it.only('Can handle an if conditional option with unconditional option after 3', () => {
+  it.only('Can handle an if conditional option with unconditional option after (3)', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterOptionWithinConditional');
 
@@ -725,19 +725,14 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-/* it('Can handle inline expression containing function call and expression', () => {
-  runner.registerFunction('testfunc', (args) => {
-          // Test returning true
-          return true;
-    });
+  // TODO
+  it.skip('Can handle inline expression containing function call and expression', () => {
+    runner.registerFunction('testfunc', () => true);
 
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpFunctionResultExp');
-    let value = run.next().value;
-    expect(value).to.deep.equal(
-      new bondage.TextResult('This results are false.', value.data, value.lineNum)
-    );
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This results are false.', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
-*/
 });

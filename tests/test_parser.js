@@ -117,22 +117,16 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  /* it('can parse a function call with multiple identifiers', () => {
+  // TODO
+  it.skip('can parse a function call with multiple identifiers', () => {
     const results = parser.parse('<<commandtext ident1 ident2 true>>');
 
     const expected = [
-      new nodes.FunctionResultNode(
-        'commandtext',
-        [
-          new nodes.TextNode("ident1"),
-          new nodes.TextNode("ident2"),
-          new nodes.BooleanLiteralNode("true")
-        ]
-      ),
+      new nodes.FunctionResultNode('commandtext', [new nodes.TextNode('ident1'), new nodes.TextNode('ident2'), new nodes.BooleanLiteralNode('true')]),
     ];
 
     expect(results).to.deep.equal(expected);
-  }); */
+  });
 
   it('can parse some text followed by a newline and a command', () => {
     const results = parser.parse('some text\n<<commandtext>>');
@@ -309,8 +303,8 @@ describe('Parser', () => {
   it('can parse a simple inline expression within a sentence', () => {
     const results = parser.parse('Hello there {$testvar}.');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
       new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: results[0].lineNum }),
@@ -323,17 +317,14 @@ describe('Parser', () => {
   it('can parse inline expression with function call', () => {
     const results = parser.parse('Hello there {testfunc(1,2)}.');
 
-// They should all be on the same line. Runner aggregates text and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
-      new nodes.InlineExpressionNode(new nodes.FunctionResultNode(
-        'testfunc',
-        [
-          new nodes.NumericLiteralNode('1'),
-          new nodes.NumericLiteralNode('2'),
-        ]),
-        { first_line: results[0].lineNum },
-      ),
+      new nodes.InlineExpressionNode(new nodes.FunctionResultNode('testfunc', [
+        new nodes.NumericLiteralNode('1'),
+        new nodes.NumericLiteralNode('2'),
+      ]), { first_line: results[0].lineNum }),
       new nodes.TextNode('.', { first_line: results[0].lineNum }),
     ];
 
@@ -343,8 +334,8 @@ describe('Parser', () => {
   it('can parse inline expression with addition within a sentence', () => {
     const results = parser.parse('Hello there {$testvar + 1} test.');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
       new nodes.InlineExpressionNode(new nodes.ArithmeticExpressionAddNode(
@@ -360,8 +351,8 @@ describe('Parser', () => {
   it('can parse a simple If expression', () => {
     const results = parser.parse('<<if $testvar == true>>Hi<<endif>>');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
         new nodes.EqualToExpressionNode(
@@ -376,8 +367,8 @@ describe('Parser', () => {
   it('can parse a nested If expression', () => {
     const results = parser.parse('<<if $testvar == true>><<if $testvar2 == false>>Hi<<endif>><<endif>>');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar')
         , new nodes.BooleanLiteralNode('true'))
@@ -393,8 +384,8 @@ describe('Parser', () => {
   it('can parse an assignment within an If expression', () => {
     const results = parser.parse('<<if $testvar == true>>Hi\n<<set $testvar to 5>><<endif>>');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
         new nodes.EqualToExpressionNode(
@@ -410,8 +401,8 @@ describe('Parser', () => {
   it('can parse am assignment within nested If expression', () => {
     const results = parser.parse('<<if $testvar == true>><<if $testvar2 == false>>Hi\n<<set $testvar to 5>><<endif>><<endif>>');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar')
         , new nodes.BooleanLiteralNode('true'))
@@ -428,8 +419,8 @@ describe('Parser', () => {
   it('can parse an AND OR If expression', () => {
     const results = parser.parse('<<if ($testvar == true) || $override == true>>Hi<<endif>>');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
         new nodes.BooleanOrExpressionNode(
@@ -449,8 +440,8 @@ describe('Parser', () => {
   it('can parse an AND OR If expression2', () => {
     const results = parser.parse('<<if ($testvar == true && $testvar2 > 1) || $override == true>>Hi<<endif>>');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
         new nodes.BooleanOrExpressionNode(
@@ -474,8 +465,8 @@ describe('Parser', () => {
   it('can parse a function call within an If expression', () => {
     const results = parser.parse('<<if visited("testnode")>>\nHi\n<<set $testvar to 5>>\n<<endif>>');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
         new nodes.FunctionResultNode('visited', [
@@ -497,16 +488,12 @@ describe('Parser', () => {
     // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-        new nodes.NegatedFunctionResultNode(
-          'visited',
-          [new nodes.StringLiteralNode('testnode')],
-        ),
+        new nodes.NegatedFunctionResultNode('visited', [
+          new nodes.StringLiteralNode('testnode'),
+        ]),
         [
           new nodes.TextNode('Hi', { first_line: 2 }),
-          new nodes.SetVariableEqualToNode(
-            'testvar',
-            new nodes.NumericLiteralNode('5'),
-          ),
+          new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
         ]),
     ];
 
@@ -562,8 +549,8 @@ describe('Parser', () => {
   it('can parse an inline expression with exponent within a sentence', () => {
     const results = parser.parse('Hello there {2 ** 2} test.');
 
-    // They should all be on the same line. Runner aggregates text
-    // and expression value for same line.
+    // They should all be on the same line.
+    // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
       new nodes.InlineExpressionNode(new nodes.ArithmeticExpressionExponentNode(

@@ -16,9 +16,9 @@ class Runner {
   }
 
   /**
-  * Loads the yarn node data into this.nodes and strips out unneeded information
-  * @param {any[]} data Object of exported yarn JSON data
-  */
+   * Loads the yarn node data into this.nodes and strips out unneeded information
+   * @param {any[]} data Object of exported yarn JSON data
+   */
   load(data) {
     data.forEach((node) => {
       this.yarnNodes[node.title] = {
@@ -52,9 +52,9 @@ class Runner {
   }
 
   /**
-  * Generator to return each sequential dialog result starting from the given node
-  * @param {string} [startNode] - The name of the yarn node to begin at
-  */
+   * Generator to return each sequential dialog result starting from the given node
+   * @param {string} [startNode] - The name of the yarn node to begin at
+   */
   * run(startNode) {
     const yarnNode = this.yarnNodes[startNode];
 
@@ -87,8 +87,9 @@ class Runner {
     let textRun = null;
 
     // Yield the individual user-visible results
-    // Need to accumulate all adjacent selectables into one list (hence some of the weirdness here)
-    for (let nodeIdx = 0; nodeIdx < nodes.length; nodeIdx++) {
+    // Need to accumulate all adjacent selectables
+    // into one list (hence some of the weirdness here)
+    for (let nodeIdx = 0; nodeIdx < nodes.length; nodeIdx += 1) {
       const node = nodes[nodeIdx];
       const nextNode = nodes[nodeIdx + 1];
 
@@ -304,9 +305,8 @@ class Runner {
 
   /**
    * Evaluates an expression or literal down to its final value
-   * isDisplay only applies for evaluating a single variable.
    */
-  evaluateExpressionOrLiteral(node, isDisplay) {
+  evaluateExpressionOrLiteral(node) {
     if (node instanceof nodeTypes.Expression) {
       if (node.type === 'UnaryMinusExpressionNode') {
         return -1 * this.evaluateExpressionOrLiteral(node.expression);
@@ -314,50 +314,50 @@ class Runner {
         return this.evaluateExpressionOrLiteral(node.expression);
       } else if (node.type === 'ArithmeticExpressionAddNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) +
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'ArithmeticExpressionMinusNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) -
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'ArithmeticExpressionExponentNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) **
-               this.evaluateExpressionOrLiteral(node.expression2);
+        return this.evaluateExpressionOrLiteral(node.expression1)
+          ** this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'ArithmeticExpressionMultiplyNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) *
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'ArithmeticExpressionDivideNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) /
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'BooleanExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.booleanExpression);
       } else if (node.type === 'NegatedBooleanExpressionNode') {
         return !this.evaluateExpressionOrLiteral(node.booleanExpression);
       } else if (node.type === 'BooleanOrExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) ||
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'BooleanAndExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) &&
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'BooleanXorExpressionNode') {
         return !this.evaluateExpressionOrLiteral(node.expression1) !== // Cheating
-               !this.evaluateExpressionOrLiteral(node.expression2);
+          !this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'EqualToExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) ===
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'NotEqualToExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) !==
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'GreaterThanExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) >
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'GreaterThanOrEqualToExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) >=
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'LessThanExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) <
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       } else if (node.type === 'LessThanOrEqualToExpressionNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) <=
-               this.evaluateExpressionOrLiteral(node.expression2);
+          this.evaluateExpressionOrLiteral(node.expression2);
       }
 
       throw new Error(`I don't recognize expression type ${node.type}`);
@@ -371,9 +371,6 @@ class Runner {
       } else if (node.type === 'BooleanLiteralNode') {
         return node.booleanLiteral === 'true';
       } else if (node.type === 'VariableNode') {
-        if (isDisplay === true) {
-          return this.variables.display(node.variableName);
-        }
         return this.variables.get(node.variableName);
       }
 

@@ -104,7 +104,7 @@ module.exports = {
     constructor(text, lineNo) {
       super();
       this.type = 'TextNode';
-      this.text = text.replace(/\\/g,''); // strip out escape characters
+      this.text = text.replace(/\\/g, ''); // strip out escape characters
       this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
@@ -371,7 +371,7 @@ module.exports = {
       this.lineNum = -1;
     }
   },
-	
+
   CommandNode: class extends Command {
     constructor(command, lineNo) {
       super();

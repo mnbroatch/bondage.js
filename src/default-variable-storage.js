@@ -13,11 +13,6 @@ class DefaultVariableStorage {
   get(name) {
     return this.data[name];
   }
-	
-	// Called when a variable is being displayed.
-	display(name) {
-		return this.data[name];
-	}
 }
 
 module.exports = DefaultVariableStorage;

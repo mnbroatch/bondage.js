@@ -127,8 +127,8 @@ class Runner {
 					yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
 				}
 			} else if (node instanceof nodeTypes.InlineExpression) {
-				let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
-				expResult = expResult ? expResult.toString(): null;
+				let expResult = this.evaluateExpressionOrLiteral(node.expression);
+				expResult = expResult !== null ? expResult.toString(): null;
 				
 				// If we are already appending text...
 				if (textRun){
@@ -300,9 +300,8 @@ class Runner {
 
   /**
    * Evaluates an expression or literal down to its final value
-	 * isDisplay only applies for evaluating a single variable.
    */
-  evaluateExpressionOrLiteral(node, isDisplay) {
+  evaluateExpressionOrLiteral(node) {
     if (node instanceof nodeTypes.Expression) {
       if (node.type === 'UnaryMinusExpressionNode') {
         return -1 * this.evaluateExpressionOrLiteral(node.expression);
@@ -367,11 +366,7 @@ class Runner {
       } else if (node.type === 'BooleanLiteralNode') {
         return node.booleanLiteral === 'true';
       } else if (node.type === 'VariableNode') {
-				if (isDisplay===true){
-					return this.variables.display(node.variableName);
-				} else {
-					return this.variables.get(node.variableName);
-				}
+				return this.variables.get(node.variableName);
       }
 
       throw new Error(`I don't recognize literal type ${node.type}`);

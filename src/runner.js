@@ -71,7 +71,7 @@ class Runner {
       tags: yarnNode.tags.split(' '),
       body: yarnNode.body,
     };
-    yield* this.evalNodes(parserNodes, yarnNodeData);
+    yield* this.evalNodes(parserNodes, yarnNodeData, 'run');
   }
 
   /**
@@ -79,34 +79,39 @@ class Runner {
    * the user. Calls itself recursively if that is required by nested nodes
    * @param {any[]} nodes
    */
-  * evalNodes(nodes, yarnNodeData) {
+  * evalNodes(nodes, yarnNodeData, lastThing) {
     if (!nodes) return;
+      console.log('============')
+      console.log('============')
+      console.log('============')
+      console.log('============')
+    console.log('nodes', nodes)
 
     let shortcutNodes = [];
     let prevnode = null;
     let textRun = null;
-
     // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables
     // into one list (hence some of the weirdness here)
-    for (let nodeIdx = 0; nodeIdx < nodes.length; nodeIdx += 1) {
+    for (let nodeIdx = 0, len = nodes.length; nodeIdx < len; nodeIdx += 1) {
       const node = nodes[nodeIdx];
       const nextNode = nodes[nodeIdx + 1];
-
+      console.log('============')
+      console.log('node', node)
+      console.log('nextNode', nextNode)
+      console.log('prevnode', prevnode)
+    console.log('lastThing', lastThing)
       if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
         // Last shortcut in the series, so yield the shortcuts.
         yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
         shortcutNodes = [];
-      }
 
-      if (
-        prevnode instanceof nodeTypes.Shortcut
-        && prevnode.content
-        && prevnode.content[0]
-        && prevnode.content[0].functionName === 'jump'
-      ) {
-        console.log('prevnode', prevnode);
-        return;
+        if (prevnode.content[0].functionName === 'jump') {
+          // we have already recursively handled this
+          // and we want to ignore everything after the jump
+          console.log('weird return')
+          return;
+        }
       }
 
       if (node instanceof nodeTypes.Text) {
@@ -120,9 +125,7 @@ class Runner {
             || (nextNode instanceof nodeTypes.InlineExpression) === false
             || node.lineNum !== nextNode.lineNum
         ) {
-            console.log('2', 2);
             yield textRun;
-            console.log('222', 222);
             textRun = null;
           }
         } else if (
@@ -134,9 +137,7 @@ class Runner {
           textRun = new results.TextResult(node.text, yarnNodeData, node.lineNum);
         } else {
           // Else not already appending and next node is not inline exp on same line.
-          console.log('3', 3);
           yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
-          console.log('333', 333);
         }
       } else if (node instanceof nodeTypes.InlineExpression) {
         let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
@@ -150,9 +151,7 @@ class Runner {
             || (nextNode instanceof nodeTypes.Text) === false
             || node.lineNum !== nextNode.lineNum
         ) {
-            console.log('4', 4);
             yield textRun;
-            console.log('444', 444);
             textRun = null;
           }
           // If next node is an inline expression and on the same line as this node...
@@ -163,9 +162,7 @@ class Runner {
         ) {
           textRun = new results.TextResult(expResult, yarnNodeData, node.lineNum);
         } else {
-          console.log('5', 5);
           yield new results.TextResult(expResult, yarnNodeData, node.lineNum);
-          console.log('555', 555);
         }
       } else if (node instanceof nodeTypes.Shortcut) {
         shortcutNodes.push(node);
@@ -175,26 +172,19 @@ class Runner {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
-          console.log('6', 6);
-          yield* this.evalNodes(evalResult, yarnNodeData);
-          console.log('prevNode2', prevnode);
-          console.log('nextNode', nextNode);
-          console.log('node2', node);
-          console.log('666', 666);
+          yield* this.evalNodes(evalResult, yarnNodeData, 'conditional');
         }
       // A function call
       } else if (node instanceof nodeTypes.FunctionCall) {
         if (node.functionName === 'jump') {
           // Special command, jump to node
-          console.log('beforejump');
-          console.log('7', 7);
           yield* this.run(node.args[0].text);
-          console.log('777', 777);
-          console.log('afterjump');
+          console.log('return after jump')
           return;
         }
         if (node.functionName === 'stop') {
           // Special command, halt execution
+          console.log('stop return ')
           return;
         }
         let funcResult = null;
@@ -202,9 +192,7 @@ class Runner {
         if (this.functions[node.functionName]) {
           funcResult = this.functions[node.functionName](funcArgs);
         }
-        console.log('8', 8);
         yield new results.CommandResult(node.functionName, funcArgs, funcResult);
-        console.log('888', 888);
       }
 
       prevnode = node;
@@ -212,9 +200,7 @@ class Runner {
 
     // The last node might be a shortcut
     if (shortcutNodes.length > 0) {
-      console.log('9', 9);
       yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
-      console.log('999', 999);
     }
   }
 
@@ -241,16 +227,12 @@ class Runner {
       return;
     }
     const optionsResult = new results.OptionsResult(filteredSelections);
-    console.log('10', 10);
     yield optionsResult;
-    console.log('101010', 101010);
     if (optionsResult.selected !== -1) {
       const selectedOption = filteredSelections[optionsResult.selected];
       if (selectedOption.content) {
         // Recursively go through the nodes nested within
-        console.log('11', 11);
-        yield* this.evalNodes(selectedOption.content, yarnNodeData);
-        console.log('111111', 111111);
+        yield* this.evalNodes(selectedOption.content, yarnNodeData, 'handleoptions');
       }
     }
   }

@@ -59,13 +59,15 @@ describe('Dialogue', () => {
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is another test line', value.data, value.lineNum));
 
-    const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+    console.log('432', 432)
+    value = run.next().value;
+    console.log('765', 765)
+    expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'First choice', lineNum: 3 },
       { text: 'Second choice', lineNum: 5 },
     ]));
 
-    optionResult.select(0);
+    value.select(0);
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', value.data, value.lineNum));
 
@@ -614,8 +616,8 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Can handle an if conditional option with unconditional option after (3)', () => {
-  it('Can handle an if conditional option with unconditional option after (3)', () => {
+  it.only('Can handle an if conditional option with unconditional option after (3)', () => {
+  // it('Can handle an if conditional option with unconditional option after (3)', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterOptionWithinConditional');
 

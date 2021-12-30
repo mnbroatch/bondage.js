@@ -59,9 +59,7 @@ describe('Dialogue', () => {
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is another test line', value.data, value.lineNum));
 
-    console.log('432', 432)
     value = run.next().value;
-    console.log('765', 765)
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'First choice', lineNum: 3 },
       { text: 'Second choice', lineNum: 5 },
@@ -636,6 +634,56 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Should move to text after a first option with no follow-up is selected', () => {
+    runner.load(shortcutsYarnData);
+    const run = runner.run('EmptyFirstOption');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1', lineNum: 2 },
+      { text: 'Option 2', lineNum: 3 },
+    ]));
+    value.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Should move to text after a second option with no follow-up is selected', () => {
+    runner.load(shortcutsYarnData);
+    const run = runner.run('EmptySecondOption');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1', lineNum: 2 },
+      { text: 'Option 2', lineNum: 4 },
+    ]));
+    value.select(1);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Should move to text after the first of two options with no follow-up is selected', () => {
+    runner.load(shortcutsYarnData);
+    const run = runner.run('EmptyBothOptions');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1', lineNum: 2 },
+      { text: 'Option 2', lineNum: 3 },
+    ]));
+    value.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
   it('Can handle a simple inline expression', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('SimpleInlineExp');

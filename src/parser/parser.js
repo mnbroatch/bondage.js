@@ -59,6 +59,7 @@ const grammar = {
     shortcut: [
       ['ShortcutOption Text Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
       ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
+      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
     ],
 
     functionCall: [

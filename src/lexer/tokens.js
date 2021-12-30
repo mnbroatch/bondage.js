@@ -99,6 +99,5 @@ const Tokens = {
   BeginInlineExp:       /(?<!\\)\{/,					   // {
   EndInlineExp:         /(?<!\\)\}/					   // }
 };
-/* eslint-enable key-spacing */
 
 module.exports = Tokens;

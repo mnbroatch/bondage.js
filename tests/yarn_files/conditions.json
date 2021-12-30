@@ -72,7 +72,7 @@
 	{
 		"title": "TextAfterJumpAfterOption",
 		"tags": "Tag",
-		"body": "<<set $haskey to true>>\nText before\nInside if\n-> Give key\n\t<<jump give.key>>\nText after\n",
+		"body": "Text before\nInside if\n-> Give key\n\t<<jump give.key>>\nText after\n",
 		"position": {
 			"x": 449,
 			"y": 252

@@ -573,25 +573,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle an if conditional with unconditional option after (1)', () => {
-    runner.load(conditionalYarnData);
-    const run = runner.run('OptionAfterSuccessConditional');
-
-    let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', value.data, value.lineNum));
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside if', value.data, value.lineNum));
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', value.data, value.lineNum));
-
-    const optionResult = run.next().value;
-    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
-      { text: 'FinalOption', lineNum: 7 },
-    ]));
-
-    expect(run.next().done).to.be.true;
-  });
-
   it('Should ignore text after a jump after an option', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('TextAfterJumpAfterOption');
@@ -603,7 +584,7 @@ describe('Dialogue', () => {
 
     const optionResult = run.next().value;
     expect(optionResult).to.deep.equal(new bondage.OptionsResult([
-      { text: 'Give key', lineNum: 4 },
+      { text: 'Give key', lineNum: 3 },
     ]));
 
     optionResult.select(0);
@@ -632,7 +613,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle an if conditional option with unconditional option after (3)', () => {
+  it('Should ignore text after a jump after an option in ca conditional block', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterOptionWithinConditional');
 

@@ -40,6 +40,16 @@
     "colorID": 0
   },
   {
+    "title": "InlineExpEquality",
+    "tags": "Tag",
+    "body": "<<set $testvar = 1>>\nThis is a {$testvar == 1} sentence.",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
+  {
     "title": "InlineExpFunctionResult",
     "tags": "Tag",
     "body": "The results are {testfunc(\"frank\",2)}.",

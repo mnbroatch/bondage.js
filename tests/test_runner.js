@@ -795,6 +795,14 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Can handle inline expression containing equality', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpEquality');
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a true sentence.', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
+
   it('Can handle inline expression containing function call and expression', () => {
     runner.registerFunction('testfunc', () => { return 1; });
 

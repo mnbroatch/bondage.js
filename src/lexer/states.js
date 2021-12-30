@@ -96,18 +96,32 @@ function makeStates() {
       .addTransition('String')
       .addTransition('LeftParen')
       .addTransition('RightParen')
-      .addTransition('Variable')
+      .addTransition('EqualTo')
+      .addTransition('EqualToOrAssign')
+      .addTransition('NotEqualTo')
+      .addTransition('GreaterThanOrEqualTo')
+      .addTransition('GreaterThan')
+      .addTransition('LessThanOrEqualTo')
+      .addTransition('LessThan')
       .addTransition('Add')
       .addTransition('Minus')
       .addTransition('Exponent')
       .addTransition('Multiply')
       .addTransition('Divide')
-      .addTransition('Identifier')
+      .addTransition('And')
+      .addTransition('Or')
+      .addTransition('Xor')
+      .addTransition('Not')
+      .addTransition('Variable')
       .addTransition('Comma')
+      .addTransition('True')
+      .addTransition('False')
+      .addTransition('Null')
+      .addTransition('Identifier')
       .addTextRule('Text', 'base'),
 
     // TODO: Copied from above
-    // There has to be a non-stupid way to do this.
+    // There has to be a non-stupid way to do this, right?
     // I'm just not familiar enough yet to know how to
     // transition from inline expression back to base OR command
     // states depending on how we got there
@@ -117,14 +131,28 @@ function makeStates() {
       .addTransition('String')
       .addTransition('LeftParen')
       .addTransition('RightParen')
-      .addTransition('Variable')
+      .addTransition('EqualTo')
+      .addTransition('EqualToOrAssign')
+      .addTransition('NotEqualTo')
+      .addTransition('GreaterThanOrEqualTo')
+      .addTransition('GreaterThan')
+      .addTransition('LessThanOrEqualTo')
+      .addTransition('LessThan')
       .addTransition('Add')
       .addTransition('Minus')
       .addTransition('Exponent')
       .addTransition('Multiply')
       .addTransition('Divide')
-      .addTransition('Identifier')
+      .addTransition('And')
+      .addTransition('Or')
+      .addTransition('Xor')
+      .addTransition('Not')
+      .addTransition('Variable')
       .addTransition('Comma')
+      .addTransition('True')
+      .addTransition('False')
+      .addTransition('Null')
+      .addTransition('Identifier')
       .addTextRule('Text', 'base'),
   };
 }

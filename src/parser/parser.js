@@ -138,7 +138,6 @@ const grammar = {
 
     inlineExpression: [
       ['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
-      ['BeginInlineExp functionResultExpression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
     ],
   },
 };

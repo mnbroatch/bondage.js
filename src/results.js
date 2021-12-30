@@ -21,13 +21,13 @@ class CommandResult extends Result {
    * Return a command string
    * @param {string[]} [name] the function name being called
    * @param {[]} [args] the array of arguments for the function
-   * @param {int[]} [lineNum] list of the line numbers of options to be shown
+   * @param {int} [lineNum] line number of the result in the node
    */
-  constructor(name, args, result) {
+  constructor(name, args, lineNum) {
     super();
     this.name = name;
     this.args = args;
-    this.result = result;
+    this.lineNum = lineNum;
   }
 }
 

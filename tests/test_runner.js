@@ -472,37 +472,48 @@ describe('Dialogue', () => {
     const run = runner.run('BasicCommands');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], null));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], 1));
     value = run.next().value;
     expect(value.data).to.not.be.undefined;
     expect(value).to.deep.equal(new bondage.TextResult('text in between commands', value.data, value.lineNum));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], null));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], 1));
     expect(run.next().done).to.be.true;
   });
+
+  it('Returns commands to the user with an inline expression argument', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpCommand');
+    runner.variables.set('testvar', 'test');
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('someCommand', ['test'], 1));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Does not execute commands as functions', () => {
+    runner.registerFunction('command', () => {
+      throw new Error('function was called when it should not be');
+    });
+
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('BasicCommands');
+
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], 1));
+  });
+
 
   it('Returns complex commands to the user', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('ComplexCommands');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], null));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], 1));
     value = run.next().value;
     expect(value.data).to.not.be.undefined;
     expect(value).to.deep.equal(new bondage.TextResult('text in between commands', value.data, value.lineNum));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], null));
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('callAFunction', [], null));
-    expect(run.next().done).to.be.true;
-  });
-
-  it('Returns command with 3 arguments to the user', () => {
-    runner.load(commandAndFunctionYarnData);
-    const run = runner.run('CommandsArgs');
-
-    const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('callAFunction', [1, 2, true], null));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], 2));
     expect(run.next().done).to.be.true;
   });
 
@@ -511,7 +522,7 @@ describe('Dialogue', () => {
     const run = runner.run('CommandWithVariable');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 100], null));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 100], 1));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Text after command', value.data, value.lineNum));
     expect(value.data).to.not.be.undefined;
@@ -751,6 +762,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  // it.only('Can handle inline expression containing function call', () => {
   it('Can handle inline expression containing function call', () => {
     runner.registerFunction('testfunc', (args) => {
       if (args[0] === 'frank') {

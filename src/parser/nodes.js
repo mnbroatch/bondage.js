@@ -353,22 +353,22 @@ module.exports = {
   // /////////////// Function Nodes
 
   FunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args) {
+    constructor(functionName, args, lineNo) {
       super();
       this.type = 'FunctionResultNode';
       this.functionName = functionName;
       this.args = args;
-      this.lineNum = -1;
+      this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
 
   NegatedFunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args) {
+    constructor(functionName, args, lineNo) {
       super();
       this.type = 'NegatedFunctionResultNode';
       this.functionName = functionName;
       this.args = args;
-      this.lineNum = -1;
+      this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
 

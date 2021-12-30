@@ -1,11 +1,11 @@
 'use strict';
 
-/* eslint-disable key-spacing */
 /**
  * Token identifier -> regular expression to match the lexeme. That's a list of all the token
  * which can be emitted by the lexer. For now, we're slightly bending the style guide,
  * to make sure the debug output of the javascript lexer will (kinda) match the original C# one.
  */
+/* eslint-disable key-spacing */
 const Tokens = {
   // Special tokens
   Whitespace:           null,                      // (not used currently)
@@ -90,14 +90,13 @@ const Tokens = {
 	
   Identifier:           /[a-zA-Z0-9_:.]+/,         // a single word (used for functions)
 
-  CommandCall:          /([^>]|(?!>)[^>]+>)+(?=>>)/, // Command call
-
   Text:                 /.*/,                      // a run of text until we hit other syntax.
-	
+
   // Braces are used for inline expressions. Ignore escaped braces
   // TODO: doesn't work ios
   BeginInlineExp:       /(?<!\\)\{/,					   // {
   EndInlineExp:         /(?<!\\)\}/					   // }
 };
+/* eslint-enable key-spacing */
 
 module.exports = Tokens;

@@ -181,12 +181,8 @@ class Runner {
           // Special command, halt execution
           return { stop: true };
         }
-        let funcResult = null;
         const funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];
-        if (this.functions[node.functionName]) {
-          funcResult = this.functions[node.functionName](funcArgs);
-        }
-        yield new results.CommandResult(node.functionName, funcArgs, funcResult);
+        yield new results.CommandResult(node.functionName, funcArgs, node.lineNum);
       }
 
       prevnode = node;

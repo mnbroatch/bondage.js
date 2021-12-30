@@ -29,6 +29,7 @@ function makeStates() {
       .addTextRule('Text'),
 
     commandArg: new LexerState()
+      .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true) // TODO: stupid, see below
       .addTransition('EndCommand', 'base', true)
       .addTransition('LeftParen', 'commandParenArgOrExpression')
       .addTransition('Variable')
@@ -91,6 +92,27 @@ function makeStates() {
 
     inlineExpression: new LexerState()
       .addTransition('EndInlineExp', 'base')
+      .addTransition('Number')
+      .addTransition('String')
+      .addTransition('LeftParen')
+      .addTransition('RightParen')
+      .addTransition('Variable')
+      .addTransition('Add')
+      .addTransition('Minus')
+      .addTransition('Exponent')
+      .addTransition('Multiply')
+      .addTransition('Divide')
+      .addTransition('Identifier')
+      .addTransition('Comma')
+      .addTextRule('Text', 'base'),
+
+    // TODO: Copied from above
+    // There has to be a non-stupid way to do this.
+    // I'm just not familiar enough yet to know how to
+    // transition from inline expression back to base OR command
+    // states depending on how we got there
+    inlineExpressionInCommand: new LexerState()
+      .addTransition('EndInlineExp', 'command')
       .addTransition('Number')
       .addTransition('String')
       .addTransition('LeftParen')

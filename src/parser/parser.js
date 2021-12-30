@@ -63,9 +63,8 @@ const grammar = {
     ],
 
     functionCall: [
-      ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, []);'],
-      ['BeginCommand functionResultExpression EndCommand', '$$ = $2;'],
-      ['BeginCommand Identifier openArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3);'],
+      ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, [], @$);'],
+      ['BeginCommand Identifier openArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3, @$);'],
     ],
 
     assignment: [
@@ -128,6 +127,7 @@ const grammar = {
     ],
 
     argument: [
+      ['inlineExpression', '$$ = $1'],
       ['Identifier', '$$ = new yy.TextNode($1);'],
       ['Number', '$$ = new yy.NumericLiteralNode($1);'],
       ['String', '$$ = new yy.StringLiteralNode($1);'],

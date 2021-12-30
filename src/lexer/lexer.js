@@ -160,7 +160,6 @@ class Lexer {
           }
         }
 
-
         if (rule.token !== 'EndInlineExp') {
           // Remove leading whitespace characters
           const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);

@@ -24,47 +24,7 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [], results[0].lineNum),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
-  it('can parse a function call with empty paren args', () => {
-    const results = parser.parse('<<commandtext()>>');
-
-    const expected = [
-      new nodes.FunctionResultNode('commandtext', [], results[0].lineNum),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
-  it('can parse a function call with one paren arg', () => {
-    const results = parser.parse('<<commandtext(1)>>');
-
-    const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('1')]),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
-  it('can parse a function call with one variable paren arg', () => {
-    const results = parser.parse('<<commandtext($somevar)>>');
-
-    const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.VariableNode('somevar')]),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
-  it('can parse a function call with two paren arg', () => {
-    const results = parser.parse('<<commandtext(2, "face")>>');
-
-    const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('2'), new nodes.StringLiteralNode('face')]),
+      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -74,7 +34,7 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext 1>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('1')]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('1')], { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -84,7 +44,7 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext $somevar>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.VariableNode('somevar')]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.VariableNode('somevar')], { first_line: results[0].lineNum }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -94,10 +54,14 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext 2 "face">>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [
-        new nodes.NumericLiteralNode('2'),
-        new nodes.StringLiteralNode('face'),
-      ]),
+      new nodes.FunctionResultNode(
+        'commandtext',
+        [
+          new nodes.NumericLiteralNode('2'),
+          new nodes.StringLiteralNode('face'),
+        ],
+        { first_line: results[0].lineNum },
+      ),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -107,11 +71,15 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext 2 "face" true>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [
-        new nodes.NumericLiteralNode('2'),
-        new nodes.StringLiteralNode('face'),
-        new nodes.BooleanLiteralNode('true'),
-      ]),
+      new nodes.FunctionResultNode(
+        'commandtext',
+        [
+          new nodes.NumericLiteralNode('2'),
+          new nodes.StringLiteralNode('face'),
+          new nodes.BooleanLiteralNode('true'),
+        ],
+        { first_line: results[0].lineNum },
+      ),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -122,7 +90,8 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext ident1 ident2 true>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.TextNode('ident1'), new nodes.TextNode('ident2'), new nodes.BooleanLiteralNode('true')]),
+      new nodes.FunctionResultNode('commandtext', [new nodes.TextNode('ident1'), new nodes.TextNode('ident2'), new nodes.BooleanLiteralNode('true')], { first_line: results[0].lineNum },
+      ),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -133,7 +102,7 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.FunctionResultNode('commandtext', []),
+      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 1 }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -263,7 +232,7 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.FunctionResultNode('commandtext', []),
+      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 2 }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -274,7 +243,7 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.FunctionResultNode('commandtext', []),
+      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 6 }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -309,6 +278,25 @@ describe('Parser', () => {
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
       new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: results[0].lineNum }),
       new nodes.TextNode('.', { first_line: results[0].lineNum }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it('can parse an inline expression within a command', () => {
+    const results = parser.parse('<<commandtext {$testvar}>>');
+
+    const expected = [
+      new nodes.FunctionResultNode(
+        'commandtext',
+        [
+          new nodes.InlineExpressionNode(
+            new nodes.VariableNode('testvar'),
+            { first_line: results[0].lineNum },
+          ),
+        ],
+        { first_line: results[0].lineNum },
+      ),
     ];
 
     expect(results).to.deep.equal(expected);

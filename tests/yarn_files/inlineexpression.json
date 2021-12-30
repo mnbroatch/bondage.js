@@ -20,6 +20,16 @@
     "colorID": 0
   },
   {
+    "title": "InlineExpCommand",
+    "tags": "Tag",
+    "body": "<<someCommand $testvar>>",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
+  {
     "title": "InlineExpAddSentence",
     "tags": "Tag",
     "body": "This is a {$firstvar + 1} sentence.",

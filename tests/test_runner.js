@@ -762,7 +762,18 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Can handle inline expression containing function call', () => {
+  it('can handle a negated function call in a conditional', () => {
+    runner.registerFunction('returnFalse', () => { return false; });
+
+    runner.load(conditionalYarnData);
+    const run = runner.run('IfNotFunction');
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', value.data, value.lineNum));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Text after', value.data, value.lineNum));
+    expect(run.next().done).to.be.true;
+  });
+
   it('Can handle inline expression containing function call', () => {
     runner.registerFunction('testfunc', (args) => {
       if (args[0] === 'frank') {
@@ -784,14 +795,13 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // TODO
-  it.skip('Can handle inline expression containing function call and expression', () => {
-    runner.registerFunction('testfunc', () => { return true; });
+  it('Can handle inline expression containing function call and expression', () => {
+    runner.registerFunction('testfunc', () => { return 1; });
 
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpFunctionResultExp');
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This results are false.', value.data, value.lineNum));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are 2.', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
 });

@@ -362,16 +362,6 @@ module.exports = {
     }
   },
 
-  NegatedFunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args, lineNo) {
-      super();
-      this.type = 'NegatedFunctionResultNode';
-      this.functionName = functionName;
-      this.args = args;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
-    }
-  },
-
   CommandNode: class extends Command {
     constructor(command, lineNo) {
       super();

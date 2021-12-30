@@ -85,8 +85,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  // TODO
-  it.skip('can parse a function call with multiple identifiers', () => {
+  it('can parse a function call with multiple identifiers', () => {
     const results = parser.parse('<<commandtext ident1 ident2 true>>');
 
     const expected = [
@@ -476,9 +475,11 @@ describe('Parser', () => {
     // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-        new nodes.NegatedFunctionResultNode('visited', [
-          new nodes.StringLiteralNode('testnode'),
-        ]),
+        new nodes.NegatedBooleanExpressionNode(
+          new nodes.FunctionResultNode('visited', [
+            new nodes.StringLiteralNode('testnode'),
+          ]),
+        ),
         [
           new nodes.TextNode('Hi', { first_line: 2 }),
           new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),

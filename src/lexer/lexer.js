@@ -124,11 +124,18 @@ class Lexer {
     }
 
     const rules = this.getState().transitions;
+    let rule
+    let str
     for (let i = 0, len = rules.length; i < len; i += 1) {
-      const rule = rules[i];
-      const match = this.getCurrentLine()
+      rule = rules[i];
+        str = this.getCurrentLine()
         .substring(this.yylloc.last_column - 1)
+      const match = str
         .match(rule.regex);
+      // const rule = rules[i];
+      // const match = this.getCurrentLine()
+      //   .substring(this.yylloc.last_column - 1)
+      //   .match(rule.regex);
 
       // Only accept valid matches that are at the beginning of the text
       if (match !== null && match.index === 0) {
@@ -171,6 +178,10 @@ class Lexer {
         return rule.token;
       }
     }
+
+    console.log('rules', rules)
+    console.log('rule', rule)
+    console.log('str', str)
 
     // Something went wrong. TODO: Throw exception?
     return 'Invalid';

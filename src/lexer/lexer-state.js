@@ -64,7 +64,7 @@ class LexerState {
     });
 
     // Join the rules that we got above on a |, then put them all into a negative lookahead.
-    const textPattern = `((?!${rules.join('|')}).)*`;
+    const textPattern = `((?!${rules.join('|')}).)+`;
     this.addTransition(type, state);
 
     // Update the regex in the transition we just added to our new one.

@@ -107,13 +107,12 @@ const grammar = {
       ['expression GreaterThanOrEqualTo expression', '$$ = new yy.GreaterThanOrEqualToExpressionNode($1, $3);'],
       ['expression LessThan expression', '$$ = new yy.LessThanExpressionNode($1, $3);'],
       ['expression LessThanOrEqualTo expression', '$$ = new yy.LessThanOrEqualToExpressionNode($1, $3);'],
+      ['functionResultExpression', '$$ = $1'],
     ],
 
     functionResultExpression: [
       ['Identifier LeftParen RightParen', '$$ = new yy.FunctionResultNode($1, []);'],
       ['Identifier LeftParen parenExpressionArgs RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
-      ['Not Identifier LeftParen RightParen', '$$ = new yy.NegatedFunctionResultNode($2, []);'],
-      ['Not Identifier LeftParen parenExpressionArgs RightParen', '$$ = new yy.NegatedFunctionResultNode($2, $4);'],
     ],
 
     parenExpressionArgs: [

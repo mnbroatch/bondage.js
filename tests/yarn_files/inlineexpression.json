@@ -52,7 +52,7 @@
   {
     "title": "InlineExpFunctionResultExp",
     "tags": "Tag",
-    "body": "The results are {testfunc() == false}.",
+    "body": "The results are {testfunc() + 1}.",
     "position": {
       "x": 449,
       "y": 252

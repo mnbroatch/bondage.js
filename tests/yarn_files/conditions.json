@@ -60,6 +60,16 @@
 		"colorID": 0
 	},
 	{
+		"title": "IfNotFunction",
+		"tags": "Tag",
+		"body": "<<if not returnFalse()>>Inside if<<endif>>\nText after\n",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
 		"title": "OptionAfterSuccessConditional",
 		"tags": "Tag",
 		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n<<endif>>\nText after\n-> FinalOption\n\t<<jump Objective>>",

@@ -143,7 +143,10 @@ const grammar = {
   },
 };
 
-Jison.print = () => {}; // TODO: bad, find better way to silence or fix shift/reduce error
+// TODO: bad, should fix shift/reduce conflicts instead.
+// Is this really the only way to silence the warnings though?
+Jison.print = () => {};
+
 const parser = new Jison.Parser(grammar);
 parser.lexer = new Lexer();
 parser.yy = Nodes;

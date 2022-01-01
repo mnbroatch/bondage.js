@@ -41,7 +41,8 @@ const Tokens = {
   ElseIf:               /elseif(?!\w)/,
   Else:                 /else(?!\w)/,
   EndIf:                /endif(?!\w)/,
-  Set:                  /set(?!\w)/,
+  Set:                  /set(?!\w)|declare(?!\w)/,  // not spec-compliant
+  ExplicitType:         /as\s.*(?=>>)/,                // so we can ignore explicit typing
 
   // Boolean values
   True:                 /true(?!\w)/,

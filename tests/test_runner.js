@@ -695,6 +695,7 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is after both options', value.data, value.lineNum));
     expect(run.next().done).to.be.true;
   });
+
   it('Can handle a simple inline expression', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('SimpleInlineExp');
@@ -727,6 +728,15 @@ describe('Dialogue', () => {
 
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a 2 sentence.', value.data, value.lineNum));
+
+    expect(run.next().done).to.be.true;
+  });
+
+  it('treats "declare" like "set", ignoring explicit typing', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('SimpleInlineExpDeclare');
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('1', value.data, value.lineNum));
 
     expect(run.next().done).to.be.true;
   });

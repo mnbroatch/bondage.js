@@ -61,6 +61,7 @@ function makeStates() {
       .addTransition('DivideAssign', 'expression'),
 
     expression: new LexerState()
+      .addTransition('ExplicitType')
       .addTransition('EndCommand', 'base')
       .addTransition('Number')
       .addTransition('String')

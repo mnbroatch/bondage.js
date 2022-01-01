@@ -1,6 +1,6 @@
 'use strict';
 
-const Parser = require('jison').Parser;
+const Jison = require('jison');
 const Nodes = require('./nodes');
 const Lexer = require('../lexer/lexer');
 
@@ -77,6 +77,7 @@ const grammar = {
     ],
 
     expression: [
+      ['expression ExplicitType', '$$ = $1;'],
       ['True', '$$ = new yy.BooleanLiteralNode($1);'],
       ['False', '$$ = new yy.BooleanLiteralNode($1);'],
       ['Number', '$$ = new yy.NumericLiteralNode($1);'],
@@ -142,7 +143,8 @@ const grammar = {
   },
 };
 
-const parser = new Parser(grammar);
+Jison.print = () => {}; // TODO: bad, find better way to silence or fix shift/reduce error
+const parser = new Jison.Parser(grammar);
 parser.lexer = new Lexer();
 parser.yy = Nodes;
 

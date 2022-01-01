@@ -10,6 +10,16 @@
     "colorID": 0
   },
   {
+    "title": "SimpleInlineExpDeclare",
+    "tags": "Tag",
+    "body": "<<declare $firstvar = 1 as String>>{$firstvar}",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
+  {
     "title": "InlineExpSentence",
     "tags": "Tag",
     "body": "This is a {$firstvar}.",

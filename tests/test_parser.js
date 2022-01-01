@@ -117,6 +117,16 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
+  it('can parse a simple assignment using "declare", ignoring explicit types', () => {
+    const results = parser.parse('<<declare $testvar = 5 as String>>');
+
+    const expected = [
+      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
   it('can parse an assignment with function call', () => {
     const results = parser.parse('<<set $testvar = visited(1)>>');
 

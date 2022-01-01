@@ -190,6 +190,19 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 
+  it('can tokenize a simple assignment using declare', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<declare $testvar = -4.3>>');
+
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Set');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EqualToOrAssign');
+    expect(lexer.lex()).to.equal('Number');
+    expect(lexer.lex()).to.equal('EndCommand');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
   it('can tokenize an assignment involving arithmetic', () => {
     const lexer = new Lexer();
     lexer.setInput('<<set $testvar = -4.3 - (1 + 2) * 3.1 / 5>>');

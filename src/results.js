@@ -6,13 +6,11 @@ class TextResult extends Result {
   /**
    * Create a text display result
    * @param {string} [text] text to be displayed
-   * @param {int} [lineNum] line number of the result in the node
    */
-  constructor(text, yarnNodeData, lineNum) {
+  constructor(text, yarnNodeData) {
     super();
     this.text = text;
     this.data = yarnNodeData;
-    this.lineNum = lineNum;
   }
 }
 
@@ -21,13 +19,11 @@ class CommandResult extends Result {
    * Return a command string
    * @param {string[]} [name] the function name being called
    * @param {[]} [args] the array of arguments for the function
-   * @param {int} [lineNum] line number of the result in the node
    */
-  constructor(name, args, lineNum) {
+  constructor(name, args) {
     super();
     this.name = name;
     this.args = args;
-    this.lineNum = lineNum;
   }
 }
 
@@ -36,14 +32,9 @@ class OptionResult extends Result {
    * Strip down Conditional option for presentation
    * @param {ConditionalDialogShortcutNode[]} [selection] relevant option
    */
-  constructor({
-    text,
-    lineNum,
-    isAvailable = true,
-  }) {
+  constructor({ text, isAvailable = true }) {
     super();
     this.text = text;
-    this.lineNum = lineNum;
     this.isAvailable = isAvailable;
   }
 }
@@ -52,7 +43,6 @@ class OptionsResult extends Result {
   /**
    * Create a selectable list of options from the given list of text
    * @param {string[]} [selections] list of the text of options to be shown
-   * @param {int[]} [lineNum] list of the line numbers of options to be shown
    */
   constructor(options) {
     super();

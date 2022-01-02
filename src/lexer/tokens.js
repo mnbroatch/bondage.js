@@ -31,6 +31,12 @@ const Tokens = {
   // Shortcut syntax ("->")
   ShortcutOption:       /->/,
 
+  // Hashtag ("#something")
+  Hashtag:              /#(?!(\w|#))/,
+
+  // Comment ("// some stuff")
+  Comment:              /\/\/.*/,
+
   // Option syntax ("[[Let's go here|Destination]]")
   OptionStart:          /\[\[/,                    // [[
   OptionDelimit:        /\|/,                      // |
@@ -42,7 +48,7 @@ const Tokens = {
   Else:                 /else(?!\w)/,
   EndIf:                /endif(?!\w)/,
   Set:                  /set(?!\w)|declare(?!\w)/,  // not spec-compliant
-  ExplicitType:         /as\s.*(?=>>)/,                // so we can ignore explicit typing
+  ExplicitType:         /as\s.*(?=>>)/,             // so we can ignore explicit typing
 
   // Boolean values
   True:                 /true(?!\w)/,

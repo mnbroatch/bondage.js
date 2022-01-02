@@ -8,6 +8,7 @@ const LexerState = require('./lexer-state');
 function makeStates() {
   return {
     base: new LexerState()
+      .addTransition('Comment')
       .addTransition('BeginCommand', 'command', true)
       .addTransition('BeginInlineExp', 'inlineExpression', true)
       .addTransition('ShortcutOption', 'shortcutOption')
@@ -29,7 +30,7 @@ function makeStates() {
       .addTextRule('Text'),
 
     commandArg: new LexerState()
-      .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true) // TODO: stupid, see below
+      .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true) // TODO: seems stupid, see below
       .addTransition('EndCommand', 'base', true)
       .addTransition('LeftParen', 'commandParenArgOrExpression')
       .addTransition('Variable')

@@ -94,6 +94,26 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it.skip('Includes hashtags with text nodes', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('OneNodeHashtag');
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult(
+      'This is a test line',
+      ['someHashtag', 'someOtherHashtag'],
+    ));
+    expect(run.next().done).to.be.true;
+  });
+
+  // it('Ignores comments', () => {
+  it.only('Ignores comments', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('OneNodeComment');
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line'));
+    expect(run.next().done).to.be.true;
+  });
+
   it('Automatically goes to the jump node', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneJumpPassthrough');

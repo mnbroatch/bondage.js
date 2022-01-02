@@ -10,6 +10,26 @@
 		"colorID": 0
 	},
 	{
+		"title": "OneNodeComment",
+		"tags": "Tag",
+		"body": "This is a test line // This is a comment",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
+		"title": "OneNodeHashtag",
+		"tags": "Tag",
+		"body": "This is a test line #someHashtag",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
 		"title": "ThreeNodes",
 		"tags": "",
 		"body": "This is a test line\nThis is another test line\n-> First choice\n\t<<jump Option1>>\n-> Second choice\n\t<<jump Option2>>",

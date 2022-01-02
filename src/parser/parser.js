@@ -54,6 +54,7 @@ const grammar = {
       ['assignment', '$$ = $1;'],
       ['Text', '$$ = new yy.TextNode($1, @$);'],
       ['inlineExpression', '$$ = $1;'],
+      ['statement Comment', '$$ = $1;'],
     ],
 
     shortcut: [

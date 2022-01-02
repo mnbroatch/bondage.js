@@ -7,7 +7,22 @@
 	{
 		"title": "OneNodeEscapeCurlyBrace",
 		"tags": "Tag",
-		"body": "This is a \\{test} line"
+		"body": "This is a \\{test\\} line"
+	},
+	{
+		"title": "OneNodeEscapeTwoCurlyBraces",
+		"tags": "Tag",
+		"body": "This is a \\{\\{test\\} line"
+	},
+	{
+		"title": "OneNodeEscapeHashtag",
+		"tags": "Tag",
+		"body": "This is a \\#test line"
+	},
+	{
+		"title": "ThreeLineEscape",
+		"tags": "Tag",
+		"body": "This is a test lin\\e\nThis is another test line\nYet another test line"
 	},
 	{
 		"title": "TwoLines",

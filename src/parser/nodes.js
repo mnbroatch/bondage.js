@@ -104,9 +104,18 @@ module.exports = {
     constructor(text, lineNo, hashtags) {
       super();
       this.type = 'TextNode';
-      this.text = text.replace(/\\/g, ''); // strip out escape characters
+      this.text = text
       this.lineNum = lineNo ? lineNo.first_line : -1;
       this.hashtags = hashtags;
+    }
+  },
+
+  EscapedCharacterNode: class extends Text {
+    constructor(text, lineNo) {
+      super();
+      this.type = 'EscapedCharacterNode';
+      this.text = text
+      this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
 

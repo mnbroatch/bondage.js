@@ -266,7 +266,7 @@ describe('Dialogue', () => {
     const run = runner.run('SimpleInlineExpComment');
     const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpComment'; });
 
-    runner.variables.set('firstvar', 1); // set the variables value
+    runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('1', [], yarnData));
@@ -689,13 +689,13 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Returns commands to the user with an inline expression argument', () => {
-    runner.load(inlineExpressionYarnData);
-    const run = runner.run('InlineExpCommand');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpCommand'; });
-    runner.variables.set('testvar', 'test');
+  it.skip('Returns commands to the user with an inline expression argument', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('ExpressionArgumentCommand');
+    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; });
+    runner.variables.set('testvar', 1);
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('someCommand', ['test'], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('someCommand', [2], [], yarnData));
     expect(run.next().done).to.be.true;
   });
 
@@ -921,10 +921,24 @@ describe('Dialogue', () => {
     const run = runner.run('SimpleInlineExp');
     const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExp'; });
 
-    runner.variables.set('firstvar', 1); // set the variables value
+    runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('1', [], yarnData));
+
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Can handle sequential inline expressions', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('SequentialInlineExpressions');
+    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SequentialInlineExpressions'; });
+
+    runner.variables.set('firstvar', 1);
+    runner.variables.set('secondvar', 2);
+
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('12', [], yarnData));
 
     expect(run.next().done).to.be.true;
   });
@@ -938,6 +952,28 @@ describe('Dialogue', () => {
 
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test.', [], yarnData));
+
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Can handle a simple inline expression in an option', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('OptionInlineExpression');
+    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'OptionInlineExpression'; });
+    runner.variables.set('firstvar', 'test');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'First test choice' },
+      { text: 'Second choice' },
+    ], yarnData));
+
+    value.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], yarnData));
 
     expect(run.next().done).to.be.true;
   });
@@ -1056,9 +1092,40 @@ describe('Dialogue', () => {
   it('Can run through a single line with an escaped curly brace', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeEscapeCurlyBrace');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'EscapeCurlyBraceOneNode'; });
+    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeEscapeCurlyBrace'; });
     const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a {test} line', [], yarnData));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Can run through a single line with two consecutive escaped curly braces', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('OneNodeEscapeTwoCurlyBraces');
+    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeEscapeTwoCurlyBraces'; });
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a {{test} line', [], yarnData));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Can run through a single line with an escaped hashtag', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('OneNodeEscapeHashtag');
+    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtag'; });
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a #test line', [], yarnData));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Can run through three lines when the first ends on an escaped character', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('ThreeLineEscape');
+    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeLineEscape'; });
+    let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], yarnData));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Yet another test line', [], yarnData));
     expect(run.next().done).to.be.true;
   });
 });

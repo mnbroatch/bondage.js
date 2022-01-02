@@ -107,7 +107,6 @@ class Runner {
           // or not on the same line as this node...
           if (
             nextNode == null
-            || (nextNode instanceof nodeTypes.InlineExpression) === false
             || node.lineNum !== nextNode.lineNum
         ) {
             yield textRun;
@@ -120,6 +119,12 @@ class Runner {
         ) {
           // Else if we are not appending text
           // and the next node is an inline exp on the same line...
+          textRun = new results.TextResult(node.text, node.hashtags, yarnNode);
+        } else if (
+          nextNode
+          && nextNode instanceof nodeTypes.Text
+          && node.lineNum === nextNode.lineNum
+        ) {
           textRun = new results.TextResult(node.text, node.hashtags, yarnNode);
         } else {
           // Else not already appending and next node is not inline exp on same line.
@@ -134,7 +139,7 @@ class Runner {
           textRun.text += expResult;
           if (
             nextNode == null
-            || (nextNode instanceof nodeTypes.Text) === false
+            || !(nextNode instanceof nodeTypes.Text)
             || node.lineNum !== nextNode.lineNum
           ) {
             yield textRun;
@@ -143,7 +148,7 @@ class Runner {
           // If next node is an inline expression and on the same line as this node...
         } else if (
           nextNode
-          && nextNode instanceof nodeTypes.Text
+          && nextNode instanceof nodeTypes.InlineExpression
           && node.lineNum === nextNode.lineNum
         ) {
           textRun = new results.TextResult(expResult, node.hashtags, yarnNode);

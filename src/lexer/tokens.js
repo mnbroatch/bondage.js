@@ -95,7 +95,7 @@ const Tokens = {
 
   Identifier:           /[a-zA-Z0-9_:.]+/,         // a single word (used for functions)
 
-  Escape:               /\\/,                      // for escaping \# special characters
+  EscapedCharacter:     /\\./,                     // for escaping \# special characters
   Text:                 /[^\\]/,                   // generic until we hit other syntax
 
   // Braces are used for inline expressions. Ignore escaped braces

@@ -10,6 +10,16 @@
     "body": "{$firstvar}"
   },
   {
+    "title": "SequentialInlineExpressions",
+    "tags": "Tag",
+    "body": "{$firstvar}{$secondvar}"
+  },
+  {
+    "title": "OptionInlineExpression",
+    "tags": "Tag",
+    "body": "This is a test line\n-> First {$firstvar} choice\n\tThis is Option1\\'s\n-> Second choice"
+  },
+  {
     "title": "SimpleInlineExpDeclare",
     "tags": "Tag",
     "body": "<<declare $firstvar = 1 as String>>{$firstvar}"
@@ -18,11 +28,6 @@
     "title": "InlineExpSentence",
     "tags": "Tag",
     "body": "This is a {$firstvar}."
-  },
-  {
-    "title": "InlineExpCommand",
-    "tags": "Tag",
-    "body": "<<someCommand $testvar>>"
   },
   {
     "title": "InlineExpAddSentence",

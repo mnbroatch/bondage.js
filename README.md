@@ -11,6 +11,7 @@ This repo is a fork of a [fork](https://github.com/alforno/bondage.js) of [the o
   - Typing is not enforced.
 
 todo: disallow dots in titles
+todo: check for escaped characters / inline expressions in options
 
 
 

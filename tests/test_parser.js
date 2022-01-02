@@ -278,6 +278,36 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
+  it.skip('can parse an escaped command', () => {
+    const results = parser.parse('\\<<testtext>>');
+
+    const expected = [
+      new nodes.TextNode('<<testtext>>', { first_line: 1 }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it.skip('can parse an escaped comment', () => {
+    const results = parser.parse('\\//testtext');
+
+    const expected = [
+      new nodes.TextNode('//testtext', { first_line: 1 }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it.skip('can parse an escaped hashtag', () => {
+    const results = parser.parse('\\#testtext');
+
+    const expected = [
+      new nodes.TextNode('#testtext', { first_line: 1 }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
   it('can parse a simple inline expression within a sentence', () => {
     const results = parser.parse('Hello there {$testvar}.');
 

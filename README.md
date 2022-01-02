@@ -10,6 +10,8 @@ This repo is a fork of a [fork](https://github.com/alforno/bondage.js) of [the o
   - Explicit typing is ignored.
   - Typing is not enforced.
 
+todo: disallow dots in titles
+
 
 
 # Usage
@@ -17,3 +19,5 @@ TODO
 
 explain how functions and commands work
 
+explain hashtags and node data
+  - mention that options hashtags go on the individual option and node data goes on the options node

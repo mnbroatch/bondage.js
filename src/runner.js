@@ -18,16 +18,12 @@ class Runner {
   }
 
   /**
-   * Loads the yarn node data into this.nodes and strips out unneeded information
+   * Loads the yarn node data into this.nodes
    * @param {any[]} data Object of exported yarn JSON data
    */
   load(data) {
     data.forEach((node) => {
-      this.yarnNodes[node.title] = {
-        title: node.title,
-        tags: node.tags,
-        body: node.body,
-      };
+      this.yarnNodes[node.title] = node;
     });
   }
 
@@ -68,12 +64,10 @@ class Runner {
 
     // Parse the entire node
     const parserNodes = Array.from(parser.parse(yarnNode.body));
-    const yarnNodeData = {
-      title: yarnNode.title,
-      tags: yarnNode.tags.split(' '),
-      body: yarnNode.body,
-    };
-    return yield* this.evalNodes(parserNodes, yarnNodeData);
+    if (yarnNode.tags && typeof yarnNode.tags === 'string') {
+      yarnNode.tags = yarnNode.tags.split(' ');
+    }
+    return yield* this.evalNodes(parserNodes, yarnNode);
   }
 
   /**
@@ -81,7 +75,7 @@ class Runner {
    * the user. Calls itself recursively if that is required by nested nodes
    * @param {any[]} nodes
    */
-  * evalNodes(nodes, yarnNodeData) {
+  * evalNodes(nodes, yarnNode) {
     if (!nodes) return { stop: false };
 
     let shortcutNodes = [];
@@ -97,7 +91,7 @@ class Runner {
 
       if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
         // Last shortcut in the series, so yield the shortcuts.
-        const result = yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+        const result = yield* this.handleShortcuts(shortcutNodes, yarnNode);
         if (result && result.stop) {
           return result;
         }
@@ -126,10 +120,10 @@ class Runner {
         ) {
           // Else if we are not appending text
           // and the next node is an inline exp on the same line...
-          textRun = new results.TextResult(node.text, node.hashtags);
+          textRun = new results.TextResult(node.text, node.hashtags, yarnNode);
         } else {
           // Else not already appending and next node is not inline exp on same line.
-          yield new results.TextResult(node.text, node.hashtags);
+          yield new results.TextResult(node.text, node.hashtags, yarnNode);
         }
       } else if (node instanceof nodeTypes.InlineExpression) {
         let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
@@ -152,9 +146,9 @@ class Runner {
           && nextNode instanceof nodeTypes.Text
           && node.lineNum === nextNode.lineNum
         ) {
-          textRun = new results.TextResult(expResult, node.hashtags);
+          textRun = new results.TextResult(expResult, node.hashtags, yarnNode);
         } else {
-          yield new results.TextResult(expResult, node.hashtags);
+          yield new results.TextResult(expResult, node.hashtags, yarnNode);
         }
       } else if (node instanceof nodeTypes.Shortcut) {
         shortcutNodes.push(node);
@@ -165,7 +159,7 @@ class Runner {
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
           // Run the remaining results
-          const result = yield* this.evalNodes(evalResult, yarnNodeData);
+          const result = yield* this.evalNodes(evalResult, yarnNode);
           if (result && result.stop) {
             return result;
           }
@@ -182,7 +176,7 @@ class Runner {
           return { stop: true };
         }
         const funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];
-        yield new results.CommandResult(node.functionName, funcArgs, node.hashtags);
+        yield new results.CommandResult(node.functionName, funcArgs, node.hashtags, yarnNode);
       }
 
       prevnode = node;
@@ -190,7 +184,7 @@ class Runner {
 
     // The last node might be a shortcut
     if (shortcutNodes.length > 0) {
-      return yield* this.handleShortcuts(shortcutNodes, yarnNodeData);
+      return yield* this.handleShortcuts(shortcutNodes, yarnNode);
     }
 
     return { stop: false };
@@ -200,7 +194,7 @@ class Runner {
    * yield a shortcut result then handle the subsequent selection
    * @param {any[]} selections
    */
-  * handleShortcuts(selections, yarnNodeData) {
+  * handleShortcuts(selections, yarnNode) {
     // Multiple options to choose from (or just a single shortcut)
     // Tag any conditional dialog options that result to false,
     // the consuming app does the actual filtering or whatever
@@ -218,13 +212,13 @@ class Runner {
       // No options to choose anymore
       return { stop: false };
     }
-    const optionsResult = new results.OptionsResult(filteredSelections);
+    const optionsResult = new results.OptionsResult(filteredSelections, yarnNode);
     yield optionsResult;
     if (optionsResult.selected !== -1) {
       const selectedOption = filteredSelections[optionsResult.selected];
       if (selectedOption.content) {
         // Recursively go through the nodes nested within
-        return yield* this.evalNodes(selectedOption.content, yarnNodeData);
+        return yield* this.evalNodes(selectedOption.content, yarnNode);
       }
     }
 

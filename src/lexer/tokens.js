@@ -95,12 +95,13 @@ const Tokens = {
 
   Identifier:           /[a-zA-Z0-9_:.]+/,         // a single word (used for functions)
 
-  Text:                 /.*/,                      // a run of text until we hit other syntax.
+  Escape:               /\\/,                      // for escaping \# special characters
+  Text:                 /[^\\]/,                   // generic until we hit other syntax
 
   // Braces are used for inline expressions. Ignore escaped braces
   // TODO: doesn't work ios
-  BeginInlineExp:       /(?<!\\)\{/,					   // {
-  EndInlineExp:         /(?<!\\)\}/					   // }
+  BeginInlineExp:       /{/,                       // {
+  EndInlineExp:         /}/,                       // }
 };
 /* eslint-enable key-spacing */
 

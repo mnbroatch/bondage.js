@@ -52,10 +52,29 @@ const grammar = {
       ['shortcut', '$$ = $1;'],
       ['functionCall', '$$ = $1;'],
       ['assignment', '$$ = $1;'],
-      ['Text', '$$ = new yy.TextNode($1, @$);'],
-      ['Text hashtags', '$$ = new yy.TextNode($1, @$, $2);'],
+      ['text', '$$ = new yy.TextNode($1, @$);'],
+      ['text hashtags', '$$ = new yy.TextNode($1, @$, $2);'],
       ['inlineExpression', '$$ = $1;'],
       ['statement Comment', '$$ = $1;'],
+    ],
+
+    text: [
+      ['Text', '$$ = $1'],
+      ['Escape text', '$$ = $2;'],
+    ],
+
+    specialCharacter: [
+      ['BeginInlineExp', '$$ = $1;'],
+      ['BeginCommand', '$$ = $1;'],
+      ['Comment', '$$ = $1;'],
+      ['Hashtag', '$$ = $1;'],
+    ],
+
+    escapedCharacter: [
+      ['Escape BeginInlineExp', '$$ = $2;'],
+      ['Escape BeginCommand', '$$ = $2;'],
+      ['Escape Comment', '$$ = $2;'],
+      ['Escape Hashtag', '$$ = $2;'],
     ],
 
     hashtags: [
@@ -65,16 +84,16 @@ const grammar = {
     ],
 
     shortcut: [
-      ['ShortcutOption Text Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
-      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
-      ['ShortcutOption Text Comment Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Comment Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$);'],
-      ['ShortcutOption Text hashtags Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$, $3);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$, $7);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$, $7);'],
+      ['ShortcutOption text Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
+      ['ShortcutOption text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
+      ['ShortcutOption text BeginCommand If expression EndCommand', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
+      ['ShortcutOption text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
+      ['ShortcutOption text Comment Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$);'],
+      ['ShortcutOption text BeginCommand If expression EndCommand Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
+      ['ShortcutOption text BeginCommand If expression EndCommand Comment Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$);'],
+      ['ShortcutOption text hashtags Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$, $3);'],
+      ['ShortcutOption text BeginCommand If expression EndCommand hashtags Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$, $7);'],
+      ['ShortcutOption text BeginCommand If expression EndCommand hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$, $7);'],
     ],
 
     functionCall: [

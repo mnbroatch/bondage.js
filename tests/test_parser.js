@@ -278,7 +278,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  it.skip('can parse an escaped command', () => {
+  it('can parse an escaped command', () => {
     const results = parser.parse('\\<<testtext>>');
 
     const expected = [
@@ -288,7 +288,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  it.skip('can parse an escaped comment', () => {
+  it('can parse an escaped comment', () => {
     const results = parser.parse('\\//testtext');
 
     const expected = [
@@ -298,7 +298,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  it.skip('can parse an escaped hashtag', () => {
+  it('can parse an escaped hashtag', () => {
     const results = parser.parse('\\#testtext');
 
     const expected = [

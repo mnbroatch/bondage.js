@@ -8,6 +8,7 @@ const LexerState = require('./lexer-state');
 function makeStates() {
   return {
     base: new LexerState()
+      .addTransition('Escape', 'escape')
       .addTransition('Comment', null, true)
       .addTransition('Hashtag', null, true)
       .addTransition('BeginCommand', 'command', true)
@@ -15,6 +16,8 @@ function makeStates() {
       .addTransition('ShortcutOption', 'shortcutOption')
       .addTextRule('Text'),
 
+    escape: new LexerState()
+      .addTransition('Text', 'base'),
 
     shortcutOption: new LexerState()
       .setTrackNextIndentation(true)

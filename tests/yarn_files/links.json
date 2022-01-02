@@ -5,6 +5,16 @@
 		"body": "This is a test line"
 	},
 	{
+		"title": "OneNodeEscapeCurlyBrace",
+		"tags": "Tag",
+		"body": "This is a \\{test} line"
+	},
+	{
+		"title": "TwoLines",
+		"tags": "Tag",
+		"body": "This is a test line\nThis is another test line"
+	},
+	{
 		"title": "OneNodeMetadata",
 		"tags": "Tag",
 		"someProp": "Hello",

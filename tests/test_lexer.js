@@ -419,6 +419,16 @@ describe('Lexer', () => {
     const lexer = new Lexer();
     lexer.setInput('\\{test\\}');
 
+    expect(lexer.lex()).to.equal('Escape');
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('can tokenize an escaped comment', () => {
+    const lexer = new Lexer();
+    lexer.setInput('\\//test');
+
+    expect(lexer.lex()).to.equal('Escape');
     expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('EndOfInput');
   });

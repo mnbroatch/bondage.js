@@ -9,7 +9,7 @@ function makeStates() {
   return {
     base: new LexerState()
       .addTransition('Comment', null, true)
-      // .addTransition('Hashtag', 'hashtag', true)
+      .addTransition('Hashtag', null, true)
       .addTransition('BeginCommand', 'command', true)
       .addTransition('BeginInlineExp', 'inlineExpression', true)
       .addTransition('ShortcutOption', 'shortcutOption')

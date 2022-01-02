@@ -53,8 +53,15 @@ const grammar = {
       ['functionCall', '$$ = $1;'],
       ['assignment', '$$ = $1;'],
       ['Text', '$$ = new yy.TextNode($1, @$);'],
+      ['Text hashtags', '$$ = new yy.TextNode($1, @$, $2);'],
       ['inlineExpression', '$$ = $1;'],
       ['statement Comment', '$$ = $1;'],
+    ],
+
+    hashtags: [
+      ['Hashtag', '$$ = [$1.substring(1)];'],
+      ['hashtags Hashtag', '$$ = $1.concat([$2.substring(1)]);'],
+      ['hashtags Comment', '$$ = $1;'],
     ],
 
     shortcut: [
@@ -147,7 +154,7 @@ const grammar = {
 
 // TODO: bad, should fix shift/reduce conflicts instead.
 // Is this really the only way to silence the warnings though?
-Jison.print = () => {};
+// Jison.print = () => {};
 
 const parser = new Jison.Parser(grammar);
 parser.lexer = new Lexer();

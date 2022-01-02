@@ -126,10 +126,10 @@ class Runner {
         ) {
           // Else if we are not appending text
           // and the next node is an inline exp on the same line...
-          textRun = new results.TextResult(node.text, yarnNodeData, node.lineNum);
+          textRun = new results.TextResult(node.text, node.hashtags);
         } else {
           // Else not already appending and next node is not inline exp on same line.
-          yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
+          yield new results.TextResult(node.text, node.hashtags);
         }
       } else if (node instanceof nodeTypes.InlineExpression) {
         let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
@@ -152,9 +152,9 @@ class Runner {
           && nextNode instanceof nodeTypes.Text
           && node.lineNum === nextNode.lineNum
         ) {
-          textRun = new results.TextResult(expResult, yarnNodeData, node.lineNum);
+          textRun = new results.TextResult(expResult, node.hashtags);
         } else {
-          yield new results.TextResult(expResult, yarnNodeData, node.lineNum);
+          yield new results.TextResult(expResult, node.hashtags);
         }
       } else if (node instanceof nodeTypes.Shortcut) {
         shortcutNodes.push(node);

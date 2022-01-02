@@ -94,13 +94,14 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it.skip('Includes hashtags with text nodes', () => {
+  it('Includes hashtags with text nodes', () => {
+  // it.only('Includes hashtags with text nodes', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeHashtag');
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult(
       'This is a test line',
-      ['someHashtag', 'someOtherHashtag'],
+      ['someHashtag', 'someOtherHashtag', 'lastHashtag'],
     ));
     expect(run.next().done).to.be.true;
   });

@@ -32,7 +32,7 @@
 	{
 		"title": "OneNodeHashtag",
 		"tags": "Tag",
-		"body": "This is a test line #someHashtag",
+		"body": "This is a test line#someHashtag#someOtherHashtag #lastHashtag//#ignore",
 		"position": {
 			"x": 449,
 			"y": 252

@@ -7,9 +7,10 @@ class TextResult extends Result {
    * Create a text display result
    * @param {string} [text] text to be displayed
    */
-  constructor(text) {
+  constructor(text, hashtags) {
     super();
     this.text = text;
+    this.hashtags = hashtags;
   }
 }
 
@@ -19,10 +20,11 @@ class CommandResult extends Result {
    * @param {string[]} [name] the function name being called
    * @param {[]} [args] the array of arguments for the function
    */
-  constructor(name, args) {
+  constructor(name, args, hashtags) {
     super();
     this.name = name;
     this.args = args;
+    this.hashtags = hashtags;
   }
 }
 
@@ -31,10 +33,11 @@ class OptionResult extends Result {
    * Strip down Conditional option for presentation
    * @param {ConditionalDialogShortcutNode[]} [selection] relevant option
    */
-  constructor({ text, isAvailable = true }) {
+  constructor(text, isAvailable = true, hashtags) {
     super();
     this.text = text;
     this.isAvailable = isAvailable;
+    this.hashtags = hashtags;
   }
 }
 
@@ -45,7 +48,9 @@ class OptionsResult extends Result {
    */
   constructor(options) {
     super();
-    this.options = options.map((s) => { return new OptionResult(s); });
+    this.options = options.map((s) => {
+      return new OptionResult(s.text, s.isAvailable, s.hashtags);
+    });
     this.selected = -1;
   }
 

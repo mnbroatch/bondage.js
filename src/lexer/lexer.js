@@ -126,7 +126,6 @@ class Lexer {
         .substring(this.yylloc.last_column - 1)
         .match(rule.regex);
 
-
       // Only accept valid matches that are at the beginning of the text
       if (match !== null && match.index === 0) {
         // Take the matched text off the front of this.text

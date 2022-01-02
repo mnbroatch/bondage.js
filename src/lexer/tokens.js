@@ -32,7 +32,7 @@ const Tokens = {
   ShortcutOption:       /->/,
 
   // Hashtag ("#something")
-  Hashtag:              /#(?!(\w|#))/,
+  Hashtag:              /#([^(\s|#|\/\/)]+)/,      // seems a little hacky to explicitly consider comments here
 
   // Comment ("// some stuff")
   Comment:              /\/\/.*/,

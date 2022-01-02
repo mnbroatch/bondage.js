@@ -106,7 +106,7 @@ module.exports = {
       this.type = 'TextNode';
       this.text = text.replace(/\\/g, ''); // strip out escape characters
       this.lineNum = lineNo ? lineNo.first_line : -1;
-      this.hashtags = hashtags
+      this.hashtags = hashtags;
     }
   },
 

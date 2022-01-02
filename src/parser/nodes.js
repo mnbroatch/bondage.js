@@ -41,23 +41,25 @@ module.exports = {
   },
 
   DialogShortcutNode: class extends Shortcut {
-    constructor(text, content, lineNo) {
+    constructor(text, content, lineNo, hashtags) {
       super();
       this.type = 'DialogShortcutNode';
       this.text = text;
       this.content = content;
       this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.hashtags = hashtags;
     }
   },
 
   ConditionalDialogShortcutNode: class extends Shortcut {
-    constructor(text, content, conditionalExpression, lineNo) {
+    constructor(text, content, conditionalExpression, lineNo, hashtags) {
       super();
       this.type = 'ConditionalDialogShortcutNode';
       this.text = text;
       this.content = content;
       this.conditionalExpression = conditionalExpression;
       this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.hashtags = hashtags;
     }
   },
 
@@ -103,7 +105,6 @@ module.exports = {
   TextNode: class extends Text {
     constructor(text, lineNo, hashtags) {
       super();
-      console.log('hashtags', hashtags)
       this.type = 'TextNode';
       this.text = text.replace(/\\/g, ''); // strip out escape characters
       this.lineNum = lineNo ? lineNo.first_line : -1;

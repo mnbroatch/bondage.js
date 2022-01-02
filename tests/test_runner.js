@@ -95,7 +95,6 @@ describe('Dialogue', () => {
   });
 
   it('Includes hashtags with text nodes', () => {
-  // it.only('Includes hashtags with text nodes', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeHashtag');
     const value = run.next().value;
@@ -103,6 +102,44 @@ describe('Dialogue', () => {
       'This is a test line',
       ['someHashtag', 'someOtherHashtag', 'lastHashtag'],
     ));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Ignores comments on option lines', () => {
+    runner.load(shortcutsYarnData);
+    const run = runner.run('NonNestedHashtag');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1', hashtags: ['someHashtag', 'someOtherHashtag', 'lastHashtag'] },
+      { text: 'Option 2' },
+    ]));
+    value.select(1);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is the second option'));
+
+    expect(run.next().done).to.be.true;
+  });
+
+  it('includes hashtags on conditional option lines', () => {
+    runner.load(shortcutsYarnData);
+    const run = runner.run('ConditionalHashtag');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line'));
+
+    const optionResult = run.next().value;
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1' },
+      { text: 'Option 2', isAvailable: false, hashtags: ['someHashtag', 'someOtherHashtag'] },
+      { text: 'Option 3' },
+    ]));
+
+    optionResult.select(2);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is the third option'));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options'));
     expect(run.next().done).to.be.true;
   });
 
@@ -137,6 +174,28 @@ describe('Dialogue', () => {
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is the second option'));
 
+    expect(run.next().done).to.be.true;
+  });
+
+  it('ignores comments on conditional option lines', () => {
+    runner.load(shortcutsYarnData);
+    const run = runner.run('ConditionalComment');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line'));
+
+    const optionResult = run.next().value;
+    expect(optionResult).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1' },
+      { text: 'Option 2', isAvailable: false },
+      { text: 'Option 3' },
+    ]));
+
+    optionResult.select(2);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is the third option'));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options'));
     expect(run.next().done).to.be.true;
   });
 
@@ -698,7 +757,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Should move to text after a first option with no follow-up is selected', () => {
+  it('Should move on after a first option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptyFirstOption');
 
@@ -715,7 +774,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Should move to text after a second option with no follow-up is selected', () => {
+  it('Should move on after a second option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptySecondOption');
 
@@ -732,9 +791,9 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Should move to text after the first of two options with no follow-up is selected', () => {
+  it('Should move on after a conditional option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('EmptyBothOptions');
+    const run = runner.run('EmptyConditional');
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line'));

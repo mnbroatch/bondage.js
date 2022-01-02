@@ -67,8 +67,14 @@ const grammar = {
     shortcut: [
       ['ShortcutOption Text Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
       ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
       ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
       ['ShortcutOption Text Comment Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand Comment Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$);'],
+      ['ShortcutOption Text hashtags Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$, $3);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$, $7);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$, $7);'],
     ],
 
     functionCall: [

@@ -18,7 +18,8 @@ function makeStates() {
 
     shortcutOption: new LexerState()
       .setTrackNextIndentation(true)
-      .addTransition('Comment', 'comment', true)
+      .addTransition('Comment', null, true)
+      .addTransition('Hashtag', null, true)
       .addTransition('BeginCommand', 'expression', true)
       .addTextRule('Text', 'base'),
 

@@ -10,6 +10,16 @@
 		"colorID": 0
 	},
 	{
+		"title": "NonNestedHashtag",
+		"tags": "Tag",
+		"body": "-> Option 1#someHashtag#someOtherHashtag #lastHashtag//#ignore\n\tThis is the first option\n-> Option 2\n\tThis is the second option",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
 		"title": "NonNestedComment",
 		"tags": "Tag",
 		"body": "-> Option 1// This is a comment {$ignore} <<if $ignore>> #ignore\n\tThis is the first option\n-> Option 2\n\tThis is the second option",
@@ -40,6 +50,26 @@
 		"colorID": 0
 	},
 	{
+		"title": "ConditionalComment",
+		"tags": "Tag",
+		"body": "This is a test line\n-> Option 1\n\tThis is the first option\n-> Option 2<<if 1 == 0>>// I should be ignored\n\tThis is the second option\n-> Option 3\n\tThis is the third option\nThis is after both options",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
+		"title": "ConditionalHashtag",
+		"tags": "Tag",
+		"body": "This is a test line\n-> Option 1\n\tThis is the first option\n-> Option 2<<if 1 == 0>>#someHashtag #someOtherHashtag\n\tThis is the second option\n-> Option 3\n\tThis is the third option\nThis is after both options",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
 		"title": "EmptyFirstOption",
 		"tags": "Tag",
 		"body": "This is a test line\n-> Option 1\n-> Option 2\n\tThis is the second option\nThis is after both options",
@@ -60,9 +90,9 @@
 		"colorID": 0
 	},
 	{
-		"title": "EmptyBothOptions",
+		"title": "EmptyConditional",
 		"tags": "Tag",
-		"body": "This is a test line\n-> Option 1\n-> Option 2\nThis is after both options",
+		"body": "This is a test line\n-> Option 1<<if true == true>>\n-> Option 2\nThis is after both options",
 		"position": {
 			"x": 449,
 			"y": 252

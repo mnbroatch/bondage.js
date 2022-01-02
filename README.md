@@ -14,3 +14,6 @@ This repo is a fork of a [fork](https://github.com/alforno/bondage.js) of [the o
 
 # Usage
 TODO
+
+explain how functions and commands work
+

@@ -182,7 +182,7 @@ class Runner {
           return { stop: true };
         }
         const funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];
-        yield new results.CommandResult(node.functionName, funcArgs, node.lineNum);
+        yield new results.CommandResult(node.functionName, funcArgs, node.hashtags);
       }
 
       prevnode = node;

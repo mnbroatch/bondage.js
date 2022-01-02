@@ -20,6 +20,16 @@
 		"colorID": 0
 	},
 	{
+		"title": "BasicCommandsHashtag",
+		"tags": "Tag",
+		"body": "<<command>>text in between commands<<command with \"space\">>#someHashtag",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
 		"title": "BasicCommands",
 		"tags": "Tag",
 		"body": "<<command>>text in between commands<<command with \"space\">>",

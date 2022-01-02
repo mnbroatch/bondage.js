@@ -7,7 +7,6 @@ class Assignment { }
 class Literal { }
 class Expression { }
 class FunctionCall { }
-class Command { }
 class InlineExpression { }
 
 module.exports = {
@@ -18,7 +17,6 @@ module.exports = {
     Assignment,
     Literal,
     Expression,
-    Command,
     FunctionCall,
     InlineExpression,
   },
@@ -356,21 +354,13 @@ module.exports = {
   // /////////////// Function Nodes
 
   FunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args, lineNo) {
+    constructor(functionName, args, lineNo, hashtags) {
       super();
       this.type = 'FunctionResultNode';
       this.functionName = functionName;
       this.args = args;
       this.lineNum = lineNo ? lineNo.first_line : -1;
-    }
-  },
-
-  CommandNode: class extends Command {
-    constructor(command, lineNo) {
-      super();
-      this.type = 'CommandNode';
-      this.command = command;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.hashtags = hashtags;
     }
   },
 

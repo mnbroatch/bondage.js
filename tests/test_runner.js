@@ -143,6 +143,19 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('includes hashtags on command lines', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('BasicCommandsHashtag');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('command', []));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('text in between commands'));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], ['someHashtag']));
+    expect(run.next().done).to.be.true;
+  });
+
   it('Ignores comments on text lines', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeComment');
@@ -204,11 +217,11 @@ describe('Dialogue', () => {
     const run = runner.run('BasicCommandsComment');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], 1));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', []));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('text in between commands'));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], 1));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space']));
     expect(run.next().done).to.be.true;
   });
 
@@ -590,11 +603,11 @@ describe('Dialogue', () => {
     const run = runner.run('BasicCommands');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], 1));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', []));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('text in between commands'));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], 1));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space']));
     expect(run.next().done).to.be.true;
   });
 
@@ -603,7 +616,7 @@ describe('Dialogue', () => {
     const run = runner.run('InlineExpCommand');
     runner.variables.set('testvar', 'test');
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('someCommand', ['test'], 1));
+    expect(value).to.deep.equal(new bondage.CommandResult('someCommand', ['test']));
     expect(run.next().done).to.be.true;
   });
 
@@ -616,7 +629,7 @@ describe('Dialogue', () => {
     const run = runner.run('BasicCommands');
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], 1));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', []));
   });
 
 
@@ -625,11 +638,11 @@ describe('Dialogue', () => {
     const run = runner.run('ComplexCommands');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], 1));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', []));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('text in between commands'));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], 2));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space']));
     expect(run.next().done).to.be.true;
   });
 
@@ -638,7 +651,7 @@ describe('Dialogue', () => {
     const run = runner.run('CommandWithVariable');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 100], 1));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 100]));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Text after command'));
   });
@@ -824,7 +837,7 @@ describe('Dialogue', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpSentence');
 
-    runner.variables.set('firstvar', 'test'); // set the variables value
+    runner.variables.set('firstvar', 'test');
 
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test.'));
@@ -836,7 +849,7 @@ describe('Dialogue', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpAddSentence');
 
-    runner.variables.set('firstvar', 1); // set the variables value
+    runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a 2 sentence.'));

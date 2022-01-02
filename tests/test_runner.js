@@ -225,6 +225,17 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('ignores comments on lines only containing inline expression', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('SimpleInlineExpComment');
+
+    runner.variables.set('firstvar', 1); // set the variables value
+
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('1'));
+
+    expect(run.next().done).to.be.true;
+  });
   it('Automatically goes to the jump node', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneJumpPassthrough');

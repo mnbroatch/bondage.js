@@ -16,6 +16,21 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('Text');
   });
 
+  it('can tokenize a comment', () => {
+    const lexer = new Lexer();
+    lexer.setInput('This is some text // and i am a comment');
+
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('Comment');
+  });
+
+  it('can tokenize a hashtag', () => {
+    const lexer = new Lexer();
+    lexer.setInput('This is some text#hashy');
+
+    expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('Hashtag');
+  });
   it('can tokenize a command', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand>>');
@@ -386,6 +401,17 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('BeginInlineExp');
     expect(lexer.lex()).to.equal('Variable');
     expect(lexer.lex()).to.equal('EndInlineExp');
+    expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('can tokenize a comment after a simple inline expression', () => {
+    const lexer = new Lexer();
+    lexer.setInput('{$test}#hashtag');
+
+    expect(lexer.lex()).to.equal('BeginInlineExp');
+    expect(lexer.lex()).to.equal('Variable');
+    expect(lexer.lex()).to.equal('EndInlineExp');
+    expect(lexer.lex()).to.equal('Hashtag');
     expect(lexer.lex()).to.equal('EndOfInput');
   });
 

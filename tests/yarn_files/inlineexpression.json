@@ -1,5 +1,15 @@
 [
   {
+    "title": "SimpleInlineExpComment",
+    "tags": "Tag",
+    "body": "{$firstvar}//ignoreme",
+    "position": {
+      "x": 449,
+      "y": 252
+    },
+    "colorID": 0
+  },
+  {
     "title": "SimpleInlineExp",
     "tags": "Tag",
     "body": "{$firstvar}",

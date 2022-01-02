@@ -561,4 +561,90 @@ describe('Parser', () => {
 
     expect(results).to.deep.equal(expected);
   });
+
+  it('can parse a comment on a text node', () => {
+    const results = parser.parse('some text// blah #ignore');
+
+    const expected = [
+      new nodes.TextNode('some text', { first_line: results[0].lineNum }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it('can parse hashtags on a text node', () => {
+    const results = parser.parse('some text#someHashtag#anotherHashtag #lastHashtag // #ignore');
+
+    const expected = [
+      new nodes.TextNode(
+        'some text',
+        { first_line: results[0].lineNum },
+        ['someHashtag', 'anotherHashtag', 'lastHashtag'],
+      ),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it('can parse comments on a simple function call', () => {
+    const results = parser.parse('<<commandtext>>// blah #ignore');
+
+    const expected = [
+      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it('can parse hashtags on a simple function call', () => {
+    const results = parser.parse('<<commandtext>>#someHashtag#anotherHashtag #lastHashtag // #ignore');
+
+    const expected = [
+      new nodes.FunctionResultNode(
+        'commandtext',
+        [],
+        { first_line: results[0].lineNum },
+        ['someHashtag', 'anotherHashtag', 'lastHashtag'],
+      ),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it('can parse a shortcut option containing an assignment', () => {
+    const results = parser.parse('text//alaksjdakj\n-> shortcut1//alaksjdakj\n\tshortcut text1//alaksjdakj\n-> shortcut2//alaksjdakj\n\tshortcut text2//alaksjdakj\n<<set $testvar to 6>>//alaksjdakj\nmore text//alaksjdakj');
+
+    const expected = [
+      new nodes.TextNode('text', { first_line: 1 }),
+      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }),
+      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('shortcut text2', { first_line: 5 })], { first_line: 4 }),
+      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
+      new nodes.TextNode('more text', { first_line: 7 }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
+
+  it('can parse hashtags on shortcut options', () => {
+    const results = parser.parse('text\n-> shortcut1#hashtag1\n\tshortcut text1\n-> shortcut2<<if true == true>>#hashtag2\n\tshortcut text2\n<<set $testvar to 6>>\nmore text');
+
+    const expected = [
+      new nodes.TextNode('text', { first_line: 1 }),
+      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }, ['hashtag1']),
+      new nodes.ConditionalDialogShortcutNode(
+        'shortcut2',
+        [new nodes.TextNode('shortcut text2', { first_line: 5 })],
+        new nodes.EqualToExpressionNode(
+          new nodes.BooleanLiteralNode('true'),
+          new nodes.BooleanLiteralNode('true'),
+        ),
+        { first_line: 4 },
+        ['hashtag2'],
+      ),
+      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
+      new nodes.TextNode('more text', { first_line: 7 }),
+    ];
+
+    expect(results).to.deep.equal(expected);
+  });
 });

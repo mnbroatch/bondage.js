@@ -10,6 +10,16 @@
 		"colorID": 0
 	},
 	{
+		"title": "BasicCommandsComment",
+		"tags": "Tag",
+		"body": "<<command>>text in between commands<<command with \"space\">>// This is a comment {$ignore} <<if $ignore>> #ignore",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
 		"title": "BasicCommands",
 		"tags": "Tag",
 		"body": "<<command>>text in between commands<<command with \"space\">>",

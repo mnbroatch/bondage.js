@@ -12,7 +12,17 @@
 	{
 		"title": "OneNodeComment",
 		"tags": "Tag",
-		"body": "This is a test line // This is a comment",
+		"body": "This is a test line// This is a comment {$ignore} <<if $ignore>> #ignore",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
+		"title": "OneNodeWholeLineComment",
+		"tags": "Tag",
+		"body": "This is a test line\n// This is a comment {$ignore} <<if $ignore>> #ignore\nHello",
 		"position": {
 			"x": 449,
 			"y": 252

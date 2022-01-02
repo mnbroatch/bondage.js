@@ -119,10 +119,6 @@ class Lexer {
       this.yylloc.last_column += thisIndentation;
     }
 
-    if (this.getCurrentLine().substring(this.yylloc.last_column - 1).startsWith('//')) {
-      return this.lexNextLine();
-    }
-
     const rules = this.getState().transitions;
     for (let i = 0, len = rules.length; i < len; i += 1) {
       const rule = rules[i];
@@ -130,12 +126,7 @@ class Lexer {
         .substring(this.yylloc.last_column - 1)
         .match(rule.regex);
 
-      if (match) {
-        console.log('======')
-        console.log('rules', rules)
-        console.log('rule', rule)
-        console.log('match', match)
-    }
+
       // Only accept valid matches that are at the beginning of the text
       if (match !== null && match.index === 0) {
         // Take the matched text off the front of this.text

@@ -8,14 +8,17 @@ const LexerState = require('./lexer-state');
 function makeStates() {
   return {
     base: new LexerState()
-      .addTransition('Comment')
+      .addTransition('Comment', null, true)
+      // .addTransition('Hashtag', 'hashtag', true)
       .addTransition('BeginCommand', 'command', true)
       .addTransition('BeginInlineExp', 'inlineExpression', true)
       .addTransition('ShortcutOption', 'shortcutOption')
       .addTextRule('Text'),
 
+
     shortcutOption: new LexerState()
       .setTrackNextIndentation(true)
+      .addTransition('Comment', 'comment', true)
       .addTransition('BeginCommand', 'expression', true)
       .addTextRule('Text', 'base'),
 

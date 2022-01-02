@@ -93,8 +93,6 @@ const Tokens = {
   MultiplyAssign:       /\*=/,                     // *=
   DivideAssign:         /\/=/,                     // /=
 
-  Comment:              '//',                      // a run of text that we ignore
-	
   Identifier:           /[a-zA-Z0-9_:.]+/,         // a single word (used for functions)
 
   Text:                 /.*/,                      // a run of text until we hit other syntax.

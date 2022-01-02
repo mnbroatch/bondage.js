@@ -10,6 +10,16 @@
 		"colorID": 0
 	},
 	{
+		"title": "NonNestedComment",
+		"tags": "Tag",
+		"body": "-> Option 1// This is a comment {$ignore} <<if $ignore>> #ignore\n\tThis is the first option\n-> Option 2\n\tThis is the second option",
+		"position": {
+			"x": 449,
+			"y": 252
+		},
+		"colorID": 0
+	},
+	{
 		"title": "Nested",
 		"tags": "Tag",
 		"body": "text\n-> shortcut1a\n\tText1\n\t-> nestedshortcut1\n\t\tNestedText1\n\t-> nestedshortcut2\n\t\tNestedText2\n-> shortcut2a\n\tText2\nmore text",

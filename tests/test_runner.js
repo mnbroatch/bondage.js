@@ -105,12 +105,50 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it('Ignores comments', () => {
-  it.only('Ignores comments', () => {
+  it('Ignores comments on text lines', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeComment');
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a test line'));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Ignores comments on their own line', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('OneNodeWholeLineComment');
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line'));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Hello'));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Ignores comments on option lines', () => {
+    runner.load(shortcutsYarnData);
+    const run = runner.run('NonNestedComment');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'Option 1' },
+      { text: 'Option 2' },
+    ]));
+    value.select(1);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is the second option'));
+
+    expect(run.next().done).to.be.true;
+  });
+
+  it('ignores comments on command lines', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('BasicCommandsComment');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], 1));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('text in between commands'));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], 1));
     expect(run.next().done).to.be.true;
   });
 

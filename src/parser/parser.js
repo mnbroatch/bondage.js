@@ -65,17 +65,23 @@ const grammar = {
       ['hashtags Comment', '$$ = $1;'],
     ],
 
+    dialogue: [
+      ['Text', '$$ = new yy.TextNode($1, @$);'],
+      ['inlineExpression', '$$ = $1;'],
+      ['dialogue dialogue', '$$ = [$1, $2];'],
+    ],
+
     shortcut: [
-      ['ShortcutOption Text Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
-      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
-      ['ShortcutOption Text Comment Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Comment Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$);'],
-      ['ShortcutOption Text hashtags Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$, $3);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$, $7);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$, $7);'],
+      ['ShortcutOption dialogue Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
+      ['ShortcutOption dialogue BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
+      ['ShortcutOption dialogue BeginCommand If expression EndCommand', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
+      ['ShortcutOption dialogue', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
+      ['ShortcutOption dialogue Comment Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$);'],
+      ['ShortcutOption dialogue BeginCommand If expression EndCommand Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
+      ['ShortcutOption dialogue BeginCommand If expression EndCommand Comment Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$);'],
+      ['ShortcutOption dialogue hashtags Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$, $3);'],
+      ['ShortcutOption dialogue BeginCommand If expression EndCommand hashtags Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$, $7);'],
+      ['ShortcutOption dialogue BeginCommand If expression EndCommand hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$, $7);'],
     ],
 
     functionCall: [
@@ -157,13 +163,14 @@ const grammar = {
 
     inlineExpression: [
       ['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
+      ['BeginInlineExp expression EndInlineExp hashtags', '$$ = new yy.InlineExpressionNode($2, @$, $4);'],
     ],
   },
 };
 
 // TODO: bad, should fix shift/reduce conflicts instead.
 // Is this really the only way to silence the warnings though?
-// Jison.print = () => {};
+Jison.print = () => {};
 
 const parser = new Jison.Parser(grammar);
 parser.lexer = new Lexer();

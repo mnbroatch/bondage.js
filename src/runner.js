@@ -282,7 +282,9 @@ class Runner {
    * Evaluates an expression or literal down to its final value
    */
   evaluateExpressionOrLiteral(node) {
-    if (node instanceof nodeTypes.Expression) {
+    if (node instanceof nodeTypes.InlineExpression) {
+      return this.evaluateExpressionOrLiteral(node.expression);
+    } else if (node instanceof nodeTypes.Expression) {
       if (node.type === 'UnaryMinusExpressionNode') {
         return -1 * this.evaluateExpressionOrLiteral(node.expression);
       } else if (node.type === 'ArithmeticExpressionNode') {

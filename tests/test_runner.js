@@ -187,6 +187,19 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('includes hashtags on lines only containing inline expression', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('SimpleInlineExpHashtag');
+    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpHashtag'; });
+
+    runner.variables.set('firstvar', 1);
+
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('1', ['someHashtag'], yarnData));
+
+    expect(run.next().done).to.be.true;
+  });
+
   it('Ignores comments on text lines', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeComment');
@@ -689,13 +702,13 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it.skip('Returns commands to the user with an inline expression argument', () => {
+  it('Returns commands to the user with an inline expression argument', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('ExpressionArgumentCommand');
     const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; });
     runner.variables.set('testvar', 1);
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('someCommand', [2], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [2], [], yarnData));
     expect(run.next().done).to.be.true;
   });
 
@@ -956,7 +969,8 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Can handle a simple inline expression in an option', () => {
+  // it.only('Can handle an inline expression in an option', () => {
+  it('Can handle an inline expression in an option', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('OptionInlineExpression');
     const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'OptionInlineExpression'; });
@@ -973,7 +987,30 @@ describe('Dialogue', () => {
 
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test text', [], yarnData));
+
+    expect(run.next().done).to.be.true;
+  });
+
+  // it.only('Can handle an inline expression in a conditional option', () => {
+  it('Can handle an inline expression in a conditional option', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('ConditionalOptionInlineExpression');
+    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'ConditionalOptionInlineExpression'; });
+    runner.variables.set('firstvar', 'test');
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'First test choice' },
+      { text: 'Second choice' },
+    ], yarnData));
+
+    value.select(0);
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test text', [], yarnData));
 
     expect(run.next().done).to.be.true;
   });

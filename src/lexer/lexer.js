@@ -73,7 +73,9 @@ class Lexer {
       // Now that we're at the end of the text, we'll emit as many
       // `Dedent` as necessary, to get back to 0-indentation.
       const indent = this.indentation.pop();
-      if (indent && indent[1]) { return 'Dedent'; }
+      if (indent && indent[1]) {
+        return 'Dedent';
+      }
 
       return 'EndOfInput';
     }
@@ -128,6 +130,10 @@ class Lexer {
 
       // Only accept valid matches that are at the beginning of the text
       if (match !== null && match.index === 0) {
+        console.log('=========')
+        console.log('rrules', rules)
+        console.log('rule', rule)
+        console.log('match', match)
         // Take the matched text off the front of this.text
         const matchedText = match[0];
 

@@ -2,121 +2,61 @@
 	{
 		"title": "CommandWithVariable",
 		"tags": "Tag",
-		"body": "<<set $testvar = 100>><<command 1 $testvar>>\nText after command",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "<<set $testvar = 100>><<command 1 $testvar>>\nText after command"
 	},
 	{
 		"title": "BasicCommandsComment",
 		"tags": "Tag",
-		"body": "<<command>>text in between commands<<command with \"space\">>// This is a comment {$ignore} <<if $ignore>> #ignore",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "<<command>>text in between commands<<command with \"space\">>// This is a comment {$ignore} <<if $ignore>> #ignore"
 	},
 	{
 		"title": "BasicCommandsHashtag",
 		"tags": "Tag",
-		"body": "<<command>>text in between commands<<command with \"space\">>#someHashtag",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "<<command>>text in between commands<<command with \"space\">>#someHashtag"
 	},
 	{
 		"title": "BasicCommands",
 		"tags": "Tag",
-		"body": "<<command>>text in between commands<<command with \"space\">>",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "<<command>>text in between commands<<command with \"space\">>"
 	},
 	{
 		"title": "ComplexCommands",
 		"tags": "Tag",
-		"body": "<<command>>text in between commands\n<<command \"with\" \"space\">>",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "<<command>>text in between commands\n<<command \"with\" \"space\">>"
 	},
         {
 		"title": "Option1",
 		"tags": "Tag",
-		"body": "Prompt1\n-> Option 1\n\t<< jump Option2>>\nThis shouldn't show",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "Prompt1\n-> Option 1\n\t<< jump Option2>>\nThis shouldn't show"
 	},
         {
 		"title": "Option2",
 		"tags": "Tag",
-		"body": "Prompt2\n-> Option 2\n\t<<jump StopCommand>>\nThis shouldn't show",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "Prompt2\n-> Option 2\n\t<<jump StopCommand>>\nThis shouldn't show"
 	},
         {
 		"title": "StopCommand",
 		"tags": "Tag",
-		"body": "First line\n<<stop>>\nThis shouldn't show",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "First line\n<<stop>>\nThis shouldn't show"
 	},
 	{
 		"title": "FunctionConditional",
 		"tags": "Tag",
-		"body": "First line\n<<if testfunc(\"firstarg\")>>\nThis shouldn't show\n<<elseif testfunc(\"firstarg\", \"secondarg\")>>\nThis should show\n<<endif>>\nAfter both",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "First line\n<<if testfunc(\"firstarg\")>>\nThis shouldn't show\n<<elseif testfunc(\"firstarg\", \"secondarg\")>>\nThis should show\n<<endif>>\nAfter both"
 	},
 	{
 		"title": "VisitedFunction",
 		"tags": "Tag",
-		"body": "<<if visited(\"VisitedFunctionStart\")>>you have visited VisitedFunctionStart!<<endif>><<if visited(\"SomeOtherNode\")>>You have not visited SomeOtherNode!<<endif>>",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "<<if visited(\"VisitedFunctionStart\")>>you have visited VisitedFunctionStart!<<endif>><<if visited(\"SomeOtherNode\")>>You have not visited SomeOtherNode!<<endif>>"
 	},
 	{
 		"title": "VisitedFunctionStart",
 		"tags": "Tag",
-		"body": "Hello\n<<jump VisitedFunction>>",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "Hello\n<<jump VisitedFunction>>"
 	},
 	{
 		"title": "NotVisitedFunction",
 		"tags": "Tag",
-		"body": "Hello\n<<if not visited(\"VisitedFunctionStart\")>>you have not visited VisitedFunctionStart!<<endif>>",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "Hello\n<<if not visited(\"VisitedFunctionStart\")>>you have not visited VisitedFunctionStart!<<endif>>"
 	}
 ]

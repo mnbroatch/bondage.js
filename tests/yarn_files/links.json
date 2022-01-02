@@ -2,101 +2,57 @@
 	{
 		"title": "OneNode",
 		"tags": "Tag",
-		"body": "This is a test line",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "This is a test line"
+	},
+	{
+		"title": "OneNodeMetadata",
+		"tags": "Tag",
+		"someProp": "Hello",
+		"body": "This is a test line"
 	},
 	{
 		"title": "OneNodeComment",
 		"tags": "Tag",
-		"body": "This is a test line// This is a comment {$ignore} <<if $ignore>> #ignore",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "This is a test line// This is a comment {$ignore} <<if $ignore>> #ignore"
 	},
 	{
 		"title": "OneNodeWholeLineComment",
 		"tags": "Tag",
-		"body": "This is a test line\n// This is a comment {$ignore} <<if $ignore>> #ignore\nHello",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "This is a test line\n// This is a comment {$ignore} <<if $ignore>> #ignore\nHello"
 	},
 	{
 		"title": "OneNodeHashtag",
 		"tags": "Tag",
-		"body": "This is a test line#someHashtag#someOtherHashtag #lastHashtag//#ignore",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "This is a test line#someHashtag#someOtherHashtag #lastHashtag//#ignore"
 	},
 	{
 		"title": "ThreeNodes",
 		"tags": "",
-		"body": "This is a test line\nThis is another test line\n-> First choice\n\t<<jump Option1>>\n-> Second choice\n\t<<jump Option2>>",
-		"position": {
-			"x": 449,
-			"y": 252
-		},
-		"colorID": 0
+		"body": "This is a test line\nThis is another test line\n-> First choice\n\t<<jump Option1>>\n-> Second choice\n\t<<jump Option2>>"
 	},
 	{
 		"title": "Option1",
 		"tags": "",
-		"body": "This is Option1's test line",
-		"position": {
-			"x": 770,
-			"y": 84
-		},
-		"colorID": 0
+		"body": "This is Option1's test line"
 	},
 	{
 		"title": "Option2",
 		"tags": "",
-		"body": "This is Option2's test line",
-		"position": {
-			"x": 774,
-			"y": 404
-		},
-		"colorID": 0
+		"body": "This is Option2's test line"
 	},
 	{
 		"title": "OneJumpPassthrough",
 		"tags": "",
-		"body": "First test line\n<<jump Option1>>",
-		"position": {
-			"x": 774,
-			"y": 404
-		},
-		"colorID": 0
+		"body": "First test line\n<<jump Option1>>"
 	},
 		{
 		"title": "TwoJumpPassthrough",
 		"tags": "",
-		"body": "Real First test line\n<<jump OneJumpPassthrough>>",
-		"position": {
-			"x": 774,
-			"y": 404
-		},
-		"colorID": 0
+		"body": "Real First test line\n<<jump OneJumpPassthrough>>"
 	},
 	{
 		"title": "LinkAfterShortcuts",
 		"tags": "",
-		"body": "First test line\n-> Shortcut 1\n\tThis is the first shortcut\n-> Shortcut 2\n\tThis is the second shortcut\n-> First link\n\t<<Option1>>\n-> Second link\n\t<<Option2>>",
-		"position": {
-			"x": 774,
-			"y": 404
-		},
-		"colorID": 0
+		"body": "First test line\n-> Shortcut 1\n\tThis is the first shortcut\n-> Shortcut 2\n\tThis is the second shortcut\n-> First link\n\t<<Option1>>\n-> Second link\n\t<<Option2>>"
 	}
 ]

@@ -99,7 +99,17 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Includes hashtags with text nodes', () => {
+  it('Includes node metadata with result', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('OneNodeMetadata');
+    const value = run.next().value;
+    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeMetadata'; });
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value.yarnNode.someProp).to.equal('Hello');
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Includes hashtags with text results', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeHashtag');
     const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeHashtag'; });
@@ -266,7 +276,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Automatically goes through two jump nodes', () => {
+  it('Automatically goes through two jumps', () => {
     runner.load(linksYarnData);
     const run = runner.run('TwoJumpPassthrough');
     const yarnData = linksYarnData.find((n) => { return n.title === 'TwoJumpPassthrough'; });

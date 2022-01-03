@@ -85,11 +85,7 @@ const grammar = {
 
     shortcut: [
       ['shortcutOption', '$$ = new yy.DialogShortcutNode($1[0], undefined, @$, $1[2], $1[1]);'],
-      ['shortcutOption shortcutBlock', '$$ = new yy.DialogShortcutNode($1[0], $2, @$, $1[2], $1[1]);'],
-    ],
-
-    shortcutBlock: [
-      ['Indent statements Dedent', '$$ = $2;'],
+      ['shortcutOption Indent statements Dedent', '$$ = new yy.DialogShortcutNode($1[0], $3, @$, $1[2], $1[1]);'],
     ],
 
     genericCommand: [

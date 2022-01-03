@@ -27,21 +27,33 @@ const grammar = {
     ],
 
     statements: [
-      ['statements conditionalStatement', '$$ = $1.concat([$2]);'],
+      ['statements conditionalBlock', '$$ = $1.concat([$2]);'],
       ['statements statement', '$$ = $1.concat([$2]);'],
-      ['conditionalStatement', '$$ = [$1];'],
+      ['conditionalBlock', '$$ = [$1];'],
       ['statement', '$$ = [$1];'],
     ],
 
-    conditionalStatement: [
-      ['BeginCommand If expression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($3, $5);'],
-      ['BeginCommand If expression EndCommand statements additionalConditionalStatements', '$$ = new yy.IfElseNode($3, $5, $6);'],
+    conditional: [
+      ['BeginCommand If expression EndCommand', '$$ = $3'],
     ],
 
-    additionalConditionalStatements: [
-      ['BeginCommand Else EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseNode($4);'],
-      ['BeginCommand ElseIf expression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseIfNode($3, $5);'],
-      ['BeginCommand ElseIf expression EndCommand statements additionalConditionalStatements', '$$ = new yy.ElseIfNode($3, $5, $6);'],
+    conditionalBlock: [
+      ['conditional statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($1, $2);'],
+      ['conditional statements additionalConditionalBlocks', '$$ = new yy.IfElseNode($1, $2, $3);'],
+    ],
+
+    else: [
+      ['BeginCommand Else EndCommand', '$$ = undefined'],
+    ],
+
+    elseif: [
+      ['BeginCommand ElseIf expression EndCommand', '$$ = $3;'],
+    ],
+
+    additionalConditionalBlocks: [
+      ['else statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseNode($2);'],
+      ['elseif statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseIfNode($1, $2);'],
+      ['elseif statements additionalConditionalBlocks', '$$ = new yy.ElseIfNode($1, $2, $3);'],
     ],
 
     statement: [
@@ -65,16 +77,20 @@ const grammar = {
     ],
 
     shortcut: [
-      ['ShortcutOption Text Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
+      ['ShortcutOption Text shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $3, @$);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $7, $5, @$);'],
       ['ShortcutOption Text BeginCommand If expression EndCommand', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
       ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
-      ['ShortcutOption Text Comment Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$);'],
+      ['ShortcutOption Text Comment shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
       ['ShortcutOption Text BeginCommand If expression EndCommand Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Comment Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$);'],
-      ['ShortcutOption Text hashtags Indent statements Dedent', '$$ = new yy.DialogShortcutNode($2, $5, @$, $3);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags Indent statements Dedent', '$$ = new yy.ConditionalDialogShortcutNode($2, $9, $5, @$, $7);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand Comment shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
+      ['ShortcutOption Text hashtags shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$, $3);'],
+      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$, $7);'],
       ['ShortcutOption Text BeginCommand If expression EndCommand hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$, $7);'],
+    ],
+
+    shortcutBlock: [
+      ['Indent statements Dedent', '$$ = $2;'],
     ],
 
     genericCommand: [

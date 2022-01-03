@@ -48,7 +48,9 @@ const grammar = {
 
     escapedText: [
       ['Text', '$$ = $1;'],
-      ['EscapedCharacter', '$$ = $1.substring(1)'],
+      ['EscapedCharacter', '$$ = $1.substring(1);'],
+      ['escapedText EscapedCharacter', '$$ = $1.concat($2.substring(1));'],
+      ['EscapedCharacter escapedText', '$$ = $1.substring(1).concat($2);'],
     ],
 
     conditional: [

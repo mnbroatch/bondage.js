@@ -130,6 +130,10 @@ class Lexer {
       if (match !== null && match.index === 0) {
         // Take the matched text off the front of this.text
         const matchedText = match[0];
+        console.log('======')
+        console.log('rules', rules)
+        console.log('rule', rule)
+        console.log('match', match)
 
         // Tell the parser what the text for this token is
         this.yytext = this.getCurrentLine().substr(this.yylloc.last_column - 1, matchedText.length);

@@ -157,10 +157,10 @@ describe('Parser', () => {
     const expected = [
       new nodes.SetVariableEqualToNode('testvar',
         new nodes.FunctionResultNode('visited', [
-          new nodes.ArithmeticExpressionNode(
-            new nodes.ArithmeticExpressionAddNode(
-              new nodes.NumericLiteralNode('1'),
-              new nodes.NumericLiteralNode('2'))),
+          new nodes.ArithmeticExpressionAddNode(
+            new nodes.NumericLiteralNode('1'),
+            new nodes.NumericLiteralNode('2'),
+          ),
         ])),
     ];
 
@@ -177,12 +177,16 @@ describe('Parser', () => {
           new nodes.NumericLiteralNode('-4.3'),
           new nodes.ArithmeticExpressionDivideNode(
             new nodes.ArithmeticExpressionMultiplyNode(
-              new nodes.ArithmeticExpressionNode(
-                new nodes.ArithmeticExpressionAddNode(
-                  new nodes.NumericLiteralNode('1'),
-                  new nodes.NumericLiteralNode('2'))),
-              new nodes.NumericLiteralNode('3.1')),
-            new nodes.NumericLiteralNode('5')))),
+              new nodes.ArithmeticExpressionAddNode(
+                new nodes.NumericLiteralNode('1'),
+                new nodes.NumericLiteralNode('2'),
+              ),
+              new nodes.NumericLiteralNode('3.1'),
+            ),
+            new nodes.NumericLiteralNode('5'),
+          ),
+        ),
+      ),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -467,14 +471,17 @@ describe('Parser', () => {
     const expected = [
       new nodes.IfNode(
         new nodes.BooleanOrExpressionNode(
-          new nodes.ArithmeticExpressionNode(
-            new nodes.EqualToExpressionNode(
-              new nodes.VariableNode('testvar'),
-              new nodes.BooleanLiteralNode('true'))),
+          new nodes.EqualToExpressionNode(
+            new nodes.VariableNode('testvar'),
+            new nodes.BooleanLiteralNode('true'),
+          ),
           new nodes.EqualToExpressionNode(
             new nodes.VariableNode('override'),
-            new nodes.BooleanLiteralNode('true'))),
-        [new nodes.TextNode('Hi', { first_line: 1 })]),
+            new nodes.BooleanLiteralNode('true'),
+          ),
+        ),
+        [new nodes.TextNode('Hi', { first_line: 1 })],
+      ),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -488,18 +495,23 @@ describe('Parser', () => {
     const expected = [
       new nodes.IfNode(
         new nodes.BooleanOrExpressionNode(
-          new nodes.ArithmeticExpressionNode(
             new nodes.BooleanAndExpressionNode(
               new nodes.EqualToExpressionNode(
                 new nodes.VariableNode('testvar'),
-                new nodes.BooleanLiteralNode('true')),
+                new nodes.BooleanLiteralNode('true'),
+              ),
               new nodes.GreaterThanExpressionNode(
                 new nodes.VariableNode('testvar2'),
-                new nodes.NumericLiteralNode('1')))),
+                new nodes.NumericLiteralNode('1'),
+              ),
+            ),
           new nodes.EqualToExpressionNode(
             new nodes.VariableNode('override'),
-            new nodes.BooleanLiteralNode('true'))),
-        [new nodes.TextNode('Hi', { first_line: 1 })]),
+            new nodes.BooleanLiteralNode('true'),
+          ),
+        ),
+        [new nodes.TextNode('Hi', { first_line: 1 })],
+      ),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -582,10 +594,11 @@ describe('Parser', () => {
     const expected = [
       new nodes.SetVariableEqualToNode(
         'testvar',
-        new nodes.ArithmeticExpressionNode(
-          new nodes.ArithmeticExpressionExponentNode(
-            new nodes.NumericLiteralNode('2'),
-            new nodes.NumericLiteralNode('2')))),
+        new nodes.ArithmeticExpressionExponentNode(
+          new nodes.NumericLiteralNode('2'),
+          new nodes.NumericLiteralNode('2'),
+        ),
+      ),
     ];
 
     expect(results).to.deep.equal(expected);

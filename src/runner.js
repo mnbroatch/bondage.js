@@ -253,8 +253,6 @@ class Runner {
     if (node instanceof nodeTypes.Expression) {
       if (node.type === 'UnaryMinusExpressionNode') {
         return -1 * this.evaluateExpressionOrLiteral(node.expression);
-      } else if (node.type === 'ArithmeticExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression);
       } else if (node.type === 'ArithmeticExpressionAddNode') {
         return this.evaluateExpressionOrLiteral(node.expression1) +
           this.evaluateExpressionOrLiteral(node.expression2);

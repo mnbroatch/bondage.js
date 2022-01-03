@@ -36,16 +36,12 @@ const grammar = {
     conditionalStatement: [
       ['BeginCommand If expression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($3, $5);'],
       ['BeginCommand If expression EndCommand statements additionalConditionalStatements', '$$ = new yy.IfElseNode($3, $5, $6);'],
-      ['BeginCommand If functionResultExpression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($3, $5);'],
-      ['BeginCommand If functionResultExpression EndCommand statements additionalConditionalStatements', '$$ = new yy.IfElseNode($3, $5, $6);'],
     ],
 
     additionalConditionalStatements: [
       ['BeginCommand Else EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseNode($4);'],
       ['BeginCommand ElseIf expression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseIfNode($3, $5);'],
       ['BeginCommand ElseIf expression EndCommand statements additionalConditionalStatements', '$$ = new yy.ElseIfNode($3, $5, $6);'],
-      ['BeginCommand ElseIf functionResultExpression EndCommand statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseIfNode($3, $5);'],
-      ['BeginCommand ElseIf functionResultExpression EndCommand statements additionalConditionalStatements', '$$ = new yy.ElseIfNode($3, $5, $6);'],
     ],
 
     statement: [
@@ -53,7 +49,7 @@ const grammar = {
       ['EscapedCharacter', '$$ = new yy.TextNode($1.substring(1), @$)'],
       ['shortcut', '$$ = $1;'],
       ['functionCall', '$$ = $1;'],
-      ['assignment', '$$ = $1;'],
+      ['assignmentCommand', '$$ = $1;'],
       ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
       ['Text hashtags', '$$ = new yy.TextNode($1, @$, $2);'],
       ['inlineExpression hashtags', '$$ = new yy.InlineExpressionNode($1, @$, $2);'],
@@ -86,30 +82,36 @@ const grammar = {
       ['BeginCommand Identifier openArguments EndCommand hashtags', '$$ = new yy.FunctionResultNode($2, $3, @$, $5);'],
     ],
 
-    assignment: [
-      ['BeginCommand Set Variable EqualToOrAssign expression EndCommand', '$$ = new yy.SetVariableEqualToNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable EqualToOrAssign functionResultExpression EndCommand', '$$ = new yy.SetVariableEqualToNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable AddAssign expression EndCommand', '$$ = new yy.SetVariableAddNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable MinusAssign expression EndCommand', '$$ = new yy.SetVariableMinusNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable MultiplyAssign expression EndCommand', '$$ = new yy.SetVariableMultipyNode($3.substring(1), $5);'],
-      ['BeginCommand Set Variable DivideAssign expression EndCommand', '$$ = new yy.SetVariableDivideNode($3.substring(1), $5);'],
+    assignmentCommand: [
+      ['BeginCommand assignment EndCommand', '$$ = $2;'],
+      ['BeginCommand assignment ExplicitType EndCommand', '$$ = $2;'],
     ],
 
-    expression: [
-      ['expression ExplicitType', '$$ = $1;'],
+    assignment: [
+      ['Set Variable EqualToOrAssign expression', '$$ = new yy.SetVariableEqualToNode($2.substring(1), $4);'],
+      ['Set Variable AddAssign expression', '$$ = new yy.SetVariableAddNode($2.substring(1), $4);'],
+      ['Set Variable MinusAssign expression', '$$ = new yy.SetVariableMinusNode($2.substring(1), $4);'],
+      ['Set Variable MultiplyAssign expression', '$$ = new yy.SetVariableMultipyNode($2.substring(1), $4);'],
+      ['Set Variable DivideAssign expression', '$$ = new yy.SetVariableDivideNode($2.substring(1), $4);'],
+    ],
+
+    term: [
       ['True', '$$ = new yy.BooleanLiteralNode($1);'],
       ['False', '$$ = new yy.BooleanLiteralNode($1);'],
       ['Number', '$$ = new yy.NumericLiteralNode($1);'],
       ['String', '$$ = new yy.StringLiteralNode($1);'],
       ['Null', '$$ = new yy.NullLiteralNode($1);'],
       ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
+    ],
 
-      ['UnaryMinus Number %prec UnaryMinus', '$$ = new yy.UnaryMinusExpressionNode($2);'],
-      ['UnaryMinus Variable %prec UnaryMinus', '$$ = new yy.UnaryMinusExpressionNode($2.substring(1));'],
+    expression: [
+      ['term', '$$ = $1;'],
+      ['functionResultExpression', '$$ = $1'],
+      ['LeftParen expression RightParen', '$$ = $2;'],
 
       ['Not expression', '$$ = new yy.NegatedBooleanExpressionNode($2);'],
-
-      ['LeftParen expression RightParen', '$$ = new yy.ArithmeticExpressionNode($2);'],
+      ['UnaryMinus Number %prec UnaryMinus', '$$ = new yy.UnaryMinusExpressionNode($2);'],
+      ['UnaryMinus Variable %prec UnaryMinus', '$$ = new yy.UnaryMinusExpressionNode($2.substring(1));'],
 
       ['expression Add expression', '$$ = new yy.ArithmeticExpressionAddNode($1, $3);'],
       ['expression Minus expression', '$$ = new yy.ArithmeticExpressionMinusNode($1, $3);'],
@@ -127,7 +129,6 @@ const grammar = {
       ['expression GreaterThanOrEqualTo expression', '$$ = new yy.GreaterThanOrEqualToExpressionNode($1, $3);'],
       ['expression LessThan expression', '$$ = new yy.LessThanExpressionNode($1, $3);'],
       ['expression LessThanOrEqualTo expression', '$$ = new yy.LessThanOrEqualToExpressionNode($1, $3);'],
-      ['functionResultExpression', '$$ = $1'],
     ],
 
     functionResultExpression: [
@@ -141,8 +142,19 @@ const grammar = {
     ],
 
     openArguments: [
-      ['openArguments argument', '$$ = $1.concat([$2]);'],
-      ['argument', '$$ = [$1];'],
+      ['openArguments openArgument', '$$ = $1.concat([$2]);'],
+      ['openArgument', '$$ = [$1];'],
+    ],
+
+    openArgument: [
+      ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
+      ['Identifier', '$$ = new yy.TextNode($1);'],
+      ['Number', '$$ = new yy.NumericLiteralNode($1);'],
+      ['String', '$$ = new yy.StringLiteralNode($1);'],
+      ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
+      ['True', '$$ = new yy.BooleanLiteralNode($1);'],
+      ['False', '$$ = new yy.BooleanLiteralNode($1);'],
+      ['Null', '$$ = new yy.NullLiteralNode($1);'],
     ],
 
     argument: [

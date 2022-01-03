@@ -161,14 +161,6 @@ module.exports = {
     }
   },
 
-  ArithmeticExpressionNode: class extends Expression {
-    constructor(expression) {
-      super();
-      this.type = 'ArithmeticExpressionNode';
-      this.expression = expression;
-    }
-  },
-
   ArithmeticExpressionAddNode: class extends Expression {
     constructor(expression1, expression2) {
       super();

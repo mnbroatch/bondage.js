@@ -986,6 +986,17 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Can handle an arithmetic inline expression', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpArithmetic');
+    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpArithmetic'; });
+
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('The results are 10 and 12 and 1.', [], yarnData));
+
+    expect(run.next().done).to.be.true;
+  });
+
   // it.only('Can handle an inline expression in an option', () => {
   it('Can handle an inline expression in an option', () => {
     runner.load(inlineExpressionYarnData);

@@ -33,6 +33,24 @@ const grammar = {
       ['statement', '$$ = [$1];'],
     ],
 
+    statement: [
+      ['escapedText', '$$ = new yy.TextNode($1, @$)'],
+      ['escapedText hashtagsAndComments', '$$ = new yy.TextNode($1, @$, $2)'],
+      ['shortcut', '$$ = $1;'],
+      ['genericCommand', '$$ = $1;'],
+      ['assignmentCommand', '$$ = $1;'],
+      ['jumpCommand', '$$ = $1;'],
+      ['stopCommand', '$$ = $1;'],
+      ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
+      ['inlineExpression hashtagsAndComments', '$$ = new yy.InlineExpressionNode($1, @$, $2);'],
+      ['statement hashtagsAndComments', '$$ = $1;'],
+    ],
+
+    escapedText: [
+      ['Text', '$$ = $1;'],
+      ['EscapedCharacter', '$$ = $1.substring(1)'],
+    ],
+
     conditional: [
       ['BeginCommand If expression EndCommand', '$$ = $3'],
     ],
@@ -56,20 +74,6 @@ const grammar = {
       ['elseif statements additionalConditionalBlocks', '$$ = new yy.ElseIfNode($1, $2, $3);'],
     ],
 
-    statement: [
-      ['Text', '$$ = new yy.TextNode($1, @$);'],
-      ['EscapedCharacter', '$$ = new yy.TextNode($1.substring(1), @$)'],
-      ['shortcut', '$$ = $1;'],
-      ['genericCommand', '$$ = $1;'],
-      ['assignmentCommand', '$$ = $1;'],
-      ['jumpCommand', '$$ = $1;'],
-      ['stopCommand', '$$ = $1;'],
-      ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
-      ['Text hashtagsAndComments', '$$ = new yy.TextNode($1, @$, $2);'],
-      ['inlineExpression hashtagsAndComments', '$$ = new yy.InlineExpressionNode($1, @$, $2);'],
-      ['statement hashtagsAndComments', '$$ = $1;'],
-    ],
-
     hashtagsAndComments: [
       ['Hashtag', '$$ = [$1.substring(1)];'],
       ['Comment', '$$ = [];'],
@@ -78,8 +82,8 @@ const grammar = {
     ],
 
     shortcutOption: [
-      ['ShortcutOption Text', '$$ = [$2];'],
-      ['ShortcutOption Text conditional', '$$ = [$2, $3]'],
+      ['ShortcutOption escapedText', '$$ = [$2];'],
+      ['ShortcutOption escapedText conditional', '$$ = [$2, $3]'],
       ['shortcutOption hashtagsAndComments', '$$ = [$1[0], $1[1], $2]'],
     ],
 

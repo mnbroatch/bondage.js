@@ -78,15 +78,15 @@ const grammar = {
 
     shortcut: [
       ['ShortcutOption Text shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $3, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $7, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
+      ['ShortcutOption Text conditional shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $4, $3, @$);'],
+      ['ShortcutOption Text conditional', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$);'],
       ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
       ['ShortcutOption Text Comment shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand Comment shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$);'],
+      ['ShortcutOption Text conditional Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$);'],
+      ['ShortcutOption Text conditional Comment shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $5, $3, @$);'],
       ['ShortcutOption Text hashtags shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$, $3);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $8, $5, @$, $7);'],
-      ['ShortcutOption Text BeginCommand If expression EndCommand hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$, $7);'],
+      ['ShortcutOption Text conditional hashtags shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $5, $3, @$, $4);'],
+      ['ShortcutOption Text conditional hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$, $4);'],
     ],
 
     shortcutBlock: [

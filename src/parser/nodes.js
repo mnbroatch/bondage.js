@@ -39,7 +39,7 @@ module.exports = {
   },
 
   DialogShortcutNode: class extends Shortcut {
-    constructor(text, content, lineNo, hashtags) {
+    constructor(text, content, lineNo, hashtags = []) {
       super();
       this.type = 'DialogShortcutNode';
       this.text = text;
@@ -50,7 +50,7 @@ module.exports = {
   },
 
   ConditionalDialogShortcutNode: class extends Shortcut {
-    constructor(text, content, conditionalExpression, lineNo, hashtags) {
+    constructor(text, content, conditionalExpression, lineNo, hashtags = []) {
       super();
       this.type = 'ConditionalDialogShortcutNode';
       this.text = text;
@@ -101,10 +101,10 @@ module.exports = {
 
   // /////////////// Contents Nodes
   TextNode: class extends Text {
-    constructor(text, lineNo, hashtags) {
+    constructor(text, lineNo, hashtags = []) {
       super();
       this.type = 'TextNode';
-      this.text = text
+      this.text = text;
       this.lineNum = lineNo ? lineNo.first_line : -1;
       this.hashtags = hashtags;
     }
@@ -114,7 +114,7 @@ module.exports = {
     constructor(text, lineNo) {
       super();
       this.type = 'EscapedCharacterNode';
-      this.text = text
+      this.text = text;
       this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
@@ -355,7 +355,7 @@ module.exports = {
   // /////////////// Function Nodes
 
   FunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args, lineNo, hashtags) {
+    constructor(functionName, args, lineNo, hashtags = []) {
       super();
       this.type = 'FunctionResultNode';
       this.functionName = functionName;
@@ -382,7 +382,7 @@ module.exports = {
 
   // /////////////// Inline Expression
   InlineExpressionNode: class extends InlineExpression {
-    constructor(expression, lineNo, hashtags) {
+    constructor(expression, lineNo, hashtags = []) {
       super();
       this.type = 'InlineExpressionNode';
       this.expression = expression;

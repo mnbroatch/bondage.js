@@ -65,28 +65,37 @@ const grammar = {
       ['jumpCommand', '$$ = $1;'],
       ['stopCommand', '$$ = $1;'],
       ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
-      ['Text hashtags', '$$ = new yy.TextNode($1, @$, $2);'],
-      ['inlineExpression hashtags', '$$ = new yy.InlineExpressionNode($1, @$, $2);'],
-      ['statement Comment', '$$ = $1;'],
+      ['Text hashtagsAndComments', '$$ = new yy.TextNode($1, @$, $2);'],
+      ['inlineExpression hashtagsAndComments', '$$ = new yy.InlineExpressionNode($1, @$, $2);'],
+      ['statement hashtagsAndComments', '$$ = $1;'],
     ],
 
-    hashtags: [
+    hashtagsAndComments: [
       ['Hashtag', '$$ = [$1.substring(1)];'],
-      ['hashtags Hashtag', '$$ = $1.concat([$2.substring(1)]);'],
-      ['hashtags Comment', '$$ = $1;'],
+      ['Comment', '$$ = [];'],
+      ['Hashtag hashtagsAndComments', '$$ = [$1.substring(1)].concat($2);'],
+      ['hashtagsAndComments Comment', '$$ = $1;'],
+    ],
+
+    shortcutOption: [
+      ['shortcutOption hashtagsAndComments', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
+      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
+      ['ShortcutOption Text conditional', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$);'],
+      ['ShortcutOption Text conditional hashtagsAndComments', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$, $4);'],
+      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, $3, @$);'],
+      ['ShortcutOption Text conditional', '$$ = new yy.ConditionalDialogShortcutNode($2, $4, $3, @$);'],
+      ['ShortcutOption Text hashtagsAndComments', '$$ = new yy.DialogShortcutNode($2, $4, @$, $3);'],
+      ['ShortcutOption Text conditional hashtagsAndComments', '$$ = new yy.ConditionalDialogShortcutNode($2, $5, $3, @$, $4);'],
     ],
 
     shortcut: [
+      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
+      ['ShortcutOption Text conditional', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$);'],
+      ['ShortcutOption Text conditional hashtagsAndComments', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$, $4);'],
       ['ShortcutOption Text shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $3, @$);'],
       ['ShortcutOption Text conditional shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $4, $3, @$);'],
-      ['ShortcutOption Text conditional', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$);'],
-      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
-      ['ShortcutOption Text Comment shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$);'],
-      ['ShortcutOption Text conditional Comment', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$);'],
-      ['ShortcutOption Text conditional Comment shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $5, $3, @$);'],
-      ['ShortcutOption Text hashtags shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$, $3);'],
-      ['ShortcutOption Text conditional hashtags shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $5, $3, @$, $4);'],
-      ['ShortcutOption Text conditional hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$, $4);'],
+      ['ShortcutOption Text hashtagsAndComments shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$, $3);'],
+      ['ShortcutOption Text conditional hashtagsAndComments shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $5, $3, @$, $4);'],
     ],
 
     shortcutBlock: [
@@ -96,8 +105,8 @@ const grammar = {
     genericCommand: [
       ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, [], @$);'],
       ['BeginCommand Identifier commandArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3, @$);'],
-      ['BeginCommand Identifier EndCommand hashtags', '$$ = new yy.FunctionResultNode($2, [], @$, $4);'],
-      ['BeginCommand Identifier commandArguments EndCommand hashtags', '$$ = new yy.FunctionResultNode($2, $3, @$, $5);'],
+      ['BeginCommand Identifier EndCommand hashtagsAndComments', '$$ = new yy.FunctionResultNode($2, [], @$, $4);'],
+      ['BeginCommand Identifier commandArguments EndCommand hashtagsAndComments', '$$ = new yy.FunctionResultNode($2, $3, @$, $5);'],
     ],
 
     jumpCommand: [

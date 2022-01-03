@@ -77,14 +77,15 @@ const grammar = {
       ['hashtagsAndComments Comment', '$$ = $1;'],
     ],
 
+    shortcutOption: [
+      ['ShortcutOption Text', '$$ = [$2];'],
+      ['ShortcutOption Text conditional', '$$ = [$2, $3]'],
+      ['shortcutOption hashtagsAndComments', '$$ = [$1[0], $1[1], $2]'],
+    ],
+
     shortcut: [
-      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
-      ['ShortcutOption Text conditional', '$$ = new yy.DialogShortcutNode($2, undefined, @$, [], $3);'],
-      ['ShortcutOption Text conditional hashtagsAndComments', '$$ = new yy.DialogShortcutNode($2, undefined, @$, $4, $3);'],
-      ['ShortcutOption Text shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $3, @$);'],
-      ['ShortcutOption Text conditional shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$, [], $3);'],
-      ['ShortcutOption Text hashtagsAndComments shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$, $3);'],
-      ['ShortcutOption Text conditional hashtagsAndComments shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $5, @$, $4, $3);'],
+      ['shortcutOption', '$$ = new yy.DialogShortcutNode($1[0], undefined, @$, $1[2], $1[1]);'],
+      ['shortcutOption shortcutBlock', '$$ = new yy.DialogShortcutNode($1[0], $2, @$, $1[2], $1[1]);'],
     ],
 
     shortcutBlock: [

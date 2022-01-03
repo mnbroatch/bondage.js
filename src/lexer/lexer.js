@@ -78,13 +78,16 @@ class Lexer {
       return 'EndOfInput';
     }
 
+    let x
     if (!this.isAtTheEndOfLine()) {
       // Get the next token on the current line
-      return this.lexNextTokenOnCurrentLine();
+      x= this.lexNextTokenOnCurrentLine();
     } else if (!this.isAtTheEndOfText()) {
       // Get the next line, and lex again.
-      return this.lexNextLine();
+      x= this.lexNextLine();
     }
+    console.log('x', x)
+    return x
 
     // Something went wrong. TODO: Throw exception?
     return 'Invalid';
@@ -156,8 +159,15 @@ class Lexer {
           }
         }
 
-        
-        if (rule.token !== 'EndInlineExp' && rule.token !== 'EscapedCharacter') {
+        const nextState = this.states[rule.state];
+        const hasText = !nextState || nextState.transitions
+          .find((transition) => { return transition.token === 'Text'; });
+        // inline expressions and escaped characters interrupt text
+        // but should still preserve surrounding whitespace.
+        if (
+          (rule.token !== 'EndInlineExp' && rule.token !== 'EscapedCharacter')
+          || !hasText // we never want leading whitespace if not in text-supporting state
+        ) {
           // Remove leading whitespace characters
           const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
           if (spaceMatch.length !== 0) {

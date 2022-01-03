@@ -144,7 +144,7 @@ function makeStates() {
     // transition from inline expression back to base OR command
     // states depending on how we got there
     inlineExpressionInCommand: new LexerState()
-      .addTransition('EndInlineExp', 'command')
+      .addTransition('EndInlineExp', 'commandArg')
       .addTransition('Number')
       .addTransition('String')
       .addTransition('LeftParen')

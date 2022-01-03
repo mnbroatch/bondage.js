@@ -17,7 +17,7 @@
 	{
 		"title": "ExpressionArgumentCommand",
 		"tags": "Tag",
-		"body": "<<command {$testvar + 1}>>"
+		"body": "<<command {$testvar1} {$testvar2}>>"
 	},
 	{
 		"title": "ComplexCommands",

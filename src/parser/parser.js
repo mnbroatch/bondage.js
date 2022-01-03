@@ -23,7 +23,7 @@ const grammar = {
 
   bnf: {
     node: [
-      ['statements EndOfInput', 'JSON.stringify($1, null, \'  \'); return $1;'],
+      ['statements EndOfInput', 'return $1;console.log($2)'],
     ],
 
     statements: [

@@ -704,13 +704,15 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Returns commands to the user with an inline expression argument', () => {
+  // it.only('Returns commands to the user with inline expression arguments', () => {
+  it('Returns commands to the user with inline expression arguments', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('ExpressionArgumentCommand');
     const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; });
-    runner.variables.set('testvar', 1);
+    runner.variables.set('testvar1', 1);
+    runner.variables.set('testvar2', 5);
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [2], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 5], [], yarnData));
     expect(run.next().done).to.be.true;
   });
 

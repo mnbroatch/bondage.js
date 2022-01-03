@@ -56,6 +56,11 @@
 		"body": "This is a test line\nThis is another test line\n-> First choice\n\t<<jump Option1>>\n-> Second choice\n\t<<jump Option2>>"
 	},
 	{
+		"title": "OneNodeEscapeHashtagComment",
+		"tags": "",
+		"body": "This is a test line\\#escaped\\//#lastHashtag//#ignore"
+	},
+	{
 		"title": "Option1",
 		"tags": "",
 		"body": "This is Option1's test line"

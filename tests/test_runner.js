@@ -1173,6 +1173,19 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Can escape hashtags and comments together', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('OneNodeEscapeHashtagComment');
+    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtagComment'; });
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult(
+      'This is a test line#escaped//',
+      ['lastHashtag'],
+      yarnData,
+    ));
+    expect(run.next().done).to.be.true;
+  });
+
   it('Can run through three lines when the first ends on an escaped character', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeLineEscape');

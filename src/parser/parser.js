@@ -15,7 +15,7 @@ const grammar = {
     ['left', 'EqualTo', 'GreaterThan', 'GreaterThanOrEqualTo', 'LessThan', 'LessThanOrEqualTo', 'NotEqualTo'],
     ['left', 'Add', 'Minus'],
     ['left', 'Multiply', 'Exponent', 'Divide'],
-    ['left', 'UMINUS'],
+    ['left', 'UnaryMinus'],
     ['left', 'LeftParen', 'RightParen'],
   ],
 
@@ -48,8 +48,10 @@ const grammar = {
       ['Text', '$$ = new yy.TextNode($1, @$);'],
       ['EscapedCharacter', '$$ = new yy.TextNode($1.substring(1), @$)'],
       ['shortcut', '$$ = $1;'],
-      ['functionCall', '$$ = $1;'],
+      ['genericCommand', '$$ = $1;'],
       ['assignmentCommand', '$$ = $1;'],
+      ['jumpCommand', '$$ = $1;'],
+      ['stopCommand', '$$ = $1;'],
       ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
       ['Text hashtags', '$$ = new yy.TextNode($1, @$, $2);'],
       ['inlineExpression hashtags', '$$ = new yy.InlineExpressionNode($1, @$, $2);'],
@@ -75,11 +77,20 @@ const grammar = {
       ['ShortcutOption Text BeginCommand If expression EndCommand hashtags', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $5, @$, $7);'],
     ],
 
-    functionCall: [
+    genericCommand: [
       ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, [], @$);'],
-      ['BeginCommand Identifier openArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3, @$);'],
+      ['BeginCommand Identifier commandArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3, @$);'],
       ['BeginCommand Identifier EndCommand hashtags', '$$ = new yy.FunctionResultNode($2, [], @$, $4);'],
-      ['BeginCommand Identifier openArguments EndCommand hashtags', '$$ = new yy.FunctionResultNode($2, $3, @$, $5);'],
+      ['BeginCommand Identifier commandArguments EndCommand hashtags', '$$ = new yy.FunctionResultNode($2, $3, @$, $5);'],
+    ],
+
+    jumpCommand: [
+      ['BeginCommand Jump Identifier EndCommand', '$$ = new yy.JumpNode($3);'],
+      ['BeginCommand Jump inlineExpression EndCommand', '$$ = new yy.JumpNode($3);'],
+    ],
+
+    stopCommand: [
+      ['BeginCommand Stop EndCommand', '$$ = new yy.StopNode();'],
     ],
 
     assignmentCommand: [
@@ -95,23 +106,13 @@ const grammar = {
       ['Set Variable DivideAssign expression', '$$ = new yy.SetVariableDivideNode($2.substring(1), $4);'],
     ],
 
-    term: [
-      ['True', '$$ = new yy.BooleanLiteralNode($1);'],
-      ['False', '$$ = new yy.BooleanLiteralNode($1);'],
-      ['Number', '$$ = new yy.NumericLiteralNode($1);'],
-      ['String', '$$ = new yy.StringLiteralNode($1);'],
-      ['Null', '$$ = new yy.NullLiteralNode($1);'],
-      ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
-    ],
-
     expression: [
-      ['term', '$$ = $1;'],
-      ['functionResultExpression', '$$ = $1'],
+      ['functionArgument', '$$ = $1;'],
+      ['functionCall', '$$ = $1'],
       ['LeftParen expression RightParen', '$$ = $2;'],
 
-      ['Not expression', '$$ = new yy.NegatedBooleanExpressionNode($2);'],
-      ['UnaryMinus Number %prec UnaryMinus', '$$ = new yy.UnaryMinusExpressionNode($2);'],
-      ['UnaryMinus Variable %prec UnaryMinus', '$$ = new yy.UnaryMinusExpressionNode($2.substring(1));'],
+      ['UnaryMinus Number', '$$ = new yy.UnaryMinusExpressionNode($2);'],
+      ['UnaryMinus Variable', '$$ = new yy.UnaryMinusExpressionNode($2.substring(1));'],
 
       ['expression Add expression', '$$ = new yy.ArithmeticExpressionAddNode($1, $3);'],
       ['expression Minus expression', '$$ = new yy.ArithmeticExpressionMinusNode($1, $3);'],
@@ -119,6 +120,7 @@ const grammar = {
       ['expression Multiply expression', '$$ = new yy.ArithmeticExpressionMultiplyNode($1, $3);'],
       ['expression Divide expression', '$$ = new yy.ArithmeticExpressionDivideNode($1, $3);'],
 
+      ['Not expression', '$$ = new yy.NegatedBooleanExpressionNode($2);'],
       ['expression Or expression', '$$ = new yy.BooleanOrExpressionNode($1, $3);'],
       ['expression And expression', '$$ = new yy.BooleanAndExpressionNode($1, $3);'],
       ['expression Xor expression', '$$ = new yy.BooleanXorExpressionNode($1, $3);'],
@@ -131,7 +133,7 @@ const grammar = {
       ['expression LessThanOrEqualTo expression', '$$ = new yy.LessThanOrEqualToExpressionNode($1, $3);'],
     ],
 
-    functionResultExpression: [
+    functionCall: [
       ['Identifier LeftParen RightParen', '$$ = new yy.FunctionResultNode($1, []);'],
       ['Identifier LeftParen parenExpressionArgs RightParen', '$$ = new yy.FunctionResultNode($1, $3);'],
     ],
@@ -141,30 +143,28 @@ const grammar = {
       ['expression', '$$ = [$1];'],
     ],
 
-    openArguments: [
-      ['openArguments openArgument', '$$ = $1.concat([$2]);'],
-      ['openArgument', '$$ = [$1];'],
+    commandArguments: [
+      ['commandArguments commandArgument', '$$ = $1.concat([$2]);'],
+      ['commandArgument', '$$ = [$1];'],
     ],
 
-    openArgument: [
+    commandArgument: [
       ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
+      ['literal', '$$ = $1;'],
       ['Identifier', '$$ = new yy.TextNode($1);'],
-      ['Number', '$$ = new yy.NumericLiteralNode($1);'],
-      ['String', '$$ = new yy.StringLiteralNode($1);'],
-      ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
-      ['True', '$$ = new yy.BooleanLiteralNode($1);'],
-      ['False', '$$ = new yy.BooleanLiteralNode($1);'],
-      ['Null', '$$ = new yy.NullLiteralNode($1);'],
     ],
 
-    argument: [
+    functionArgument: [
       ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
-      ['Identifier', '$$ = new yy.TextNode($1);'],
-      ['Number', '$$ = new yy.NumericLiteralNode($1);'],
-      ['String', '$$ = new yy.StringLiteralNode($1);'],
+      ['literal', '$$ = $1;'],
       ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
+    ],
+
+    literal: [
       ['True', '$$ = new yy.BooleanLiteralNode($1);'],
       ['False', '$$ = new yy.BooleanLiteralNode($1);'],
+      ['Number', '$$ = new yy.NumericLiteralNode($1);'],
+      ['String', '$$ = new yy.StringLiteralNode($1);'],
       ['Null', '$$ = new yy.NullLiteralNode($1);'],
     ],
 

@@ -137,13 +137,13 @@ class Runner {
           }
         }
       } else if (node instanceof nodeTypes.FunctionCall) {
-        if (node.functionName === 'jump') {
-          yield* this.run(node.args[0].text);
+        if (node.type === 'JumpNode') {
+          yield* this.run(node.destination);
           // ignore the rest of this outer loop and
           // tell parent loops to ignore following nodes
           return { stop: true };
         }
-        if (node.functionName === 'stop') {
+        if (node.type === 'StopNode') {
           // ignore the rest of this outer loop and
           // tell parent loops to ignore following nodes
           return { stop: true };

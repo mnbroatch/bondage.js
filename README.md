@@ -10,6 +10,9 @@ This repo is a fork of a [fork](https://github.com/alforno/bondage.js) of [the o
   - Explicit typing is ignored.
   - Typing is not enforced.
 
+- Unary minus does not work in front of parens: (-2) works but -(2 + 2) does not.
+  - use (0 - (2 + 2)) instead
+
 todo: disallow dots in titles
 todo: check for escaped characters / inline expressions in options
 

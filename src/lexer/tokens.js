@@ -14,7 +14,7 @@ const Tokens = {
   EndOfLine:            null,                      // (not used currently)
   EndOfInput:           null,
 
-  UnaryMinus:           null,                      // -; this is differentiated from Minus
+  UnaryMinus:           /-/,                      // ; this is differentiated from Minus
                                                    // when parsing expressions (Not used currently)
 
   // Literals in ("<<commands>>")
@@ -32,7 +32,7 @@ const Tokens = {
   ShortcutOption:       /->/,
 
   // Hashtag ("#something")
-  Hashtag:              /#([^(\s|#|\/\/)]+)/,      // seems a little hacky to explicitly consider comments here
+  Hashtag:              /#([^(\s|#|//)]+)/,      // seems a little hacky to explicitly consider comments here
 
   // Comment ("// some stuff")
   Comment:              /\/\/.*/,
@@ -47,8 +47,10 @@ const Tokens = {
   ElseIf:               /elseif(?!\w)/,
   Else:                 /else(?!\w)/,
   EndIf:                /endif(?!\w)/,
+  Jump:                 /jump(?!\w)/,
+  Stop:                 /stop(?!\w)/,
   Set:                  /set(?!\w)|declare(?!\w)/,  // not spec-compliant
-  ExplicitType:         /as\s.*(?=>>)/,             // so we can ignore explicit typing
+  ExplicitType:         /as\s.*(?=>>)/,             // since we ignore explicit typing
 
   // Boolean values
   True:                 /true(?!\w)/,

@@ -29,12 +29,14 @@ function makeStates() {
       .addTransition('ElseIf', 'expression')
       .addTransition('EndIf')
       .addTransition('Set', 'assignment')
+      .addTransition('Jump', 'jump')
+      .addTransition('Stop', 'stop')
       .addTransition('EndCommand', 'base', true)
       .addTransition('Identifier', 'commandArg', true)
       .addTextRule('Text'),
 
     commandArg: new LexerState()
-      .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true) // TODO: seems stupid, see below
+      .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true)
       .addTransition('EndCommand', 'base', true)
       .addTransition('LeftParen', 'commandParenArgOrExpression')
       .addTransition('Variable')
@@ -65,6 +67,14 @@ function makeStates() {
       .addTransition('MultiplyAssign', 'expression')
       .addTransition('DivideAssign', 'expression'),
 
+    jump: new LexerState()
+      .addTransition('Identifier')
+      .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true)
+      .addTransition('EndCommand', 'base', true),
+
+    stop: new LexerState()
+      .addTransition('EndCommand', 'base', true),
+
     expression: new LexerState()
       .addTransition('ExplicitType')
       .addTransition('EndCommand', 'base')
@@ -81,6 +91,7 @@ function makeStates() {
       .addTransition('LessThan')
       .addTransition('Add')
       .addTransition('Minus')
+      .addTransition('UnaryMinus')
       .addTransition('Exponent')
       .addTransition('Multiply')
       .addTransition('Divide')
@@ -111,6 +122,7 @@ function makeStates() {
       .addTransition('LessThan')
       .addTransition('Add')
       .addTransition('Minus')
+      .addTransition('UnaryMinus')
       .addTransition('Exponent')
       .addTransition('Multiply')
       .addTransition('Divide')
@@ -146,6 +158,7 @@ function makeStates() {
       .addTransition('LessThan')
       .addTransition('Add')
       .addTransition('Minus')
+      .addTransition('UnaryMinus')
       .addTransition('Exponent')
       .addTransition('Multiply')
       .addTransition('Divide')

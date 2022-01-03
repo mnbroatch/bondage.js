@@ -62,6 +62,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  // it.only('Can run through a first option to another node', () => {
   it('Can run through a first option to another node', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeNodes');
@@ -741,17 +742,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Call command with variable argument', () => {
-    runner.load(commandAndFunctionYarnData);
-    const run = runner.run('CommandWithVariable');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'CommandWithVariable'; });
-
-    let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 100], [], yarnData));
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after command', [], yarnData));
-  });
-
   it('Evaluates a function and uses it in a conditional', () => {
     runner.registerFunction('testfunc', (args) => {
       if (args[0] === 'firstarg') {
@@ -992,7 +982,7 @@ describe('Dialogue', () => {
     const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpArithmetic'; });
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('The results are 10 and 12 and 1.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are 10 and 12 and -1.', [], yarnData));
 
     expect(run.next().done).to.be.true;
   });

@@ -365,6 +365,21 @@ module.exports = {
     }
   },
 
+  JumpNode: class extends FunctionCall {
+    constructor(destination) {
+      super();
+      this.type = 'JumpNode';
+      this.destination = destination;
+    }
+  },
+
+  StopNode: class extends FunctionCall {
+    constructor() {
+      super();
+      this.type = 'StopNode';
+    }
+  },
+
   // /////////////// Inline Expression
   InlineExpressionNode: class extends InlineExpression {
     constructor(expression, lineNo, hashtags) {

@@ -40,16 +40,6 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  it('can parse a function call with one variable open arg', () => {
-    const results = parser.parse('<<commandtext $somevar>>');
-
-    const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.VariableNode('somevar')], { first_line: results[0].lineNum }),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
   it('can parse a function call with two open args', () => {
     const results = parser.parse('<<commandtext 2 "face">>');
 

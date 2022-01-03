@@ -711,8 +711,9 @@ describe('Dialogue', () => {
     const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; });
     runner.variables.set('testvar1', 1);
     runner.variables.set('testvar2', 5);
+    runner.variables.set('testvar3', 10);
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 5], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 5, 'apple', 10], [], yarnData));
     expect(run.next().done).to.be.true;
   });
 

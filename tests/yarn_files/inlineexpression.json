@@ -22,7 +22,7 @@
   {
     "title": "NonSequentialInlineExpressions",
     "tags": "Tag",
-    "body": "{$firstvar}text{$secondvar}"
+    "body": "{$firstvar}textbetween{$secondvar}"
   },
   {
     "title": "OptionInlineExpression",

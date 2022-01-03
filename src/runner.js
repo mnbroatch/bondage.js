@@ -80,7 +80,7 @@ class Runner {
 
     let shortcutNodes = [];
     let prevnode = null;
-    let textRun = null;
+    let textRun = '';
 
     // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables
@@ -95,66 +95,33 @@ class Runner {
         if (result && result.stop) {
           return result;
         }
-
         shortcutNodes = [];
       }
 
-      if (node instanceof nodeTypes.Text) {
-        // If we are already appending text...
-        if (textRun) {
-          textRun.text += node.text;
-          // If next node is null or not an inline expression
-          // or not on the same line as this node...
-          if (
-            nextNode == null
-            || node.lineNum !== nextNode.lineNum
-          ) {
-            yield textRun;
-            textRun = null;
-          }
-        } else if (
-          nextNode
-          && nextNode instanceof nodeTypes.InlineExpression
-          && node.lineNum === nextNode.lineNum
-        ) {
-          // Else if we are not appending text
-          // and the next node is an inline exp on the same line...
-          textRun = new results.TextResult(node.text, node.hashtags, yarnNode);
-        } else if (
-          nextNode
-          && nextNode instanceof nodeTypes.Text
-          && node.lineNum === nextNode.lineNum
-        ) {
-          textRun = new results.TextResult(node.text, node.hashtags, yarnNode);
-        } else {
-          // Else not already appending and next node is not inline exp on same line.
-          yield new results.TextResult(node.text, node.hashtags, yarnNode);
-        }
-      } else if (node instanceof nodeTypes.InlineExpression) {
-        let expResult = this.evaluateExpressionOrLiteral(node.expression);
-        expResult = expResult !== null ? expResult.toString() : null;
+      // Text and the output of Inline Expressions
+      // are combined to deliver a TextNode.
+      if (
+        node instanceof nodeTypes.Text
+        || node instanceof nodeTypes.InlineExpression
+      ) {
+        textRun += this.evaluateExpressionOrLiteral(node).toString();
 
-        // If we are already appending text...
-        if (textRun) {
-          textRun.text += expResult;
-          if (
-            nextNode == null
-            || !(nextNode instanceof nodeTypes.Text)
-            || node.lineNum !== nextNode.lineNum
-          ) {
-            yield textRun;
-            textRun = null;
-          }
-          // If next node is an inline expression and on the same line as this node...
-        } else if (
+        if (
           nextNode
-          && nextNode instanceof nodeTypes.InlineExpression
           && node.lineNum === nextNode.lineNum
+          && (
+            nextNode instanceof nodeTypes.Text
+            || nextNode instanceof nodeTypes.InlineExpression
+          )
         ) {
-          textRun = new results.TextResult(expResult, node.hashtags, yarnNode);
+          // Same line, with another text equivalent to add to the
+          // text run further on in the loop, so don't yield.
         } else {
-          yield new results.TextResult(expResult, node.hashtags, yarnNode);
+          yield new results.TextResult(textRun, node.hashtags, yarnNode);
+          textRun = '';
         }
+
+        // Other nodes are more straightforward:
       } else if (node instanceof nodeTypes.Shortcut) {
         shortcutNodes.push(node);
       } else if (node instanceof nodeTypes.Assignment) {
@@ -169,15 +136,16 @@ class Runner {
             return result;
           }
         }
-        // A function call
       } else if (node instanceof nodeTypes.FunctionCall) {
         if (node.functionName === 'jump') {
-          // Special command, jump to node
           yield* this.run(node.args[0].text);
+          // ignore the rest of this outer loop and
+          // tell parent loops to ignore following nodes
           return { stop: true };
         }
         if (node.functionName === 'stop') {
-          // Special command, halt execution
+          // ignore the rest of this outer loop and
+          // tell parent loops to ignore following nodes
           return { stop: true };
         }
         const funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];

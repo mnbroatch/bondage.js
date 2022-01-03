@@ -174,6 +174,7 @@ describe('Dialogue', () => {
   });
 
   it('includes hashtags on command lines', () => {
+  // it.only('includes hashtags on command lines', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('BasicCommandsHashtag');
     const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsHashtag'; });
@@ -961,13 +962,13 @@ describe('Dialogue', () => {
   it('Can handle non-sequential inline expressions', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('NonSequentialInlineExpressions');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SequentialInlineExpressions'; });
+    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'NonSequentialInlineExpressions'; });
 
     runner.variables.set('firstvar', 1);
     runner.variables.set('secondvar', 2);
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('1a2', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('1textbetween2', [], yarnData));
 
     expect(run.next().done).to.be.true;
   });
@@ -1045,6 +1046,7 @@ describe('Dialogue', () => {
   });
 
   it('treats "declare" like "set", ignoring explicit typing', () => {
+  // it.only('treats "declare" like "set", ignoring explicit typing', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('SimpleInlineExpDeclare');
     const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpDeclare'; });

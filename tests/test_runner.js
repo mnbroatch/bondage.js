@@ -958,6 +958,20 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Can handle non-sequential inline expressions', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('NonSequentialInlineExpressions');
+    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SequentialInlineExpressions'; });
+
+    runner.variables.set('firstvar', 1);
+    runner.variables.set('secondvar', 2);
+
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('1a2', [], yarnData));
+
+    expect(run.next().done).to.be.true;
+  });
+
   it('Can handle a simple inline expression in a sentence', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpSentence');

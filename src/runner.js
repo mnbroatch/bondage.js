@@ -108,7 +108,7 @@ class Runner {
           if (
             nextNode == null
             || node.lineNum !== nextNode.lineNum
-        ) {
+          ) {
             yield textRun;
             textRun = null;
           }

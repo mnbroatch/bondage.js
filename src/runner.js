@@ -173,7 +173,8 @@ class Runner {
     // the consuming app does the actual filtering or whatever
     const filteredSelections = selections.map((s) => {
       if (
-        s.type === 'ConditionalDialogShortcutNode'
+        s.type === 'DialogShortcutNode'
+        && s.conditionalExpression
         && !this.evaluateExpressionOrLiteral(s.conditionalExpression)
       ) {
         return Object.assign(s, { isAvailable: false });

@@ -77,25 +77,14 @@ const grammar = {
       ['hashtagsAndComments Comment', '$$ = $1;'],
     ],
 
-    shortcutOption: [
-      ['shortcutOption hashtagsAndComments', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
-      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
-      ['ShortcutOption Text conditional', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$);'],
-      ['ShortcutOption Text conditional hashtagsAndComments', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$, $4);'],
-      ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, $3, @$);'],
-      ['ShortcutOption Text conditional', '$$ = new yy.ConditionalDialogShortcutNode($2, $4, $3, @$);'],
-      ['ShortcutOption Text hashtagsAndComments', '$$ = new yy.DialogShortcutNode($2, $4, @$, $3);'],
-      ['ShortcutOption Text conditional hashtagsAndComments', '$$ = new yy.ConditionalDialogShortcutNode($2, $5, $3, @$, $4);'],
-    ],
-
     shortcut: [
       ['ShortcutOption Text', '$$ = new yy.DialogShortcutNode($2, undefined, @$);'],
-      ['ShortcutOption Text conditional', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$);'],
-      ['ShortcutOption Text conditional hashtagsAndComments', '$$ = new yy.ConditionalDialogShortcutNode($2, undefined, $3, @$, $4);'],
+      ['ShortcutOption Text conditional', '$$ = new yy.DialogShortcutNode($2, undefined, @$, [], $3);'],
+      ['ShortcutOption Text conditional hashtagsAndComments', '$$ = new yy.DialogShortcutNode($2, undefined, @$, $4, $3);'],
       ['ShortcutOption Text shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $3, @$);'],
-      ['ShortcutOption Text conditional shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $4, $3, @$);'],
+      ['ShortcutOption Text conditional shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$, [], $3);'],
       ['ShortcutOption Text hashtagsAndComments shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $4, @$, $3);'],
-      ['ShortcutOption Text conditional hashtagsAndComments shortcutBlock', '$$ = new yy.ConditionalDialogShortcutNode($2, $5, $3, @$, $4);'],
+      ['ShortcutOption Text conditional hashtagsAndComments shortcutBlock', '$$ = new yy.DialogShortcutNode($2, $5, @$, $4, $3);'],
     ],
 
     shortcutBlock: [

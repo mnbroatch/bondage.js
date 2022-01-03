@@ -680,15 +680,15 @@ describe('Parser', () => {
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
       new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }, ['hashtag1']),
-      new nodes.ConditionalDialogShortcutNode(
+      new nodes.DialogShortcutNode(
         'shortcut2',
         [new nodes.TextNode('shortcut text2', { first_line: 5 })],
+        { first_line: 4 },
+        ['hashtag2'],
         new nodes.EqualToExpressionNode(
           new nodes.BooleanLiteralNode('true'),
           new nodes.BooleanLiteralNode('true'),
         ),
-        { first_line: 4 },
-        ['hashtag2'],
       ),
       new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
       new nodes.TextNode('more text', { first_line: 7 }),

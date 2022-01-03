@@ -49,14 +49,15 @@ const grammar = {
     ],
 
     statement: [
+      ['Text', '$$ = new yy.TextNode($1, @$);'],
+      ['EscapedCharacter', '$$ = new yy.TextNode($1.substring(1), @$)'],
       ['shortcut', '$$ = $1;'],
       ['functionCall', '$$ = $1;'],
       ['assignment', '$$ = $1;'],
-      ['Text', '$$ = new yy.TextNode($1, @$);'],
+      ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
       ['Text hashtags', '$$ = new yy.TextNode($1, @$, $2);'],
-      ['inlineExpression', '$$ = $1;'],
+      ['inlineExpression hashtags', '$$ = new yy.InlineExpressionNode($1, @$, $2);'],
       ['statement Comment', '$$ = $1;'],
-      ['EscapedCharacter', '$$ = new yy.TextNode($1.substring(1), @$)'],
     ],
 
     hashtags: [
@@ -145,7 +146,7 @@ const grammar = {
     ],
 
     argument: [
-      ['inlineExpression', '$$ = $1'],
+      ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
       ['Identifier', '$$ = new yy.TextNode($1);'],
       ['Number', '$$ = new yy.NumericLiteralNode($1);'],
       ['String', '$$ = new yy.StringLiteralNode($1);'],
@@ -156,7 +157,7 @@ const grammar = {
     ],
 
     inlineExpression: [
-      ['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
+      ['BeginInlineExp expression EndInlineExp', '$$ = $2;'],
     ],
   },
 };

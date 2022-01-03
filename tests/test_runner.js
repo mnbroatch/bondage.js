@@ -894,8 +894,8 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it.only('Should move on after a second option with no follow-up is selected', () => {
-  // it('Should move on after a second option with no follow-up is selected', () => {
+  // it.only('Should move on after a second option with no follow-up is selected', () => {
+  it('Should move on after a second option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptySecondOption');
     const yarnData = shortcutsYarnData.find((n) => { return n.title === 'EmptySecondOption'; });
@@ -1117,6 +1117,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  // it.only('Can handle inline expression containing function call and expression', () => {
   it('Can handle inline expression containing function call and expression', () => {
     runner.registerFunction('testfunc', () => { return 1; });
 

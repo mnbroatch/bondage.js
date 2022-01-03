@@ -131,7 +131,7 @@ class Runner {
           yield new results.TextResult(node.text, node.hashtags, yarnNode);
         }
       } else if (node instanceof nodeTypes.InlineExpression) {
-        let expResult = this.evaluateExpressionOrLiteral(node.expression, true);
+        let expResult = this.evaluateExpressionOrLiteral(node.expression);
         expResult = expResult !== null ? expResult.toString() : null;
 
         // If we are already appending text...
@@ -364,6 +364,8 @@ class Runner {
         );
       }
       throw new Error(`Function "${node.functionName}" not found`);
+    } else if (node.type === 'InlineExpressionNode') {
+      return this.evaluateExpressionOrLiteral(node.expression);
     } else {
       throw new Error(`I don't recognize expression/literal type ${node.type}`);
     }

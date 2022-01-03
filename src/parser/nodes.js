@@ -375,11 +375,12 @@ module.exports = {
 
   // /////////////// Inline Expression
   InlineExpressionNode: class extends InlineExpression {
-    constructor(expression, lineNo) {
+    constructor(expression, lineNo, hashtags) {
       super();
       this.type = 'InlineExpressionNode';
       this.expression = expression;
       this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.hashtags = hashtags;
     }
   },
 };

@@ -344,7 +344,7 @@ module.exports = {
   // /////////////// Function Nodes
 
   FunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args, lineNo, hashtags = []) {
+    constructor(functionName, args = [], lineNo, hashtags = []) {
       super();
       this.type = 'FunctionResultNode';
       this.functionName = functionName;

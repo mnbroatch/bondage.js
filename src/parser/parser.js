@@ -27,30 +27,39 @@ const grammar = {
     ],
 
     statements: [
-      ['statements conditionalBlock', '$$ = $1.concat([$2]);'],
-      ['statements statement', '$$ = $1.concat([$2]);'],
+      ['statements conditionalBlock', '$$ = $1.concat($2);'],
+      ['statements statement', '$$ = $1.concat($2);'],
       ['conditionalBlock', '$$ = [$1];'],
       ['statement', '$$ = [$1];'],
     ],
 
     statement: [
-      ['escapedText', '$$ = new yy.TextNode($1, @$)'],
-      ['escapedText hashtagsAndComments', '$$ = new yy.TextNode($1, @$, $2)'],
+      ['escapedText', '$$ = $1'],
       ['shortcut', '$$ = $1;'],
       ['genericCommand', '$$ = $1;'],
       ['assignmentCommand', '$$ = $1;'],
       ['jumpCommand', '$$ = $1;'],
       ['stopCommand', '$$ = $1;'],
-      ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
-      ['inlineExpression hashtagsAndComments', '$$ = new yy.InlineExpressionNode($1, @$, $2);'],
-      ['statement hashtagsAndComments', '$$ = $1;'],
+      ['inlineExpression', '$$ = $1;'],
+      ['statement hashtagsAndComments', '$$ = Object.assign($1, { hashtags: $2 });'],
+    ],
+
+    escapedTextRaw: [
+      ['Text', '$$ = $1;'],
+      ['EscapedCharacter', '$$ = $1.substring(1);'],
+      ['escapedTextRaw EscapedCharacter', '$$ = $1.concat($2.substring(1));'],
+      ['EscapedCharacter escapedTextRaw', '$$ = $1.substring(1).concat($2);'],
     ],
 
     escapedText: [
-      ['Text', '$$ = $1;'],
-      ['EscapedCharacter', '$$ = $1.substring(1);'],
-      ['escapedText EscapedCharacter', '$$ = $1.concat($2.substring(1));'],
-      ['EscapedCharacter escapedText', '$$ = $1.substring(1).concat($2);'],
+      ['escapedTextRaw', '$$ = new yy.TextNode($1, @$);'],
+    ],
+
+    textWithExpressions: [
+      ['escapedTextRaw', '$$ = $1;'],
+      ['inlineExpressionRaw', '$$ = $1;'],
+      ['escapedTextRaw inlineExpressionRaw', '$$ = [$1, $2];'],
+      ['inlineExpressionRaw escapedTextRaw', '$$ = [$1, $2];'],
     ],
 
     conditional: [
@@ -84,8 +93,8 @@ const grammar = {
     ],
 
     shortcutOption: [
-      ['ShortcutOption escapedText', '$$ = [$2];'],
-      ['ShortcutOption escapedText conditional', '$$ = [$2, $3]'],
+      ['ShortcutOption escapedTextRaw', '$$ = [$2];'],
+      ['ShortcutOption escapedTextRaw conditional', '$$ = [$2, $3]'],
       ['shortcutOption hashtagsAndComments', '$$ = [$1[0], $1[1], $2]'],
     ],
 
@@ -97,8 +106,6 @@ const grammar = {
     genericCommand: [
       ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, [], @$);'],
       ['BeginCommand Identifier commandArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3, @$);'],
-      ['BeginCommand Identifier EndCommand hashtagsAndComments', '$$ = new yy.FunctionResultNode($2, [], @$, $4);'],
-      ['BeginCommand Identifier commandArguments EndCommand hashtagsAndComments', '$$ = new yy.FunctionResultNode($2, $3, @$, $5);'],
     ],
 
     jumpCommand: [
@@ -166,13 +173,13 @@ const grammar = {
     ],
 
     commandArgument: [
-      ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
+      ['inlineExpression', '$$ = $1;'],
       ['literal', '$$ = $1;'],
       ['Identifier', '$$ = new yy.TextNode($1);'],
     ],
 
     functionArgument: [
-      ['inlineExpression', '$$ = new yy.InlineExpressionNode($1, @$);'],
+      ['inlineExpression', '$$ = $1;'],
       ['literal', '$$ = $1;'],
       ['Variable', '$$ = new yy.VariableNode($1.substring(1));'],
     ],
@@ -186,7 +193,7 @@ const grammar = {
     ],
 
     inlineExpression: [
-      ['BeginInlineExp expression EndInlineExp', '$$ = $2;'],
+      ['BeginInlineExp expression EndInlineExp', '$$ = new yy.InlineExpressionNode($2, @$);'],
     ],
   },
 };

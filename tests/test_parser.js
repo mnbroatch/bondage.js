@@ -20,6 +20,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
+  // it.only('can parse a simple function call', () => {
   it('can parse a simple function call', () => {
     const results = parser.parse('<<commandtext>>');
 
@@ -654,7 +655,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
-  it('can parse a shortcut option containing an assignment', () => {
+  it('can parse a shortcut option containing a comment', () => {
     const results = parser.parse('text//alaksjdakj\n-> shortcut1//alaksjdakj\n\tshortcut text1//alaksjdakj\n-> shortcut2//alaksjdakj\n\tshortcut text2//alaksjdakj\n<<set $testvar to 6>>//alaksjdakj\nmore text//alaksjdakj');
 
     const expected = [

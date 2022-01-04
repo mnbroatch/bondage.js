@@ -202,7 +202,7 @@ const grammar = {
 
 // TODO: bad, should fix shift/reduce conflicts instead.
 // Is this really the only way to silence the warnings though?
-// Jison.print = () => {};
+Jison.print = () => {};
 
 const parser = new Jison.Parser(grammar);
 parser.lexer = new Lexer();

@@ -4,6 +4,7 @@ const parser = require('./parser/parser');
 const results = require('./results');
 const DefaultVariableStorage = require('./default-variable-storage');
 const nodeTypes = require('./parser/nodes').types;
+const convertYarn = require('./convert-yarn').types;
 
 class Runner {
   constructor() {
@@ -22,7 +23,16 @@ class Runner {
    * @param {any[]} data Object of exported yarn JSON data
    */
   load(data) {
-    data.forEach((node) => {
+    let nodes = data;
+    if (typeof data === 'string') {
+      nodes = convertYarn(data);
+    }
+    nodes.forEach((node) => {
+      if (!node.title) {
+        throw new Error(`Node needs a title: ${JSON.stringify(node)}`);
+      } else if (node.title.split().length > 1) {
+        throw new Error(`Invalid node title: ${node.title}`);
+      }
       this.yarnNodes[node.title] = node;
     });
   }
@@ -76,8 +86,6 @@ class Runner {
    * @param {any[]} nodes
    */
   * evalNodes(nodes, yarnNode) {
-    if (!nodes) return { stop: false };
-
     let shortcutNodes = [];
     let prevnode = null;
     let textRun = '';
@@ -136,7 +144,8 @@ class Runner {
             return result;
           }
         }
-      } else if (node instanceof nodeTypes.FunctionCall) {
+      } else {
+        // FunctionCall
         if (node.type === 'JumpNode') {
           yield* this.run(node.destination);
           // ignore the rest of this outer loop and
@@ -148,7 +157,7 @@ class Runner {
           // tell parent loops to ignore following nodes
           return { stop: true };
         }
-        const funcArgs = node.args ? node.args.map(this.evaluateExpressionOrLiteral, this) : [];
+        const funcArgs = node.args.map(this.evaluateExpressionOrLiteral, this);
         yield new results.CommandResult(node.functionName, funcArgs, node.hashtags, yarnNode);
       }
 
@@ -171,7 +180,7 @@ class Runner {
     // Multiple options to choose from (or just a single shortcut)
     // Tag any conditional dialog options that result to false,
     // the consuming app does the actual filtering or whatever
-    const filteredSelections = selections.map((s) => {
+    const transformedSelections = selections.map((s) => {
       let isAvailable = true;
       let text = '';
 
@@ -189,14 +198,10 @@ class Runner {
       return Object.assign(s, { isAvailable, text });
     });
 
-    if (filteredSelections.length === 0) {
-      // No options to choose anymore
-      return { stop: false };
-    }
-    const optionsResult = new results.OptionsResult(filteredSelections, yarnNode);
+    const optionsResult = new results.OptionsResult(transformedSelections, yarnNode);
     yield optionsResult;
     if (optionsResult.selected !== -1) {
-      const selectedOption = filteredSelections[optionsResult.selected];
+      const selectedOption = transformedSelections[optionsResult.selected];
       if (selectedOption.content) {
         // Recursively go through the nodes nested within
         return yield* this.evalNodes(selectedOption.content, yarnNode);
@@ -210,23 +215,7 @@ class Runner {
    * Evaluates the given assignment node
    */
   evaluateAssignment(node) {
-    let result = this.evaluateExpressionOrLiteral(node.expression);
-    const currentVal = this.variables.get(node.variableName);
-
-    if (node.type === 'SetVariableAddNode') {
-      result += currentVal;
-    } else if (node.type === 'SetVariableMinusNode') {
-      result -= currentVal;
-    } else if (node.type === 'SetVariableMultiplyNode') {
-      result *= currentVal;
-    } else if (node.type === 'SetVariableDivideNode') {
-      result /= currentVal;
-    } else if (node.type === 'SetVariableEqualToNode') {
-      // Nothing to be done
-    } else {
-      throw new Error(`I don't recognize assignment type ${node.type}`);
-    }
-
+    const result = this.evaluateExpressionOrLiteral(node.expression);
     this.variables.set(node.variableName, result);
   }
 
@@ -247,7 +236,8 @@ class Runner {
       if (node.elseStatement) {
         return this.evaluateConditional(node.elseStatement);
       }
-    } else if (node.type === 'ElseNode') {
+    } else {
+      // ElseNode
       return node.statement;
     }
 

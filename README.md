@@ -9,6 +9,8 @@ This repo is a fork of a [fork](https://github.com/alforno/bondage.js) of [the o
   - Explicit typing is ignored.
   - Type safety is not enforced.
 
+- File system operations (like reading from a file) are left to the user, and dialogues should be supplied as a text string or json format.
+
 - Unary minus does not work in front of parens: (-2) works but -(2 + 2) does not.
   - use (0 - (2 + 2)) instead
 

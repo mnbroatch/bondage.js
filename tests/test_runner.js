@@ -62,7 +62,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Can run through a first option to another node', () => {
   it('Can run through a first option to another node', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeNodes');
@@ -85,6 +84,22 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], yarnData2));
 
     expect(run.next().done).to.be.true;
+  });
+
+  it('Throws an error if an out-of-range option is selected', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('ThreeNodes');
+    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeNodes'; });
+
+    let value = run.next().value;
+    value = run.next().value;
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'First choice' },
+      { text: 'Second choice' },
+    ], yarnData));
+
+    expect(() => { value.select(100); }).to.throw();
   });
 
   it('Can run through a second option to another node', () => {
@@ -175,7 +190,6 @@ describe('Dialogue', () => {
   });
 
   it('includes hashtags on command lines', () => {
-  // it.only('includes hashtags on command lines', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('BasicCommandsHashtag');
     const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsHashtag'; });
@@ -615,7 +629,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Can handle an if else conditional', () => {
   it('Can handle an if else conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIfElse');
@@ -705,7 +718,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Returns commands to the user with inline expression arguments', () => {
   it('Returns commands to the user with inline expression arguments', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('ExpressionArgumentCommand');
@@ -870,7 +882,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Should move on after a first option with no follow-up is selected', () => {
   it('Should move on after a first option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptyFirstOption');
@@ -889,7 +900,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Should move on after a second option with no follow-up is selected', () => {
   it('Should move on after a second option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptySecondOption');
@@ -991,6 +1001,16 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('Can handle an inline expression with a variable', () => {
+    runner.load(inlineExpressionYarnData);
+    const run = runner.run('InlineExpVariable');
+    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpVariable'; });
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('The results are -1 and true and true and true and true.', [], yarnData));
+
+    expect(run.next().done).to.be.true;
+  });
+
   it('Can handle an inline expression in an option', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('OptionInlineExpression');
@@ -1013,7 +1033,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Can handle an inline expression in a conditional option', () => {
   it('Can handle an inline expression in a conditional option', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('ConditionalOptionInlineExpression');
@@ -1126,7 +1145,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Can handle inline expression containing function call and expression', () => {
   it('Can handle inline expression containing function call and expression', () => {
     runner.registerFunction('testfunc', () => { return 1; });
 

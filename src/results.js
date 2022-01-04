@@ -9,7 +9,7 @@ class TextResult extends Result {
    * @param {string[]} [hashtags] the hashtags for the line
    * @param {object} [yarnNode] the parent yarn node
    */
-  constructor(text, hashtags = [], yarnNode) {
+  constructor(text, hashtags, yarnNode) {
     super();
     this.text = text;
     this.hashtags = hashtags;
@@ -25,7 +25,7 @@ class CommandResult extends Result {
    * @param {string[]} [hashtags] the hashtags for the line
    * @param {object} [yarnNode] the parent yarn node
    */
-  constructor(name, args, hashtags = [], yarnNode) {
+  constructor(name, args, hashtags, yarnNode) {
     super();
     this.name = name;
     this.args = args;

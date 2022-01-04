@@ -5,6 +5,7 @@
   "main": "src/bondage.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha tests --recursive",
+    "test:coverage": "nyc --reporter=html node node_modules/mocha/bin/mocha tests --recursive",
     "testlexer": "node node_modules/mocha/bin/mocha tests/test_lexer.js",
     "testparser": "node node_modules/mocha/bin/mocha tests/test_parser.js",
     "testrunner": "node node_modules/mocha/bin/mocha tests/test_runner.js",
@@ -42,6 +43,7 @@
     "jison": "^0.4.17",
     "json-loader": "^0.5.4",
     "mocha": "^3.4.2",
+    "nyc": "^15.1.0",
     "webpack": "^1.15.0"
   },
   "dependencies": {

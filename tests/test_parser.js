@@ -179,11 +179,16 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [
-        new nodes.TextNode('Text1', { first_line: 3 }),
-        new nodes.TextNode('Text1a', { first_line: 4 }),
-      ], { first_line: 2 }),
-      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('Text2', { first_line: 6 })], { first_line: 5 }),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut1', { first_line: 2 })],
+        [
+          new nodes.TextNode('Text1', { first_line: 3 }),
+          new nodes.TextNode('Text1a', { first_line: 4 }),
+        ],
+        { first_line: 2 }),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut2', { first_line: 5 })],
+        [new nodes.TextNode('Text2', { first_line: 6 })], { first_line: 5 }),
       new nodes.TextNode('more text', { first_line: 7 }),
     ];
 
@@ -195,16 +200,26 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [
-        new nodes.TextNode('Text1', { first_line: 3 }),
-        new nodes.DialogShortcutNode('nestedshortcut1', [
-          new nodes.TextNode('NestedText1', { first_line: 5 }),
-        ], { first_line: 4 }),
-        new nodes.DialogShortcutNode('nestedshortcut2', [
-          new nodes.TextNode('NestedText2', { first_line: 7 }),
-        ], { first_line: 6 }),
-      ], { first_line: 2 }),
-      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('Text2', { first_line: 9 })], { first_line: 8 }),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut1', { first_line: 2 })],
+        [
+          new nodes.TextNode('Text1', { first_line: 3 }),
+          new nodes.DialogShortcutNode(
+            [new nodes.TextNode('nestedshortcut1', { first_line: 4 })],
+            [
+              new nodes.TextNode('NestedText1', { first_line: 5 }),
+            ],
+            { first_line: 4 },
+          ),
+          new nodes.DialogShortcutNode(
+            [new nodes.TextNode('nestedshortcut2', { first_line: 6 })],
+            [new nodes.TextNode('NestedText2', { first_line: 7 })],
+            { first_line: 6 },
+          ),
+        ], { first_line: 2 }),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut2', { first_line: 8 })],
+        [new nodes.TextNode('Text2', { first_line: 9 })], { first_line: 8 }),
       new nodes.TextNode('more text', { first_line: 10 }),
     ];
 
@@ -216,8 +231,16 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }),
-      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('shortcut text2', { first_line: 5 })], { first_line: 4 }),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut1', { first_line: 2 })],
+        [new nodes.TextNode('shortcut text1', { first_line: 3 })],
+        { first_line: 2 },
+      ),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut2', { first_line: 4 })],
+        [new nodes.TextNode('shortcut text2', { first_line: 5 })],
+        { first_line: 4 },
+      ),
       new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
       new nodes.TextNode('more text', { first_line: 7 }),
     ];
@@ -384,12 +407,13 @@ describe('Parser', () => {
         new nodes.EqualToExpressionNode(
           new nodes.VariableNode('testvar'),
           new nodes.BooleanLiteralNode('true')),
-        [new nodes.TextNode('Hi', { first_line: 1 })]),
+        [new nodes.TextNode('Hi', { first_line: 2 })]),
     ];
 
     expect(results).to.deep.equal(expected);
   });
 
+  // it.only('can parse a nested If expression', () => {
   it('can parse a nested If expression', () => {
     const results = parser.parse('<<if $testvar == true>>\n<<if $testvar2 == false>>\nHi\n<<endif>>\n<<endif>>');
 
@@ -400,7 +424,7 @@ describe('Parser', () => {
         , new nodes.BooleanLiteralNode('true'))
         , [new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar2')
           , new nodes.BooleanLiteralNode('false'))
-          , [new nodes.TextNode('Hi', { first_line: 1 })]),
+          , [new nodes.TextNode('Hi', { first_line: 3 })]),
         ]),
     ];
 
@@ -417,7 +441,7 @@ describe('Parser', () => {
         new nodes.EqualToExpressionNode(
           new nodes.VariableNode('testvar'),
           new nodes.BooleanLiteralNode('true')),
-        [new nodes.TextNode('Hi', { first_line: 1 }),
+        [new nodes.TextNode('Hi', { first_line: 2 }),
           new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))]),
     ];
 
@@ -434,7 +458,7 @@ describe('Parser', () => {
         , new nodes.BooleanLiteralNode('true'))
         , [new nodes.IfNode(new nodes.EqualToExpressionNode(new nodes.VariableNode('testvar2')
           , new nodes.BooleanLiteralNode('false'))
-          , [new nodes.TextNode('Hi', { first_line: 1 }),
+          , [new nodes.TextNode('Hi', { first_line: 3 }),
             new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))]),
         ]),
     ];
@@ -459,7 +483,7 @@ describe('Parser', () => {
             new nodes.BooleanLiteralNode('true'),
           ),
         ),
-        [new nodes.TextNode('Hi', { first_line: 1 })],
+        [new nodes.TextNode('Hi', { first_line: 2 })],
       ),
     ];
 
@@ -489,7 +513,7 @@ describe('Parser', () => {
             new nodes.BooleanLiteralNode('true'),
           ),
         ),
-        [new nodes.TextNode('Hi', { first_line: 1 })],
+        [new nodes.TextNode('Hi', { first_line: 2 })],
       ),
     ];
 
@@ -654,8 +678,16 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }),
-      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('shortcut text2', { first_line: 5 })], { first_line: 4 }),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut1', { first_line: 2 })],
+        [new nodes.TextNode('shortcut text1', { first_line: 3 })],
+        { first_line: 2 },
+      ),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut2', { first_line: 4 })],
+        [new nodes.TextNode('shortcut text2', { first_line: 5 })],
+        { first_line: 4 },
+      ),
       new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
       new nodes.TextNode('more text', { first_line: 7 }),
     ];
@@ -668,9 +700,14 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('shortcut text1', { first_line: 3 })], { first_line: 2 }, ['hashtag1']),
       new nodes.DialogShortcutNode(
-        'shortcut2',
+        [new nodes.TextNode('shortcut1', { first_line: 2 })],
+        [new nodes.TextNode('shortcut text1', { first_line: 3 })],
+        { first_line: 2 },
+        ['hashtag1'],
+      ),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut2', { first_line: 4 })],
         [new nodes.TextNode('shortcut text2', { first_line: 5 })],
         { first_line: 4 },
         ['hashtag2'],

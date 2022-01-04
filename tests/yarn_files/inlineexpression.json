@@ -27,7 +27,7 @@
   {
     "title": "OptionInlineExpression",
     "tags": "Tag",
-    "body": "This is a test line\n-> First {$firstvar} choice\n\tThis is Option1's {$firstvar} text\n-> Second choice"
+    "body": "This is a test line\n-> Fir\\st {$firstvar} choice\n\tThis is Option1's {$firstvar} text\n-> Second choice"
   },
   {
     "title": "ConditionalOptionInlineExpression",

@@ -12,17 +12,17 @@
 	{
 		"title": "BasicIfElse",
 		"tags": "Tag",
-		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 123>>Inside if<<else>>Inside else<<endif>>Text after"
+		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 123>>\nInside if\n<<else>>\nInside else\n<<endif>>\nText after"
 	},
 	{
 		"title": "BasicIfElseIf",
 		"tags": "Tag",
-		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 123>>Inside if<<elseif $testvar == 321>>Inside elseif<<endif>>Text after"
+		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 123>>\nInside if\n<<elseif $testvar == 321>>\nInside elseif\n<<endif>>\nText after"
 	},
 	{
 		"title": "BasicIfElseIfElse",
 		"tags": "Tag",
-		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 123>>Inside if<<elseif $testvar == 1>>Inside elseif<<else>>Inside else<<endif>>Text after"
+		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 123>>\nInside if\n<<elseif $testvar == 1>>\nInside elseif\n<<else>>\nInside else\n<<endif>>\nText after"
 	},
 	{
 		"title": "ConditionalOption",
@@ -32,7 +32,7 @@
 	{
 		"title": "IfNotFunction",
 		"tags": "Tag",
-		"body": "<<if not returnFalse()>>Inside if<<endif>>\nText after\n"
+		"body": "<<if not returnFalse()>>\nInside if\n<<endif>>\nText after\n"
 	},
 	{
 		"title": "OptionAfterSuccessConditional",

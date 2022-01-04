@@ -615,6 +615,7 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  // it.only('Can handle an if else conditional', () => {
   it('Can handle an if else conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIfElse');
@@ -990,7 +991,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  // it.only('Can handle an inline expression in an option', () => {
   it('Can handle an inline expression in an option', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('OptionInlineExpression');

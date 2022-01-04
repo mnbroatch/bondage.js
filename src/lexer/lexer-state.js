@@ -16,6 +16,11 @@ class LexerState {
      * (will make the lexer emit Indent and Dedent tokens).
      */
     this.isTrackingNextIndentation = false;
+
+    /**
+     * Whether or not this state emits EndOfLine tokens
+     */
+    this.isEmittingEndOfLineTokens = false;
   }
 
   /**

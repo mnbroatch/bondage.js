@@ -75,9 +75,8 @@ class Runner {
    * the user. Calls itself recursively if that is required by nested nodes
    * @param {any[]} nodes
    */
-  * evalNodes(nodeGroup, yarnNode) {
-    if (!nodeGroup) return { stop: false };
-    const nodes = nodeGroup.flat();
+  * evalNodes(nodes, yarnNode) {
+    if (!nodes) return { stop: false };
 
     let shortcutNodes = [];
     let prevnode = null;
@@ -184,7 +183,7 @@ class Runner {
       }
 
       text = s.text.reduce((acc, node) => {
-        return this.evaluateExpressionOrLiteral(node).toString();
+        return acc + this.evaluateExpressionOrLiteral(node).toString();
       }, '');
 
       return Object.assign(s, { isAvailable, text });

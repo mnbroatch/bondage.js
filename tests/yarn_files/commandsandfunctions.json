@@ -47,7 +47,7 @@
 	{
 		"title": "VisitedFunction",
 		"tags": "Tag",
-		"body": "<<if visited(\"VisitedFunctionStart\")>>you have visited VisitedFunctionStart!<<endif>><<if visited(\"SomeOtherNode\")>>You have not visited SomeOtherNode!<<endif>>"
+		"body": "<<if visited(\"VisitedFunctionStart\")>>\nyou have visited VisitedFunctionStart!\n<<endif>>\n<<if visited(\"SomeOtherNode\")>>\nYou have not visited SomeOtherNode!\n<<endif>>"
 	},
 	{
 		"title": "VisitedFunctionStart",
@@ -57,6 +57,6 @@
 	{
 		"title": "NotVisitedFunction",
 		"tags": "Tag",
-		"body": "Hello\n<<if not visited(\"VisitedFunctionStart\")>>you have not visited VisitedFunctionStart!<<endif>>"
+		"body": "Hello\n<<if not visited(\"VisitedFunctionStart\")>>\nyou have not visited VisitedFunctionStart!\n<<endif>>"
 	}
 ]

@@ -24,14 +24,13 @@ const grammar = {
   bnf: {
     node: [
       ['statements EndOfInput', 'return $1.flat();'],
-      // ['statements EndOfInput', 'console.log(JSON.stringify($1, null, 2));console.log("==============");let x = $1.flat(); console.log(JSON.stringify(x, null, 2));return x;'],
     ],
 
     statements: [
-      ['statements conditionalBlock', '$$ = $1.concat($2);'],
-      ['statements statement', '$$ = $1.concat([$2]);'],
       ['conditionalBlock', '$$ = [$1];'],
+      ['statements conditionalBlock', '$$ = $1.concat($2);'],
       ['statement', '$$ = [$1];'],
+      ['statements statement', '$$ = $1.concat([$2]);'],
     ],
 
     statement: [
@@ -74,14 +73,17 @@ const grammar = {
     conditionalBlock: [
       ['conditional EndOfLine statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($1, $3.flat());'],
       ['conditional EndOfLine statements additionalConditionalBlocks', '$$ = new yy.IfElseNode($1, $3.flat(), $4);'],
+      ['conditionalBlock EndOfLine', '$$ = $1;'],
     ],
 
     else: [
       ['BeginCommand Else EndCommand', '$$ = undefined'],
+      ['else EndOfLine', '$$ = undefined'],
     ],
 
     elseif: [
       ['BeginCommand ElseIf expression EndCommand', '$$ = $3;'],
+      ['elseif EndOfLine', '$$ = $1;'],
     ],
 
     additionalConditionalBlocks: [
@@ -96,6 +98,7 @@ const grammar = {
       ['shortcutOption hashtags', '$$ = { ...$1, hashtags: $2 }'],
       ['shortcutOption Comment', '$$ = $1'],
       ['shortcutOption hashtags Comment', '$$ = { ...$1, hashtags: $2 }'],
+      ['shortcutOption EndOfLine', '$$ = $1'],
     ],
 
     shortcut: [

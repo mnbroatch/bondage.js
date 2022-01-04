@@ -78,17 +78,25 @@ class Lexer {
       return 'EndOfInput';
     }
 
-    let x
     if (!this.isAtTheEndOfLine()) {
       // Get the next token on the current line
-      x = this.lexNextTokenOnCurrentLine();
+      return this.lexNextTokenOnCurrentLine();
     } else if (!this.isAtTheEndOfText()) {
-      // Get the next line, and lex again.
-      x = this.lexNextLine();
+      // end of line
+      this.yylineno += 1;
+      const currentLine = this.getCurrentLine().replace(/\t/, '    ');
+      this.lines[this.yylineno - 1] = currentLine;
+      this.previousLevelOfIndentation = this.getLastRecordedIndentation()[0];
+      this.yytext = '';
+      this.yylloc = {
+        first_column: 1,
+        first_line: this.yylineno,
+        last_column: 1,
+        last_line: this.yylineno,
+      };
+      return 'EndOfLine';
     }
 
-    console.log('x', x)
-    return x
     // Something went wrong. TODO: Throw exception?
     return 'Invalid';
   }
@@ -133,10 +141,6 @@ class Lexer {
       if (match !== null && match.index === 0) {
         // Take the matched text off the front of this.text
         const matchedText = match[0];
-        // console.log('======')
-        // console.log('rules', rules)
-        // console.log('rule', rule)
-        console.log('match', match[0])
 
         // Tell the parser what the text for this token is
         this.yytext = this.getCurrentLine().substr(this.yylloc.last_column - 1, matchedText.length);
@@ -185,32 +189,6 @@ class Lexer {
 
     // Something went wrong. TODO: Throw exception?
     return 'Invalid';
-  }
-
-
-  /**
-   * lexNextLine - Start lexing the next line.
-   *
-   * @return {string}  the first token found on the next line.
-   */
-  lexNextLine() {
-    this.yylineno += 1;
-    const currentLine = this.getCurrentLine().replace(/\t/, '    ');
-
-    this.lines[this.yylineno - 1] = currentLine;
-    this.previousLevelOfIndentation = this.getLastRecordedIndentation()[0];
-
-    this.yytext = '';
-
-    this.yylloc = {
-      first_column: 1,
-      first_line: this.yylineno,
-      last_column: 1,
-      last_line: this.yylineno,
-    };
-    return 'EndOfLine';
-
-    return this.lex();
   }
 
   // /////////////// Getters & Setters

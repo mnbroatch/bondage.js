@@ -142,15 +142,20 @@ describe('Lexer', () => {
     lexer.setInput('text\n-> shortcut1\n\tText1\n-> shortcut2\n\tText2\nmore text');
 
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('ShortcutOption');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Indent');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Dedent');
     expect(lexer.lex()).to.equal('ShortcutOption');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Indent');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Dedent');
     expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('EndOfInput');
@@ -161,31 +166,39 @@ describe('Lexer', () => {
     lexer.setInput('text\n-> shortcut1\n\tText1\n\t-> nestedshortcut1\n\t\tNestedText1\n\t-> nestedshortcut2\n\t\tNestedText2\n-> shortcut2\n\tText2\nmore text');
 
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
 
     expect(lexer.lex()).to.equal('ShortcutOption');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Indent');
 
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('ShortcutOption');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Indent');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Dedent');
 
     expect(lexer.lex()).to.equal('ShortcutOption');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Indent');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Dedent');
-
     expect(lexer.lex()).to.equal('Dedent');
 
     expect(lexer.lex()).to.equal('ShortcutOption');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
 
     expect(lexer.lex()).to.equal('Indent');
     expect(lexer.lex()).to.equal('Text');
+    expect(lexer.lex()).to.equal('EndOfLine');
     expect(lexer.lex()).to.equal('Dedent');
 
     expect(lexer.lex()).to.equal('Text');
@@ -195,19 +208,6 @@ describe('Lexer', () => {
   it('can tokenize a simple assignment', () => {
     const lexer = new Lexer();
     lexer.setInput('<<set $testvar = -4.3>>');
-
-    expect(lexer.lex()).to.equal('BeginCommand');
-    expect(lexer.lex()).to.equal('Set');
-    expect(lexer.lex()).to.equal('Variable');
-    expect(lexer.lex()).to.equal('EqualToOrAssign');
-    expect(lexer.lex()).to.equal('Number');
-    expect(lexer.lex()).to.equal('EndCommand');
-    expect(lexer.lex()).to.equal('EndOfInput');
-  });
-
-  it('can tokenize a simple assignment using declare', () => {
-    const lexer = new Lexer();
-    lexer.setInput('<<declare $testvar = -4.3>>');
 
     expect(lexer.lex()).to.equal('BeginCommand');
     expect(lexer.lex()).to.equal('Set');

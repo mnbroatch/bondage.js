@@ -78,14 +78,17 @@ class Lexer {
       return 'EndOfInput';
     }
 
+    let x
     if (!this.isAtTheEndOfLine()) {
       // Get the next token on the current line
-      return this.lexNextTokenOnCurrentLine();
+      x = this.lexNextTokenOnCurrentLine();
     } else if (!this.isAtTheEndOfText()) {
       // Get the next line, and lex again.
-      return this.lexNextLine();
+      x = this.lexNextLine();
     }
 
+    console.log('x', x)
+    return x
     // Something went wrong. TODO: Throw exception?
     return 'Invalid';
   }
@@ -133,7 +136,7 @@ class Lexer {
         // console.log('======')
         // console.log('rules', rules)
         // console.log('rule', rule)
-        // console.log('match', match)
+        console.log('match', match[0])
 
         // Tell the parser what the text for this token is
         this.yytext = this.getCurrentLine().substr(this.yylloc.last_column - 1, matchedText.length);
@@ -205,6 +208,7 @@ class Lexer {
       last_column: 1,
       last_line: this.yylineno,
     };
+    return 'EndOfLine';
 
     return this.lex();
   }

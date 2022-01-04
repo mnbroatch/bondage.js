@@ -23,25 +23,27 @@ const grammar = {
 
   bnf: {
     node: [
-      ['statements EndOfInput', 'return $1;console.log($2)'],
+      ['statements EndOfInput', 'return $1.flat();'],
+      // ['statements EndOfInput', 'console.log(JSON.stringify($1, null, 2));console.log("==============");let x = $1.flat(); console.log(JSON.stringify(x, null, 2));return x;'],
     ],
 
     statements: [
       ['statements conditionalBlock', '$$ = $1.concat($2);'],
-      ['statements statement', '$$ = $1.concat($2);'],
+      ['statements statement', '$$ = $1.concat([$2]);'],
       ['conditionalBlock', '$$ = [$1];'],
       ['statement', '$$ = [$1];'],
     ],
 
     statement: [
-      ['escapedText', '$$ = $1'],
-      ['shortcut', '$$ = $1;'],
-      ['genericCommand', '$$ = $1;'],
-      ['assignmentCommand', '$$ = $1;'],
-      ['jumpCommand', '$$ = $1;'],
-      ['stopCommand', '$$ = $1;'],
-      ['inlineExpression', '$$ = $1;'],
-      ['statement hashtagsAndComments', '$$ = Object.assign($1, { hashtags: $2 });'],
+      ['text', '$$ = $1'],
+      ['shortcut', '$$ = [$1];'],
+      ['genericCommand', '$$ = [$1];'],
+      ['assignmentCommand', '$$ = [$1];'],
+      ['jumpCommand', '$$ = [$1];'],
+      ['stopCommand', '$$ = [$1];'],
+      ['statement Comment', '$$ = $1;'],
+      ['statement hashtags', '$$ = $1.map(s => Object.assign(s, { hashtags: $2 }));'],
+      ['statement EndOfLine', '$$ = $1;'],
     ],
 
     escapedTextRaw: [
@@ -50,16 +52,19 @@ const grammar = {
       ['escapedTextRaw EscapedCharacter', '$$ = $1.concat($2.substring(1));'],
       ['EscapedCharacter escapedTextRaw', '$$ = $1.substring(1).concat($2);'],
     ],
-
     escapedText: [
       ['escapedTextRaw', '$$ = new yy.TextNode($1, @$);'],
     ],
 
-    textWithExpressions: [
-      ['escapedTextRaw', '$$ = $1;'],
-      ['inlineExpressionRaw', '$$ = $1;'],
-      ['escapedTextRaw inlineExpressionRaw', '$$ = [$1, $2];'],
-      ['inlineExpressionRaw escapedTextRaw', '$$ = [$1, $2];'],
+    text: [
+      ['escapedText', '$$ = [$1]'],
+      ['inlineExpression', '$$ = [$1];'],
+      ['text text', '$$ = $1.concat($2); '],
+    ],
+
+    hashtags: [
+      ['Hashtag', '$$ = [$1.substring(1)];'],
+      ['Hashtag hashtags', '$$ = [$1.substring(1)].concat($2);'],
     ],
 
     conditional: [
@@ -67,8 +72,8 @@ const grammar = {
     ],
 
     conditionalBlock: [
-      ['conditional statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($1, $2);'],
-      ['conditional statements additionalConditionalBlocks', '$$ = new yy.IfElseNode($1, $2, $3);'],
+      ['conditional EndOfLine statements BeginCommand EndIf EndCommand', '$$ = new yy.IfNode($1, $3.flat());'],
+      ['conditional EndOfLine statements additionalConditionalBlocks', '$$ = new yy.IfElseNode($1, $3.flat(), $4);'],
     ],
 
     else: [
@@ -80,32 +85,38 @@ const grammar = {
     ],
 
     additionalConditionalBlocks: [
-      ['else statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseNode($2);'],
-      ['elseif statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseIfNode($1, $2);'],
-      ['elseif statements additionalConditionalBlocks', '$$ = new yy.ElseIfNode($1, $2, $3);'],
-    ],
-
-    hashtagsAndComments: [
-      ['Hashtag', '$$ = [$1.substring(1)];'],
-      ['Comment', '$$ = [];'],
-      ['Hashtag hashtagsAndComments', '$$ = [$1.substring(1)].concat($2);'],
-      ['hashtagsAndComments Comment', '$$ = $1;'],
+      ['else statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseNode($2.flat());'],
+      ['elseif statements BeginCommand EndIf EndCommand', '$$ = new yy.ElseIfNode($1, $2.flat());'],
+      ['elseif statements additionalConditionalBlocks', '$$ = new yy.ElseIfNode($1, $2.flat(), $3);'],
     ],
 
     shortcutOption: [
-      ['ShortcutOption escapedTextRaw', '$$ = [$2];'],
-      ['ShortcutOption escapedTextRaw conditional', '$$ = [$2, $3]'],
-      ['shortcutOption hashtagsAndComments', '$$ = [$1[0], $1[1], $2]'],
+      ['ShortcutOption text', '$$ = { text: $2 };'],
+      ['ShortcutOption text conditional', '$$ = { text: $2, conditional: $3 };'],
+      ['shortcutOption hashtags', '$$ = { ...$1, hashtags: $2 }'],
+      ['shortcutOption Comment', '$$ = $1'],
+      ['shortcutOption hashtags Comment', '$$ = { ...$1, hashtags: $2 }'],
     ],
 
     shortcut: [
-      ['shortcutOption', '$$ = new yy.DialogShortcutNode($1[0], undefined, @$, $1[2], $1[1]);'],
-      ['shortcutOption Indent statements Dedent', '$$ = new yy.DialogShortcutNode($1[0], $3, @$, $1[2], $1[1]);'],
+      ['shortcutOption', '$$ = new yy.DialogShortcutNode($1.text, undefined, @$, $1.hashtags, $1.conditional);'],
+      ['shortcutOption EndOfLine Indent statements Dedent', '$$ = new yy.DialogShortcutNode($1.text, $4.flat(), @$, $1.hashtags, $1.conditional);'],
     ],
 
     genericCommand: [
       ['BeginCommand Identifier EndCommand', '$$ = new yy.FunctionResultNode($2, [], @$);'],
-      ['BeginCommand Identifier commandArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3, @$);'],
+      ['BeginCommand Identifier genericCommandArguments EndCommand', '$$ = new yy.FunctionResultNode($2, $3, @$);'],
+    ],
+
+    genericCommandArguments: [
+      ['genericCommandArgument', '$$ = [$1];'],
+      ['genericCommandArguments genericCommandArgument', '$$ = $1.concat([$2]);'],
+    ],
+
+    genericCommandArgument: [
+      ['inlineExpression', '$$ = $1;'],
+      ['literal', '$$ = $1;'],
+      ['Identifier', '$$ = new yy.TextNode($1);'],
     ],
 
     jumpCommand: [
@@ -118,11 +129,10 @@ const grammar = {
     ],
 
     assignmentCommand: [
-      ['BeginCommand assignment EndCommand', '$$ = $2;'],
-      ['BeginCommand assignment ExplicitType EndCommand', '$$ = $2;'],
+      ['BeginCommand assignmentCommandInner EndCommand', '$$ = $2;'],
+      ['BeginCommand assignmentCommandInner ExplicitType EndCommand', '$$ = $2;'],
     ],
-
-    assignment: [
+    assignmentCommandInner: [
       ['Set Variable EqualToOrAssign expression', '$$ = new yy.SetVariableEqualToNode($2.substring(1), $4);'],
       ['Set Variable AddAssign expression', '$$ = new yy.SetVariableAddNode($2.substring(1), $4);'],
       ['Set Variable MinusAssign expression', '$$ = new yy.SetVariableMinusNode($2.substring(1), $4);'],
@@ -165,17 +175,6 @@ const grammar = {
     parenExpressionArgs: [
       ['parenExpressionArgs Comma expression', '$$ = $1.concat([$3]);'],
       ['expression', '$$ = [$1];'],
-    ],
-
-    commandArguments: [
-      ['commandArguments commandArgument', '$$ = $1.concat([$2]);'],
-      ['commandArgument', '$$ = [$1];'],
-    ],
-
-    commandArgument: [
-      ['inlineExpression', '$$ = $1;'],
-      ['literal', '$$ = $1;'],
-      ['Identifier', '$$ = new yy.TextNode($1);'],
     ],
 
     functionArgument: [

@@ -75,8 +75,9 @@ class Runner {
    * the user. Calls itself recursively if that is required by nested nodes
    * @param {any[]} nodes
    */
-  * evalNodes(nodes, yarnNode) {
-    if (!nodes) return { stop: false };
+  * evalNodes(nodeGroup, yarnNode) {
+    if (!nodeGroup) return { stop: false };
+    const nodes = nodeGroup.flat();
 
     let shortcutNodes = [];
     let prevnode = null;
@@ -172,14 +173,21 @@ class Runner {
     // Tag any conditional dialog options that result to false,
     // the consuming app does the actual filtering or whatever
     const filteredSelections = selections.map((s) => {
+      let isAvailable = true;
+      let text = '';
+
       if (
-        s.type === 'DialogShortcutNode'
-        && s.conditionalExpression
+        s.conditionalExpression
         && !this.evaluateExpressionOrLiteral(s.conditionalExpression)
       ) {
-        return Object.assign(s, { isAvailable: false });
+        isAvailable = false;
       }
-      return s;
+
+      text = s.text.reduce((acc, node) => {
+        return this.evaluateExpressionOrLiteral(node).toString();
+      }, '');
+
+      return Object.assign(s, { isAvailable, text });
     });
 
     if (filteredSelections.length === 0) {

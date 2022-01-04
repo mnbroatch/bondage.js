@@ -11,10 +11,10 @@ const Tokens = {
   Whitespace:           null,                      // (not used currently)
   Indent:               null,
   Dedent:               null,
-  EndOfLine:            null,                      // (not used currently)
+  EndOfLine:            /\n/,
   EndOfInput:           null,
 
-  UnaryMinus:           /-/,                      // ; this is differentiated from Minus
+  UnaryMinus:           /-/,                       // ; this is differentiated from Minus
                                                    // when parsing expressions (Not used currently)
 
   // Literals in ("<<commands>>")
@@ -49,7 +49,7 @@ const Tokens = {
   EndIf:                /endif(?!\w)/,
   Jump:                 /jump(?!\w)/,
   Stop:                 /stop(?!\w)/,
-  Set:                  /set(?!\w)|declare(?!\w)/,  // not spec-compliant
+  Set:                  /set(?!\w)/,                // not spec-compliant
   ExplicitType:         /as\s.*(?=>>)/,             // since we ignore explicit typing
 
   // Boolean values

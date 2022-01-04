@@ -87,6 +87,7 @@ describe('Parser', () => {
     expect(results).to.deep.equal(expected);
   });
 
+  // it.only('can parse some text followed by a newline and a command', () => {
   it('can parse some text followed by a newline and a command', () => {
     const results = parser.parse('some text\n<<commandtext>>');
 
@@ -100,16 +101,6 @@ describe('Parser', () => {
 
   it('can parse a simple assignment', () => {
     const results = parser.parse('<<set $testvar = 5>>');
-
-    const expected = [
-      new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
-    ];
-
-    expect(results).to.deep.equal(expected);
-  });
-
-  it('can parse a simple assignment using "declare", ignoring explicit types', () => {
-    const results = parser.parse('<<declare $testvar = 5 as String>>');
 
     const expected = [
       new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
@@ -184,13 +175,16 @@ describe('Parser', () => {
   });
 
   it('can parse a shortcut command', () => {
-    const results = parser.parse('text\n-> shortcut1\n\tText1\n-> shortcut2\n\tText2\nmore text');
+    const results = parser.parse('text\n-> shortcut1\n\tText1\n\tText1a\n-> shortcut2\n\tText2\nmore text');
 
     const expected = [
       new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode('shortcut1', [new nodes.TextNode('Text1', { first_line: 3 })], { first_line: 2 }),
-      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('Text2', { first_line: 5 })], { first_line: 4 }),
-      new nodes.TextNode('more text', { first_line: 6 }),
+      new nodes.DialogShortcutNode('shortcut1', [
+        new nodes.TextNode('Text1', { first_line: 3 }),
+        new nodes.TextNode('Text1a', { first_line: 4 }),
+      ], { first_line: 2 }),
+      new nodes.DialogShortcutNode('shortcut2', [new nodes.TextNode('Text2', { first_line: 6 })], { first_line: 5 }),
+      new nodes.TextNode('more text', { first_line: 7 }),
     ];
 
     expect(results).to.deep.equal(expected);
@@ -381,7 +375,7 @@ describe('Parser', () => {
   });
 
   it('can parse a simple If expression', () => {
-    const results = parser.parse('<<if $testvar == true>>Hi<<endif>>');
+    const results = parser.parse('<<if $testvar == true>>\nHi\n<<endif>>');
 
     // They should all be on the same line.
     // Runner aggregates text and expression value for same line.
@@ -397,7 +391,7 @@ describe('Parser', () => {
   });
 
   it('can parse a nested If expression', () => {
-    const results = parser.parse('<<if $testvar == true>><<if $testvar2 == false>>Hi<<endif>><<endif>>');
+    const results = parser.parse('<<if $testvar == true>>\n<<if $testvar2 == false>>\nHi\n<<endif>>\n<<endif>>');
 
     // They should all be on the same line.
     // Runner aggregates text and expression value for same line.
@@ -414,7 +408,7 @@ describe('Parser', () => {
   });
 
   it('can parse an assignment within an If expression', () => {
-    const results = parser.parse('<<if $testvar == true>>Hi\n<<set $testvar to 5>><<endif>>');
+    const results = parser.parse('<<if $testvar == true>>\nHi\n<<set $testvar to 5>>\n<<endif>>');
 
     // They should all be on the same line.
     // Runner aggregates text and expression value for same line.
@@ -431,7 +425,7 @@ describe('Parser', () => {
   });
 
   it('can parse am assignment within nested If expression', () => {
-    const results = parser.parse('<<if $testvar == true>><<if $testvar2 == false>>Hi\n<<set $testvar to 5>><<endif>><<endif>>');
+    const results = parser.parse('<<if $testvar == true>>\n<<if $testvar2 == false>>\nHi\n<<set $testvar to 5>>\n<<endif>>\n<<endif>>');
 
     // They should all be on the same line.
     // Runner aggregates text and expression value for same line.
@@ -449,7 +443,7 @@ describe('Parser', () => {
   });
 
   it('can parse an AND OR If expression', () => {
-    const results = parser.parse('<<if ($testvar == true) || $override == true>>Hi<<endif>>');
+    const results = parser.parse('<<if ($testvar == true) || $override == true>>\nHi\n<<endif>>');
 
     // They should all be on the same line.
     // Runner aggregates text and expression value for same line.
@@ -473,7 +467,7 @@ describe('Parser', () => {
   });
 
   it('can parse an AND OR If expression2', () => {
-    const results = parser.parse('<<if ($testvar == true && $testvar2 > 1) || $override == true>>Hi<<endif>>');
+    const results = parser.parse('<<if ($testvar == true && $testvar2 > 1) || $override == true>>\nHi\n<<endif>>');
 
     // They should all be on the same line.
     // Runner aggregates text and expression value for same line.

@@ -869,8 +869,8 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('Should move on after a first option with no follow-up is selected', () => {
   // it.only('Should move on after a first option with no follow-up is selected', () => {
+  it('Should move on after a first option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptyFirstOption');
     const yarnData = shortcutsYarnData.find((n) => { return n.title === 'EmptyFirstOption'; });
@@ -1045,17 +1045,6 @@ describe('Dialogue', () => {
 
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is a 2 sentence.', [], yarnData));
-
-    expect(run.next().done).to.be.true;
-  });
-
-  it('treats "declare" like "set", ignoring explicit typing', () => {
-  // it.only('treats "declare" like "set", ignoring explicit typing', () => {
-    runner.load(inlineExpressionYarnData);
-    const run = runner.run('SimpleInlineExpDeclare');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpDeclare'; });
-    const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('1', [], yarnData));
 
     expect(run.next().done).to.be.true;
   });

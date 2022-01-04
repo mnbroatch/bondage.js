@@ -35,11 +35,6 @@
     "body": "This is a test line\n-> First {$firstvar} choice<<if true == true>>\n\tThis is Option1's {$firstvar} text\n-> Second choice"
   },
   {
-    "title": "SimpleInlineExpDeclare",
-    "tags": "Tag",
-    "body": "<<declare $firstvar = 1 as String>>{$firstvar}"
-  },
-  {
     "title": "InlineExpSentence",
     "tags": "Tag",
     "body": "This is a {$firstvar}."

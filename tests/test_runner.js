@@ -1275,8 +1275,8 @@ describe('Dialogue', () => {
   it('Throws an error if two nodes have the same title', () => {
     expect(() => {
       runner.load([
-        { title: 'Cool.Node', body: 'Hello' },
-        { title: 'Cool.Node', body: 'Goodbye' },
+        { title: 'CoolNode', body: 'Hello' },
+        { title: 'CoolNode', body: 'Goodbye' },
       ]);
     }).to.throw();
   });

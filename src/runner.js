@@ -36,6 +36,9 @@ class Runner {
       if (!node.body) {
         throw new Error(`Node needs a body: ${JSON.stringify(node)}`);
       }
+      if (this.yarnNodes[node.title]) {
+        throw new Error(`Duplicate node title: ${node.title}`);
+      }
       this.yarnNodes[node.title] = node;
     });
   }

@@ -26,10 +26,16 @@ module.exports = function convertYarn(content) {
   const lines = content.split(/\r?\n/);
   let obj = null;
   let readingBody = false;
+  let filetags;
   for (let i = 0; i < lines.length; i += 1) {
-    if (lines[i].trim() === '===') {
+    if (lines[i][0] === '#' || !lines[i].trim()) {
+      if (!filetags) filetags = [];
+      if (lines[i].trim()) {
+        filetags.push(lines[i].substr(1));
+      }
+    } else if (lines[i].trim() === '===') {
       readingBody = false;
-      if (!obj.tags) obj.tags = '';
+      if (filetags) obj.filetags = filetags;
       objects.push(obj);
       obj = null;
     } else if (readingBody) {

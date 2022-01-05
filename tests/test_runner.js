@@ -16,7 +16,6 @@ describe('Dialogue', () => {
   let conditionalYarnData;
   let commandAndFunctionYarnData;
   let inlineExpressionYarnData;
-  let stringYarnDialogue;
 
   let runner;
 
@@ -27,7 +26,6 @@ describe('Dialogue', () => {
     conditionalYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/conditions.json'));
     commandAndFunctionYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/commandsandfunctions.json'));
     inlineExpressionYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/inlineexpression.json'));
-    stringYarnDialogue = fs.readFileSync('./tests/yarn_files/stringyarndialogue.yarn').toString();
   });
 
   beforeEach(() => {
@@ -1274,6 +1272,15 @@ describe('Dialogue', () => {
     expect(() => { runner.load([{ title: 'Cool.Node', body: 'Hello' }]); }).to.throw();
   });
 
+  it('Throws an error if two nodes have the same title', () => {
+    expect(() => {
+      runner.load([
+        { title: 'Cool.Node', body: 'Hello' },
+        { title: 'Cool.Node', body: 'Goodbye' },
+      ]);
+    }).to.throw();
+  });
+
   it('Throws an error if a node does not have a body', () => {
     expect(() => { runner.load([{ title: 'CoolNode', body: '' }]); }).to.throw();
   });
@@ -1289,12 +1296,48 @@ describe('Dialogue', () => {
   });
 
   it('handles a string yarn dialogue', () => {
-    runner.load(stringYarnDialogue);
+    const dialogue = `
+#someFiletag
+
+#someOtherFiletag
+
+title: Start
+tags: hello
+otherkey: someValue
+body: should be ignored
+---
+This is a test line.
+<<jump End>>
+===
+
+title: End
+---
+This is another test line.
+===`;
+    runner.load(dialogue);
     const run = runner.run('Start');
     let value = run.next().value;
-    expect(value.text).to.deep.equal('This is a test line.');
+    expect(value).to.deep.equal(new bondage.TextResult(
+      'This is a test line.',
+      [],
+      {
+        title: 'Start',
+        tags: ['hello'],
+        otherkey: 'someValue',
+        body: 'This is a test line.\n<<jump End>>\n',
+        filetags: ['someFiletag', 'someOtherFiletag'],
+      },
+    ));
     value = run.next().value;
-    expect(value.text).to.deep.equal('This is another test line.');
+    expect(value).to.deep.equal(new bondage.TextResult(
+      'This is another test line.',
+      [],
+      {
+        title: 'End',
+        body: 'This is another test line.\n',
+        filetags: ['someFiletag', 'someOtherFiletag'],
+      },
+    ));
     expect(run.next().done).to.be.true;
   });
 });

@@ -31,7 +31,7 @@ class Runner {
       if (!node.title) {
         throw new Error(`Node needs a title: ${JSON.stringify(node)}`);
       } else if (node.title.split('.').length > 1) {
-        throw new Error(`Invalid node title: ${node.title}`);
+        throw new Error(`Node title cannot contain a dot: ${node.title}`);
       }
       if (!node.body) {
         throw new Error(`Node needs a body: ${JSON.stringify(node)}`);

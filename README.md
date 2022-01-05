@@ -5,17 +5,10 @@ bondage.js for Yarn 2.0
 This repo is a fork of a [fork](https://github.com/alforno/bondage.js) of [the original](https://github.com/hylyh/bondage.js).
 
 # Known Deviations from Yarn 2.0 spec
-- There is no type system. So,
-  - Explicit typing is ignored.
-  - Type safety is not enforced.
-
-- File system operations (like reading from a file) are left to the user, and dialogues should be supplied as a text string or json format.
-
-todo: 
-disallow dots in titles
-set initial values with declare
-
-
+- Type safety is not enforced.
+- "declare" commands are ignored.
+  - You should set initial values on variableStorage manually instead.
+- Reading from a .yarn file is left to the user; dialogues should be supplied as a text string or array of node objects.
 
 # Usage
 TODO

@@ -96,12 +96,14 @@ class Runner {
     let prevnode = null;
     let textRun = '';
 
+    const filteredNodes = nodes.filter(Boolean)
+
     // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables
     // into one list (hence some of the weirdness here)
-    for (let nodeIdx = 0; nodeIdx < nodes.length; nodeIdx += 1) {
-      const node = nodes[nodeIdx];
-      const nextNode = nodes[nodeIdx + 1];
+    for (let nodeIdx = 0; nodeIdx < filteredNodes.length; nodeIdx += 1) {
+      const node = filteredNodes[nodeIdx];
+      const nextNode = filteredNodes[nodeIdx + 1];
 
       if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
         // Last shortcut in the series, so yield the shortcuts.

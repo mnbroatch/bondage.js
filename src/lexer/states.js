@@ -31,6 +31,7 @@ function makeStates() {
       .addTransition('ElseIf', 'expression')
       .addTransition('EndIf')
       .addTransition('Set', 'assignment')
+      .addTransition('Declare', 'assignment')
       .addTransition('Jump', 'jump')
       .addTransition('Stop', 'stop')
       .addTransition('EndCommand', 'base', true)
@@ -63,11 +64,7 @@ function makeStates() {
 
     assignment: new LexerState()
       .addTransition('Variable')
-      .addTransition('EqualToOrAssign', 'expression')
-      .addTransition('AddAssign', 'expression')
-      .addTransition('MinusAssign', 'expression')
-      .addTransition('MultiplyAssign', 'expression')
-      .addTransition('DivideAssign', 'expression'),
+      .addTransition('EqualToOrAssign', 'expression'),
 
     jump: new LexerState()
       .addTransition('Identifier')

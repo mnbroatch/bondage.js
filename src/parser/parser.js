@@ -132,15 +132,15 @@ const grammar = {
     ],
 
     assignmentCommand: [
-      ['BeginCommand assignmentCommandInner EndCommand', '$$ = $2;'],
-      ['BeginCommand assignmentCommandInner ExplicitType EndCommand', '$$ = $2;'],
+      ['BeginCommand setCommandInner EndCommand', '$$ = $2;'],
+      ['BeginCommand declareCommandInner EndCommand', '$$ = null'], // do i need the assignment?
     ],
-    assignmentCommandInner: [
+    setCommandInner: [
       ['Set Variable EqualToOrAssign expression', '$$ = new yy.SetVariableEqualToNode($2.substring(1), $4);'],
-      ['Set Variable AddAssign expression', '$$ = new yy.SetVariableAddNode($2.substring(1), $4);'],
-      ['Set Variable MinusAssign expression', '$$ = new yy.SetVariableMinusNode($2.substring(1), $4);'],
-      ['Set Variable MultiplyAssign expression', '$$ = new yy.SetVariableMultipyNode($2.substring(1), $4);'],
-      ['Set Variable DivideAssign expression', '$$ = new yy.SetVariableDivideNode($2.substring(1), $4);'],
+    ],
+    declareCommandInner: [
+      ['Declare Variable EqualToOrAssign expression', '$$ = null'],
+      ['Declare Variable EqualToOrAssign expression ExplicitType', '$$ = null;'],
     ],
 
     expression: [

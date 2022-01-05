@@ -78,10 +78,9 @@ class Lexer {
       return 'EndOfInput';
     }
 
-    let x
     if (!this.isAtTheEndOfLine()) {
       // Get the next token on the current line
-      x= this.lexNextTokenOnCurrentLine();
+      return this.lexNextTokenOnCurrentLine();
     } else if (!this.isAtTheEndOfText()) {
       // end of line
       this.yylineno += 1;
@@ -95,10 +94,8 @@ class Lexer {
         last_column: 1,
         last_line: this.yylineno,
       };
-      x= 'EndOfLine';
+      return 'EndOfLine';
     }
-    // console.log('x', x)
-    return x
 
     // Something went wrong. TODO: Throw exception?
     return 'Invalid';

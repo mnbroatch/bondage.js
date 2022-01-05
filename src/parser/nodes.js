@@ -7,7 +7,6 @@ class Assignment { }
 class Literal { }
 class Expression { }
 class FunctionCall { }
-class InlineExpression { }
 
 module.exports = {
   types: {
@@ -18,7 +17,6 @@ module.exports = {
     Literal,
     Expression,
     FunctionCall,
-    InlineExpression,
   },
 
   RootNode: class {
@@ -96,15 +94,6 @@ module.exports = {
       this.text = text;
       this.lineNum = lineNo ? lineNo.first_line : -1;
       this.hashtags = hashtags;
-    }
-  },
-
-  EscapedCharacterNode: class extends Text {
-    constructor(text, lineNo) {
-      super();
-      this.type = 'EscapedCharacterNode';
-      this.text = text;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
 
@@ -195,21 +184,29 @@ module.exports = {
     }
   },
 
+  ArithmeticExpressionModuloNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'ArithmeticExpressionModuloNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+  },
   // /////////////// Boolean Expression Nodes
 
   BooleanExpressionNode: class extends Expression {
-    constructor(booleanExpression) {
+    constructor(expression) {
       super();
       this.type = 'BooleanExpressionNode';
-      this.booleanExpression = booleanExpression;
+      this.expression = expression;
     }
   },
 
   NegatedBooleanExpressionNode: class extends Expression {
-    constructor(booleanExpression) {
+    constructor(expression) {
       super();
       this.type = 'NegatedBooleanExpressionNode';
-      this.booleanExpression = booleanExpression;
+      this.expression = expression;
     }
   },
 
@@ -252,7 +249,7 @@ module.exports = {
   NotEqualToExpressionNode: class extends Expression {
     constructor(expression1, expression2) {
       super();
-      this.type = 'EqualToExpressionNode';
+      this.type = 'NotEqualToExpressionNode';
       this.expression1 = expression1;
       this.expression2 = expression2;
     }
@@ -370,7 +367,7 @@ module.exports = {
   },
 
   // /////////////// Inline Expression
-  InlineExpressionNode: class extends InlineExpression {
+  InlineExpressionNode: class extends Expression {
     constructor(expression, lineNo, hashtags = []) {
       super();
       this.type = 'InlineExpressionNode';

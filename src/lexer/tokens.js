@@ -14,9 +14,6 @@ const Tokens = {
   EndOfLine:            /\n/,
   EndOfInput:           null,
 
-  UnaryMinus:           /-/,                       // ; this is differentiated from Minus
-                                                   // when parsing expressions (Not used currently)
-
   // Literals in ("<<commands>>")
   Number:               /-?[0-9]+(\.[0-9+])?/,
   String:               /"([^"\\]*(?:\\.[^"\\]*)*)"/,
@@ -67,6 +64,8 @@ const Tokens = {
   Comma:                /,/,
 
   // Operators
+  UnaryMinus:           /-(?!\s)/,
+
   EqualTo:              /(==|is(?!\w)|eq(?!\w))/,  // ==, eq, is
   GreaterThan:          /(>|gt(?!\w))/,            // >, gt
   GreaterThanOrEqualTo: /(>=|gte(?!\w))/,          // >=, gte
@@ -89,6 +88,7 @@ const Tokens = {
   Exponent:             /\*\*/,                    // **
   Multiply:             /\*/,                      // *
   Divide:               /\//,                      // /
+  Modulo:               /%/,                      // /
 
   AddAssign:            /\+=/,                     // +=
   MinusAssign:          /-=/,                      // -=

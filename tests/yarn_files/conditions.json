@@ -42,12 +42,12 @@
 	{
 		"title": "TextAfterJumpAfterOption",
 		"tags": "Tag",
-		"body": "Text before\nInside if\n-> Give key\n\t<<jump give.key>>\nText after\n"
+		"body": "Text before\nInside if\n-> Give key\n\t<<jump give_key>>\nText after\n"
 	},
 	{
 		"title": "OptionAfterOptionWithinConditional",
 		"tags": "Tag",
-		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n-> Give key\n\t<<jump give.key>>\n-> You keep the key.\n\tThe troll is displeased.\n<<endif>>\nText after\n-> FinalOption\n\t<<jump Objective>>"
+		"body": "<<set $haskey to true>>\nText before\n<<if $haskey == true>>\nInside if\n-> Give key\n\t<<jump give_key>>\n-> You keep the key.\n\tThe troll is displeased.\n<<endif>>\nText after\n-> FinalOption\n\t<<jump Objective>>"
 	},
 	{
 		"title": "ArithmeticExpressionConditional",
@@ -60,7 +60,7 @@
 		"body": "You reach the objective."
 	},
 	{
-		"title": "give.key",
+		"title": "give_key",
 		"tags": "Tag",
 		"body": "You give the key to the troll."
 	}

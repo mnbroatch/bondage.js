@@ -148,14 +148,14 @@ const grammar = {
       ['functionCall', '$$ = $1'],
       ['LeftParen expression RightParen', '$$ = $2;'],
 
-      ['UnaryMinus Number', '$$ = new yy.UnaryMinusExpressionNode($2);'],
-      ['UnaryMinus Variable', '$$ = new yy.UnaryMinusExpressionNode($2.substring(1));'],
+      ['UnaryMinus expression', '$$ = new yy.UnaryMinusExpressionNode($2);'],
 
       ['expression Add expression', '$$ = new yy.ArithmeticExpressionAddNode($1, $3);'],
       ['expression Minus expression', '$$ = new yy.ArithmeticExpressionMinusNode($1, $3);'],
       ['expression Exponent expression', '$$ = new yy.ArithmeticExpressionExponentNode($1, $3);'],
       ['expression Multiply expression', '$$ = new yy.ArithmeticExpressionMultiplyNode($1, $3);'],
       ['expression Divide expression', '$$ = new yy.ArithmeticExpressionDivideNode($1, $3);'],
+      ['expression Modulo expression', '$$ = new yy.ArithmeticExpressionModuloNode($1, $3);'],
 
       ['Not expression', '$$ = new yy.NegatedBooleanExpressionNode($2);'],
       ['expression Or expression', '$$ = new yy.BooleanOrExpressionNode($1, $3);'],

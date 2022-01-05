@@ -16,6 +16,7 @@ describe('Dialogue', () => {
   let conditionalYarnData;
   let commandAndFunctionYarnData;
   let inlineExpressionYarnData;
+  let stringYarnDialogue;
 
   let runner;
 
@@ -26,6 +27,7 @@ describe('Dialogue', () => {
     conditionalYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/conditions.json'));
     commandAndFunctionYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/commandsandfunctions.json'));
     inlineExpressionYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/inlineexpression.json'));
+    stringYarnDialogue = fs.readFileSync('./tests/yarn_files/stringyarndialogue.yarn').toString();
   });
 
   beforeEach(() => {
@@ -84,22 +86,6 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], yarnData2));
 
     expect(run.next().done).to.be.true;
-  });
-
-  it('Throws an error if an out-of-range option is selected', () => {
-    runner.load(linksYarnData);
-    const run = runner.run('ThreeNodes');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeNodes'; });
-
-    let value = run.next().value;
-    value = run.next().value;
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.OptionsResult([
-      { text: 'First choice' },
-      { text: 'Second choice' },
-    ], yarnData));
-
-    expect(() => { value.select(100); }).to.throw();
   });
 
   it('Can run through a second option to another node', () => {
@@ -407,6 +393,25 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is the third option', [], yarnData));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], yarnData));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Can set a custom variable storage', () => {
+    runner.load(assignmentYarnData);
+    const run = runner.run('Numeric');
+    const yarnData = assignmentYarnData.find((n) => { return n.title === 'Numeric'; });
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+
+    runner.setVariableStorage(new Map());
+    expect(runner.variables.get('testvar')).to.be.undefined;
+
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+
+    expect(runner.variables.get('testvar')).to.equal(-123.4);
+
     expect(run.next().done).to.be.true;
   });
 
@@ -817,7 +822,7 @@ describe('Dialogue', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('TextAfterJumpAfterOption');
     const yarnData = conditionalYarnData.find((n) => { return n.title === 'TextAfterJumpAfterOption'; });
-    const yarnData2 = conditionalYarnData.find((n) => { return n.title === 'give.key'; });
+    const yarnData2 = conditionalYarnData.find((n) => { return n.title === 'give_key'; });
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
@@ -861,7 +866,7 @@ describe('Dialogue', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterOptionWithinConditional');
     const yarnData = conditionalYarnData.find((n) => { return n.title === 'OptionAfterOptionWithinConditional'; });
-    const yarnData2 = conditionalYarnData.find((n) => { return n.title === 'give.key'; });
+    const yarnData2 = conditionalYarnData.find((n) => { return n.title === 'give_key'; });
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
@@ -996,7 +1001,7 @@ describe('Dialogue', () => {
     const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpArithmetic'; });
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('The results are 10 and 12 and -1.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are 10 and 12 and 1.', [], yarnData));
 
     expect(run.next().done).to.be.true;
   });
@@ -1006,7 +1011,7 @@ describe('Dialogue', () => {
     const run = runner.run('InlineExpVariable');
     const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpVariable'; });
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('The results are -1 and true and true and true and true.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are -1 and true and true and true and true and true.', [], yarnData));
 
     expect(run.next().done).to.be.true;
   });
@@ -1206,6 +1211,90 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], yarnData));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult('Yet another test line', [], yarnData));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('Throws an error if an out-of-range option is selected', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('ThreeNodes');
+    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeNodes'; });
+
+    let value = run.next().value;
+    value = run.next().value;
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'First choice' },
+      { text: 'Second choice' },
+    ], yarnData));
+
+    expect(() => { value.select(100); }).to.throw();
+    expect(() => { value.select(); }).to.throw();
+  });
+
+  it('Throws an error if no option is selected before next() is called', () => {
+    runner.load(linksYarnData);
+    const run = runner.run('ThreeNodes');
+    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeNodes'; });
+
+    let value = run.next().value;
+    value = run.next().value;
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.OptionsResult([
+      { text: 'First choice' },
+      { text: 'Second choice' },
+    ], yarnData));
+
+    expect(() => { run.next(); }).to.throw();
+  });
+
+  it('Throws an error if a function is called but not registered', () => {
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('FunctionConditional');
+    run.next();
+    expect(() => { run.next(); }).to.throw();
+  });
+
+  it('Throws an error if evaluateExpressionOrLiteral is called with an unknown node type', () => {
+    expect(
+      runner.evaluateExpressionOrLiteral({ type: 'TextNode', text: 'hello' }),
+    ).to.equal('hello');
+    expect(() => { runner.evaluateExpressionOrLiteral({ type: 'Blah', text: 'hello' }); }).to.throw();
+  });
+
+  it('Throws an error if starting node does not exist', () => {
+    runner.load(commandAndFunctionYarnData);
+    expect(() => { runner.run('BlahDoesNotExistBlah').next(); }).to.throw();
+  });
+
+  it('Throws an error if a node does not have a title', () => {
+    expect(() => { runner.load([{ body: 'Hello' }]); }).to.throw();
+  });
+
+  it('Throws an error if a node has a dot in the title', () => {
+    expect(() => { runner.load([{ title: 'Cool.Node', body: 'Hello' }]); }).to.throw();
+  });
+
+  it('Throws an error if a node does not have a body', () => {
+    expect(() => { runner.load([{ title: 'CoolNode', body: '' }]); }).to.throw();
+  });
+
+  it('Throws an error if a non-function is registed as a function', () => {
+    expect(() => { runner.registerFunction('testfunc', {}); }).to.throw();
+  });
+
+  it('Throws an error if custom variableStorage does not have a get or set', () => {
+    expect(() => { runner.setVariableStorage({ set: () => {} }); }).to.throw();
+    expect(() => { runner.setVariableStorage({ get: () => {} }); }).to.throw();
+    expect(() => { runner.setVariableStorage({ get: () => {}, set: () => {} }); }).to.not.throw();
+  });
+
+  it('handles a string yarn dialogue', () => {
+    runner.load(stringYarnDialogue);
+    const run = runner.run('Start');
+    let value = run.next().value;
+    expect(value.text).to.deep.equal('This is a test line.');
+    value = run.next().value;
+    expect(value.text).to.deep.equal('This is another test line.');
     expect(run.next().done).to.be.true;
   });
 });

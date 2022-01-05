@@ -66,7 +66,7 @@ class OptionsResult extends Result {
     this.yarnNode = yarnNode;
   }
 
-  select(index) {
+  select(index = -1) {
     if (index < 0 || index >= this.options.length) {
       throw new Error(`Cannot select option #${index}, there are only ${this.options.length} options`);
     }

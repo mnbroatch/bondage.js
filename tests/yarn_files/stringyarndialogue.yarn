@@ -1,0 +1,16 @@
+title: Start
+tags: hello
+otherkey: someValue
+body: should be ignored
+---
+This is a test line.
+This is another test line.
+===
+
+title: Start
+otherkey: someValue
+body: should be ignored
+---
+This is a test line.
+This is another test line.
+===

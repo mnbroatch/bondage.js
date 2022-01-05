@@ -29,11 +29,9 @@ module.exports = function convertYarn(content) {
   for (let i = 0; i < lines.length; i += 1) {
     if (lines[i].trim() === '===') {
       readingBody = false;
-      if (obj != null) {
-        if (!obj.tags) obj.tags = '';
-        objects.push(obj);
-        obj = null;
-      }
+      if (!obj.tags) obj.tags = '';
+      objects.push(obj);
+      obj = null;
     } else if (readingBody) {
       obj.body += `${lines[i]}\n`;
     } else if (lines[i].trim() === '---') {
@@ -46,10 +44,6 @@ module.exports = function convertYarn(content) {
         obj[key] = value.trim();
       }
     }
-  }
-  if (obj != null) {
-    if (!obj.tags) obj.tags = '';
-    objects.push(obj);
   }
   return objects;
 };

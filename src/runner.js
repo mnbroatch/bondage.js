@@ -4,7 +4,7 @@ const parser = require('./parser/parser');
 const results = require('./results');
 const DefaultVariableStorage = require('./default-variable-storage');
 const nodeTypes = require('./parser/nodes').types;
-const convertYarn = require('./convert-yarn').types;
+const convertYarn = require('./convert-yarn');
 
 class Runner {
   constructor() {
@@ -30,8 +30,11 @@ class Runner {
     nodes.forEach((node) => {
       if (!node.title) {
         throw new Error(`Node needs a title: ${JSON.stringify(node)}`);
-      } else if (node.title.split().length > 1) {
+      } else if (node.title.split('.').length > 1) {
         throw new Error(`Invalid node title: ${node.title}`);
+      }
+      if (!node.body) {
+        throw new Error(`Node needs a body: ${JSON.stringify(node)}`);
       }
       this.yarnNodes[node.title] = node;
     });
@@ -110,7 +113,7 @@ class Runner {
       // are combined to deliver a TextNode.
       if (
         node instanceof nodeTypes.Text
-        || node instanceof nodeTypes.InlineExpression
+        || node instanceof nodeTypes.Expression
       ) {
         textRun += this.evaluateExpressionOrLiteral(node).toString();
 
@@ -119,7 +122,7 @@ class Runner {
           && node.lineNum === nextNode.lineNum
           && (
             nextNode instanceof nodeTypes.Text
-            || nextNode instanceof nodeTypes.InlineExpression
+            || nextNode instanceof nodeTypes.Expression
           )
         ) {
           // Same line, with another text equivalent to add to the
@@ -206,6 +209,8 @@ class Runner {
         // Recursively go through the nodes nested within
         return yield* this.evalNodes(selectedOption.content, yarnNode);
       }
+    } else {
+      throw new Error('No option selected before resuming dialogue');
     }
 
     return { stop: false };
@@ -244,95 +249,59 @@ class Runner {
     return null;
   }
 
+  evaluateFunctionCall(node) {
+    if (this.functions[node.functionName]) {
+      return this.functions[node.functionName](
+        node.args.map(this.evaluateExpressionOrLiteral, this),
+      );
+    }
+    throw new Error(`Function "${node.functionName}" not found`);
+  }
+
   /**
    * Evaluates an expression or literal down to its final value
    */
   evaluateExpressionOrLiteral(node) {
-    if (node instanceof nodeTypes.Expression) {
-      if (node.type === 'UnaryMinusExpressionNode') {
-        return -1 * this.evaluateExpressionOrLiteral(node.expression);
-      } else if (node.type === 'ArithmeticExpressionAddNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) +
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'ArithmeticExpressionMinusNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) -
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'ArithmeticExpressionExponentNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1)
-          ** this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'ArithmeticExpressionMultiplyNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) *
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'ArithmeticExpressionDivideNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) /
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'BooleanExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.booleanExpression);
-      } else if (node.type === 'NegatedBooleanExpressionNode') {
-        return !this.evaluateExpressionOrLiteral(node.booleanExpression);
-      } else if (node.type === 'BooleanOrExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) ||
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'BooleanAndExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) &&
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'BooleanXorExpressionNode') {
-        return !this.evaluateExpressionOrLiteral(node.expression1) !== // Cheating
-          !this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'EqualToExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) ===
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'NotEqualToExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) !==
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'GreaterThanExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) >
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'GreaterThanOrEqualToExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) >=
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'LessThanExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) <
-          this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'LessThanOrEqualToExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) <=
-          this.evaluateExpressionOrLiteral(node.expression2);
-      }
+    const nodeHandlers = {
+      UnaryMinusExpressionNode: (a) => { return -a; },
+      ArithmeticExpressionAddNode: (a, b) => { return a + b; },
+      ArithmeticExpressionMinusNode: (a, b) => { return a - b; },
+      ArithmeticExpressionExponentNode: (a, b) => { return a ** b; },
+      ArithmeticExpressionMultiplyNode: (a, b) => { return a * b; },
+      ArithmeticExpressionDivideNode: (a, b) => { return a / b; },
+      ArithmeticExpressionModuloNode: (a, b) => { return a % b; },
+      NegatedBooleanExpressionNode: (a) => { return !a; },
+      BooleanOrExpressionNode: (a, b) => { return a || b; },
+      BooleanAndExpressionNode: (a, b) => { return a && b; },
+      BooleanXorExpressionNode: (a, b) => { return !!(a ^ b); }, // eslint-disable-line no-bitwise
+      EqualToExpressionNode: (a, b) => { return a === b; },
+      NotEqualToExpressionNode: (a, b) => { return a !== b; },
+      GreaterThanExpressionNode: (a, b) => { return a > b; },
+      GreaterThanOrEqualToExpressionNode: (a, b) => { return a >= b; },
+      LessThanExpressionNode: (a, b) => { return a < b; },
+      LessThanOrEqualToExpressionNode: (a, b) => { return a <= b; },
+      TextNode: (a) => { return a.text; },
+      NumericLiteralNode: (a) => { return parseFloat(a.numericLiteral); },
+      StringLiteralNode: (a) => { return `${a.stringLiteral}`; },
+      BooleanLiteralNode: (a) => { return a.booleanLiteral === 'true'; },
+      VariableNode: (a) => { return this.variables.get(a.variableName); },
+      FunctionResultNode: (a) => { return this.evaluateFunctionCall(a); },
+      InlineExpressionNode: (a) => { return a; },
+    };
 
-      throw new Error(`I don't recognize expression type ${node.type}`);
-    } else if (node instanceof nodeTypes.Text) {
-      return node.text;
-    } else if (node instanceof nodeTypes.Literal) {
-      if (node.type === 'NumericLiteralNode') {
-        return parseFloat(node.numericLiteral);
-      } else if (node.type === 'StringLiteralNode') {
-        return node.stringLiteral;
-      } else if (node.type === 'BooleanLiteralNode') {
-        return node.booleanLiteral === 'true';
-      } else if (node.type === 'VariableNode') {
-        return this.variables.get(node.variableName);
-      }
-
-      throw new Error(`I don't recognize literal type ${node.type}`);
-    } else if (node.type === 'FunctionResultNode') {
-      if (this.functions[node.functionName]) {
-        return this.functions[node.functionName](
-          node.args.map(this.evaluateExpressionOrLiteral, this),
-        );
-      }
-      throw new Error(`Function "${node.functionName}" not found`);
-    } else if (node.type === 'NegatedFunctionResultNode') {
-      if (this.functions[node.functionName]) {
-        return !this.functions[node.functionName](
-          node.args.map(this.evaluateExpressionOrLiteral, this),
-        );
-      }
-      throw new Error(`Function "${node.functionName}" not found`);
-    } else if (node.type === 'InlineExpressionNode') {
-      return this.evaluateExpressionOrLiteral(node.expression);
-    } else {
-      throw new Error(`I don't recognize expression/literal type ${node.type}`);
+    const handler = nodeHandlers[node.type];
+    if (!handler) {
+      throw new Error(`node type not recognized: ${node.type}`);
     }
+
+    return handler(
+      node instanceof nodeTypes.Expression
+        ? this.evaluateExpressionOrLiteral(node.expression || node.expression1)
+        : node,
+      node.expression2
+        ? this.evaluateExpressionOrLiteral(node.expression2)
+        : node,
+    );
   }
 }
 

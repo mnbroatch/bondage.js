@@ -27,7 +27,6 @@ class Runner {
     if (typeof data === 'string') {
       nodes = convertYarn(data);
     }
-    console.log('nodes', nodes)
     nodes.forEach((node) => {
       if (!node.title) {
         throw new Error(`Node needs a title: ${JSON.stringify(node)}`);

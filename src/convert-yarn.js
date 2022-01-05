@@ -28,11 +28,10 @@ module.exports = function convertYarn(content) {
   let readingBody = false;
   let filetags;
 
-
   let i = 0;
   while (lines[i][0] === '#' || !lines[i].trim()) {
-    if (!filetags) filetags = [];
     if (lines[i].trim()) {
+      if (!filetags) filetags = [];
       filetags.push(lines[i].substr(1));
     }
     i += 1;
@@ -52,6 +51,9 @@ module.exports = function convertYarn(content) {
       const [key, value] = lines[i].split(':');
       if (key !== 'body') {
         if (obj == null) obj = {};
+        if (obj[key]) {
+          throw new Error(`Duplicate tag on node: ${key}`);
+        }
         obj[key] = value.trim();
       }
     }

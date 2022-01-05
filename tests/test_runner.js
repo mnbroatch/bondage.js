@@ -1295,8 +1295,17 @@ describe('Dialogue', () => {
     expect(() => { runner.setVariableStorage({ get: () => {}, set: () => {} }); }).to.not.throw();
   });
 
-  // it('handles a string yarn dialogue', () => {
-  it.only('handles a string yarn dialogue', () => {
+  it('Throws an error if a node has a duplicate tag', () => {
+    const dialogue = `
+title: Start
+title: Start
+---
+This is a test line.
+===`;
+    expect(() => { runner.load(dialogue); }).to.throw();
+  });
+
+  it('handles a string yarn dialogue', () => {
     const dialogue = `
 #someFiletag
 
@@ -1339,6 +1348,27 @@ This is another test line.
         title: 'End',
         body: 'This is another test line.\n',
         filetags: ['someFiletag', 'someOtherFiletag'],
+      },
+    ));
+    expect(run.next().done).to.be.true;
+  });
+
+  it('handles a string yarn with no tags', () => {
+    const dialogue = `
+title: Start
+ignoreme
+---
+This is a test line.
+===`;
+    runner.load(dialogue);
+    const run = runner.run('Start');
+    const value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult(
+      'This is a test line.',
+      [],
+      {
+        title: 'Start',
+        body: 'This is a test line.\n',
       },
     ));
     expect(run.next().done).to.be.true;

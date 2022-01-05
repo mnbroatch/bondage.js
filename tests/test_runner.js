@@ -1295,7 +1295,8 @@ describe('Dialogue', () => {
     expect(() => { runner.setVariableStorage({ get: () => {}, set: () => {} }); }).to.not.throw();
   });
 
-  it('handles a string yarn dialogue', () => {
+  // it('handles a string yarn dialogue', () => {
+  it.only('handles a string yarn dialogue', () => {
     const dialogue = `
 #someFiletag
 
@@ -1311,7 +1312,9 @@ This is a test line.
 ===
 
 title: End
+
 ---
+
 This is another test line.
 ===`;
     runner.load(dialogue);

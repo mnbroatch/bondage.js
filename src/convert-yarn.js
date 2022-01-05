@@ -23,17 +23,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 module.exports = function convertYarn(content) {
   const objects = [];
-  const lines = content.split(/\r?\n/);
+  const lines = content.split(/\r?\n+/);
   let obj = null;
   let readingBody = false;
   let filetags;
-  for (let i = 0; i < lines.length; i += 1) {
-    if (lines[i][0] === '#' || !lines[i].trim()) {
-      if (!filetags) filetags = [];
-      if (lines[i].trim()) {
-        filetags.push(lines[i].substr(1));
-      }
-    } else if (lines[i].trim() === '===') {
+
+
+  let i = 0;
+  while (lines[i][0] === '#' || !lines[i].trim()) {
+    if (!filetags) filetags = [];
+    if (lines[i].trim()) {
+      filetags.push(lines[i].substr(1));
+    }
+    i += 1;
+  }
+  for (; i < lines.length; i += 1) {
+    if (lines[i].trim() === '===') {
       readingBody = false;
       if (filetags) obj.filetags = filetags;
       objects.push(obj);

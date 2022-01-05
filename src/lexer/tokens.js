@@ -47,8 +47,9 @@ const Tokens = {
   Jump:                 /jump(?!\w)/,
   Stop:                 /stop(?!\w)/,
   Set:                  /set(?!\w)/,
-  Declare:              /declare(?!\w)/,            // no-op, contrary to spec
-  ExplicitType:         /as\s.*(?=>>)/,             // no-op, contrary to spec
+  Declare:              /declare(?!\w)/,
+  As:                   /as(?!\w)/,
+  ExplicitType:         /(String|Number|Bool)(?=>>)/,
 
   // Boolean values
   True:                 /true(?!\w)/,

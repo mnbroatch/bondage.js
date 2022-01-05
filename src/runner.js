@@ -20,7 +20,7 @@ class Runner {
 
   /**
    * Loads the yarn node data into this.nodes
-   * @param {any[]} data Object of exported yarn JSON data
+   * @param {any[]} yarn dialogue as string or array
    */
   load(data) {
     let nodes = data;
@@ -41,6 +41,11 @@ class Runner {
       }
       this.yarnNodes[node.title] = node;
     });
+
+    parser.yy.areDeclarationsHandled = false;
+    parser.yy.declarations = {};
+    this.handleDeclarations(nodes);
+    parser.yy.areDeclarationsHandled = true;
   }
 
   /**
@@ -55,6 +60,52 @@ class Runner {
     }
 
     this.variables = storage;
+  }
+
+  /**
+   * Scans for <<declare>> commands and sets initial variable values
+   * @param {any[]} yarn dialogue as string or array
+   */
+  handleDeclarations(nodes) {
+    const defaultValues = {
+      Number: 0,
+      String: '',
+      Boolean: false,
+    };
+
+    const allLines = nodes.reduce((acc, node) => {
+      const nodeLines = node.body.split(/\r?\n+/);
+      return [...acc, ...nodeLines];
+    }, []);
+
+    const declareLines = allLines.reduce((acc, line) => {
+      const match = line.match(/^<<declare .+>>/);
+      return match
+        ? [...acc, line]
+        : acc;
+    }, []);
+    if (declareLines.length) {
+      parser.parse(declareLines.join('\n'));
+    }
+
+    Object.entries(parser.yy.declarations)
+      .forEach(([variableName, { expression, explicitType }]) => {
+        let value;
+        if (expression) {
+          value = this.evaluateExpressionOrLiteral(expression);
+        } else {
+          value = defaultValues[explicitType];
+        }
+
+        if (expression && explicitType && typeof value !== typeof defaultValues[explicitType]) {
+          throw new Error(`Cannot declare value ${value} as type ${explicitType} for variable ${variableName}`);
+        }
+
+        if (!this.variables.get(variableName)) {
+          console.log('variableName, value', variableName, value)
+          this.variables.set(variableName, value);
+        }
+      });
   }
 
   registerFunction(name, func) {
@@ -96,7 +147,7 @@ class Runner {
     let prevnode = null;
     let textRun = '';
 
-    const filteredNodes = nodes.filter(Boolean)
+    const filteredNodes = nodes.filter(Boolean);
 
     // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables

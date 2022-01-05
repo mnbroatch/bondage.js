@@ -83,22 +83,26 @@ class Lexer {
       return this.lexNextTokenOnCurrentLine();
     } else if (!this.isAtTheEndOfText()) {
       // end of line
-      this.yylineno += 1;
-      const currentLine = this.getCurrentLine().replace(/\t/, '    ');
-      this.lines[this.yylineno - 1] = currentLine;
-      this.previousLevelOfIndentation = this.getLastRecordedIndentation()[0];
-      this.yytext = '';
-      this.yylloc = {
-        first_column: 1,
-        first_line: this.yylineno,
-        last_column: 1,
-        last_line: this.yylineno,
-      };
+      this.advanceLine();
       return 'EndOfLine';
     }
 
     // Something went wrong. TODO: Throw exception?
     return 'Invalid';
+  }
+
+  advanceLine() {
+    this.yylineno += 1;
+    const currentLine = this.getCurrentLine().replace(/\t/, '    ');
+    this.lines[this.yylineno - 1] = currentLine;
+    this.previousLevelOfIndentation = this.getLastRecordedIndentation()[0];
+    this.yytext = '';
+    this.yylloc = {
+      first_column: 1,
+      first_line: this.yylineno,
+      last_column: 1,
+      last_line: this.yylineno,
+    };
   }
 
   lexNextTokenOnCurrentLine() {

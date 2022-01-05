@@ -5,11 +5,6 @@
     "body": "Test Line\n<<set $testvar = -123.4>>\nTest Line After"
   },
   {
-    "title": "NumericWithDeclare",
-    "tags": "Tag",
-    "body": "Test Line\n<<set $testvar = -123.4>>\n<<declare $testvar = -123.4 as Number>>\nTest Line After"
-  },
-  {
     "title": "NumericExpression",
     "tags": "Tag",
     "body": "Test Line\n<<set $testvar = (1 + 2) * -3 + 4.3>>\nTest Line After"

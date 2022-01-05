@@ -615,24 +615,6 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
-  it('does nothing on a declare command', () => {
-    runner.load(assignmentYarnData);
-    const run = runner.run('NumericWithDeclare');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'NumericWithDeclare'; });
-
-    let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
-
-    expect(runner.variables.get('testvar')).to.be.undefined;
-
-    value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
-
-    expect(runner.variables.get('testvar')).to.equal(-123.4);
-
-    expect(run.next().done).to.be.true;
-  });
-
   it('Can handle an if conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIf');

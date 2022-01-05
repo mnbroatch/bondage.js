@@ -31,7 +31,7 @@ function makeStates() {
       .addTransition('ElseIf', 'expression')
       .addTransition('EndIf')
       .addTransition('Set', 'assignment')
-      .addTransition('Declare', 'assignment')
+      .addTransition('Declare', 'declare')
       .addTransition('Jump', 'jump')
       .addTransition('Stop', 'stop')
       .addTransition('EndCommand', 'base', true)
@@ -66,6 +66,13 @@ function makeStates() {
       .addTransition('Variable')
       .addTransition('EqualToOrAssign', 'expression'),
 
+    declare: new LexerState()
+      .addTransition('As')
+      .addTransition('Variable')
+      .addTransition('ExplicitType')
+      .addTransition('EndCommand', 'base')
+      .addTransition('EqualToOrAssign', 'expression'),
+
     jump: new LexerState()
       .addTransition('Identifier')
       .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true)
@@ -75,6 +82,7 @@ function makeStates() {
       .addTransition('EndCommand', 'base', true),
 
     expression: new LexerState()
+      .addTransition('As')
       .addTransition('ExplicitType')
       .addTransition('EndCommand', 'base')
       .addTransition('Number')

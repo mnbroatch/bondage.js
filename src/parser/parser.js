@@ -139,8 +139,9 @@ const grammar = {
       ['Set Variable EqualToOrAssign expression', '$$ = new yy.SetVariableEqualToNode($2.substring(1), $4);'],
     ],
     declareCommandInner: [
-      ['Declare Variable EqualToOrAssign expression', '$$ = null'],
-      ['Declare Variable EqualToOrAssign expression ExplicitType', '$$ = null;'],
+      ['Declare Variable EqualToOrAssign expression', '$$ = null;yy.registerDeclaration($2.substring(1), $4)'],
+      ['Declare Variable EqualToOrAssign expression As ExplicitType', '$$ = null;yy.registerDeclaration($2.substring(1), $4, $6)'],
+      ['Declare Variable As ExplicitType', '$$ = null;yy.registerDeclaration($2.substring(1), undefined, $4)'],
     ],
 
     expression: [
@@ -207,5 +208,23 @@ Jison.print = () => {};
 const parser = new Jison.Parser(grammar);
 parser.lexer = new Lexer();
 parser.yy = Nodes;
+parser.yy.declarations = {};
+parser.yy.registerDeclaration = function registerDeclaration(
+  variableName,
+  expression,
+  explicitType,
+) {
+  if (!this.areDeclarationsHandled) {
+    if (this.declarations[variableName]) {
+      throw new Error(`Duplicate declaration found for variable: ${variableName}`);
+    }
+    this.declarations[variableName] = {
+      variableName,
+      expression,
+      explicitType,
+    };
+  }
+};
+
 
 module.exports = parser;

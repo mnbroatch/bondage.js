@@ -157,7 +157,9 @@ in order to move to the line with text, "You picked Red!"
 But how will your view layer know whether you're looking at a text result or an options result? Use `instanceof`:
 
 `node instanceof bondage.TextResult`
+
 `node instanceof bondage.OptionsResult`
+
 `node instanceof bondage.CommandResult`
 
 Speaking of CommandResult...

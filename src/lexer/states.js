@@ -68,8 +68,8 @@ function makeStates() {
 
     declare: new LexerState()
       .addTransition('As')
-      .addTransition('Variable')
       .addTransition('ExplicitType')
+      .addTransition('Variable')
       .addTransition('EndCommand', 'base')
       .addTransition('EqualToOrAssign', 'expression'),
 
@@ -82,8 +82,6 @@ function makeStates() {
       .addTransition('EndCommand', 'base', true),
 
     expression: new LexerState()
-      .addTransition('As')
-      .addTransition('ExplicitType')
       .addTransition('EndCommand', 'base')
       .addTransition('Number')
       .addTransition('String')

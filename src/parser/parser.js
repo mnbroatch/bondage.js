@@ -141,7 +141,6 @@ const grammar = {
     declareCommandInner: [
       ['Declare Variable EqualToOrAssign expression', '$$ = null;yy.registerDeclaration($2.substring(1), $4)'],
       ['Declare Variable EqualToOrAssign expression As ExplicitType', '$$ = null;yy.registerDeclaration($2.substring(1), $4, $6)'],
-      ['Declare Variable As ExplicitType', '$$ = null;yy.registerDeclaration($2.substring(1), undefined, $4)'],
     ],
 
     expression: [

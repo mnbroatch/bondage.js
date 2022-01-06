@@ -1373,4 +1373,65 @@ This is a test line.
     ));
     expect(run.next().done).to.be.true;
   });
+
+  it('handles declaration', () => {
+    const dialogue = `
+title: Start
+---
+<<declare $testvar1 = 1>>
+<<set $testvar2 to 2>>
+<<declare $testvar2 = 023984029384>>
+{ $testvar1 }
+{ $testvar2 }
+{ $testvar3 }
+<<declare $testvar3 = 3>>
+===`;
+    runner.load(dialogue);
+    const run = runner.run('Start');
+    let value = run.next().value;
+    expect(value.text).to.equal('1');
+    value = run.next().value;
+    expect(value.text).to.equal('2');
+    value = run.next().value;
+    expect(value.text).to.equal('3');
+    expect(run.next().done).to.be.true;
+  });
+
+  it('does not overwrite existing value with declaration', () => {
+    const dialogue = `
+title: Start
+---
+<<declare $testvar1 = 1>>
+{ $testvar1 }
+===`;
+    runner.load(dialogue);
+    const run = runner.run('Start');
+    runner.variables.set('testvar1', 99);
+    const value = run.next().value;
+    expect(value.text).to.equal('99');
+    expect(run.next().done).to.be.true;
+  });
+
+  it('throws an error on duplicate declaration', () => {
+    const dialogue = `
+title: Start
+---
+<<declare $testvar1 = 1>>
+<<declare $testvar1 = 2>>
+===`;
+    expect(() => { runner.load(dialogue); }).to.throw();
+  });
+
+  // it('throws an error if a variable value overwrites a different type', () => {
+  it.only('throws an error if a variable value overwrites a different type', () => {
+    const dialogue = `
+title: Start
+---
+<<set $testvar1 = 1>>
+<<set $testvar1 = "bad">>
+===`;
+    runner.load(dialogue);
+    const run = runner.run('Start');
+    expect(() => { run.next(); }).to.throw();
+  });
 });

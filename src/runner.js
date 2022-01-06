@@ -67,7 +67,7 @@ class Runner {
    * @param {any[]} yarn dialogue as string or array
    */
   handleDeclarations(nodes) {
-    const defaultValues = {
+    const exampleValues = {
       Number: 0,
       String: '',
       Boolean: false,
@@ -90,19 +90,13 @@ class Runner {
 
     Object.entries(parser.yy.declarations)
       .forEach(([variableName, { expression, explicitType }]) => {
-        let value;
-        if (expression) {
-          value = this.evaluateExpressionOrLiteral(expression);
-        } else {
-          value = defaultValues[explicitType];
-        }
+        const value = this.evaluateExpressionOrLiteral(expression);
 
-        if (expression && explicitType && typeof value !== typeof defaultValues[explicitType]) {
+        if (explicitType && typeof value !== typeof exampleValues[explicitType]) {
           throw new Error(`Cannot declare value ${value} as type ${explicitType} for variable ${variableName}`);
         }
 
         if (!this.variables.get(variableName)) {
-          console.log('variableName, value', variableName, value)
           this.variables.set(variableName, value);
         }
       });
@@ -277,6 +271,12 @@ class Runner {
    */
   evaluateAssignment(node) {
     const result = this.evaluateExpressionOrLiteral(node.expression);
+    const oldValue = this.variables.get(node.variableName);
+    console.log('oldValue', oldValue)
+    console.log('result', result)
+    if (oldValue && typeof oldValue !== typeof result) {
+      throw new Error(`Variable ${node.variableName} is already type ${typeof oldValue}; cannot set equal to ${result} of type ${typeof result}`);
+    }
     this.variables.set(node.variableName, result);
   }
 

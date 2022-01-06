@@ -5,8 +5,9 @@
   "main": "src/bondage.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha tests --recursive",
+    "test:coverage": "nyc --reporter=html node node_modules/mocha/bin/mocha tests --recursive",
     "lint": "node_modules/.bin/eslint .",
-    "build": "node_modules/.bin/gulp"
+    "build": "rollup -c -o dist/bondage.min.js"
   },
   "bin": {
     "bondage": "dist/bondage.js"
@@ -26,6 +27,9 @@
   },
   "homepage": "https://github.com/mnbroatch/bondage.js#readme",
   "devDependencies": {
+    "@babel/preset-env": "^7.16.7",
+    "@rollup/plugin-babel": "",
+    "babel-preset-env": "^1.7.0",
     "chai": "^4.0.1",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",

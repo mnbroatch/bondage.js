@@ -13,8 +13,8 @@ Live demo also under development.
 - Some minutia about what unicode characters define a string has not been considered.
 
 There are features in the Yarn docs that are not present in the language spec. These have not been implemented. Known examples are:
-  - `Character: some text` lines
-  - Markup
+  - `Character: some text` annotation
+  - `[b]Markup[/b]`
   
 
 # Usage

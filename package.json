@@ -2,16 +2,13 @@
   "name": "bondage",
   "version": "3.0.0",
   "description": "Yarn parser for Javascript",
-  "main": "src/bondage.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha tests --recursive",
     "test:coverage": "nyc --reporter=html node node_modules/mocha/bin/mocha tests --recursive",
     "lint": "node_modules/.bin/eslint .",
     "build": "rollup -c -o dist/bondage.min.js"
   },
-  "files": [
-    "dist/bondage.min.js"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mnbroatch/bondage.js.git"

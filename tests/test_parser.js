@@ -227,22 +227,23 @@ describe('Parser', () => {
   });
 
   it('can parse a shortcut option containing an assignment', () => {
-    const results = parser.parse('text\n-> shortcut1\n\tshortcut text1\n-> shortcut2\n\tshortcut text2\n<<set $testvar to 6>>\nmore text');
+    const results = parser.parse('<<set $testvar to 6>>\ntext\n-> shortcut1\n\tshortcut text1\n-> shortcut2\n\tshortcut text2\nmore text {$testvar}');
 
     const expected = [
-      new nodes.TextNode('text', { first_line: 1 }),
-      new nodes.DialogShortcutNode(
-        [new nodes.TextNode('shortcut1', { first_line: 2 })],
-        [new nodes.TextNode('shortcut text1', { first_line: 3 })],
-        { first_line: 2 },
-      ),
-      new nodes.DialogShortcutNode(
-        [new nodes.TextNode('shortcut2', { first_line: 4 })],
-        [new nodes.TextNode('shortcut text2', { first_line: 5 })],
-        { first_line: 4 },
-      ),
       new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('6')),
-      new nodes.TextNode('more text', { first_line: 7 }),
+      new nodes.TextNode('text', { first_line: 2 }),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut1', { first_line: 3 })],
+        [new nodes.TextNode('shortcut text1', { first_line: 4 })],
+        { first_line: 3 },
+      ),
+      new nodes.DialogShortcutNode(
+        [new nodes.TextNode('shortcut2', { first_line: 5 })],
+        [new nodes.TextNode('shortcut text2', { first_line: 6 })],
+        { first_line: 5 },
+      ),
+      new nodes.TextNode('more text ', { first_line: 7 }),
+      new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: 7 }),
     ];
 
     expect(results).to.deep.equal(expected);

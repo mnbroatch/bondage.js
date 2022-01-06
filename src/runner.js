@@ -272,8 +272,6 @@ class Runner {
   evaluateAssignment(node) {
     const result = this.evaluateExpressionOrLiteral(node.expression);
     const oldValue = this.variables.get(node.variableName);
-    console.log('oldValue', oldValue)
-    console.log('result', result)
     if (oldValue && typeof oldValue !== typeof result) {
       throw new Error(`Variable ${node.variableName} is already type ${typeof oldValue}; cannot set equal to ${result} of type ${typeof result}`);
     }

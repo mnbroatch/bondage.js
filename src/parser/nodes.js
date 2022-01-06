@@ -19,22 +19,7 @@ module.exports = {
     FunctionCall,
   },
 
-  RootNode: class {
-    constructor(dialogNodes) {
-      this.name = 'RootNode';
-      this.dialogNodes = dialogNodes || [];
-    }
-  },
-
   // /////////////// Dialog Nodes
-
-  DialogNode: class {
-    constructor(content, name) {
-      this.type = 'DialogNode';
-      this.name = name || null;
-      this.content = content;
-    }
-  },
 
   DialogShortcutNode: class extends Shortcut {
     constructor(text, content, lineNo, hashtags = [], conditionalExpression) {
@@ -42,7 +27,7 @@ module.exports = {
       this.type = 'DialogShortcutNode';
       this.text = text;
       this.content = content;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
       this.hashtags = hashtags;
       this.conditionalExpression = conditionalExpression;
     }
@@ -194,14 +179,6 @@ module.exports = {
   },
   // /////////////// Boolean Expression Nodes
 
-  BooleanExpressionNode: class extends Expression {
-    constructor(expression) {
-      super();
-      this.type = 'BooleanExpressionNode';
-      this.expression = expression;
-    }
-  },
-
   NegatedBooleanExpressionNode: class extends Expression {
     constructor(expression) {
       super();
@@ -302,46 +279,10 @@ module.exports = {
     }
   },
 
-  SetVariableAddNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableAddNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-  },
-
-  SetVariableMinusNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableMinusNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-  },
-
-  SetVariableMultipyNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableMultipyNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-  },
-
-  SetVariableDivideNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableDivideNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-  },
-
   // /////////////// Function Nodes
 
   FunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args = [], lineNo, hashtags = []) {
+    constructor(functionName, args, lineNo, hashtags = []) {
       super();
       this.type = 'FunctionResultNode';
       this.functionName = functionName;
@@ -372,7 +313,7 @@ module.exports = {
       super();
       this.type = 'InlineExpressionNode';
       this.expression = expression;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
       this.hashtags = hashtags;
     }
   },

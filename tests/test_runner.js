@@ -1404,9 +1404,9 @@ title: Start
 <<declare $testvar1 = 1>>
 { $testvar1 }
 ===`;
+    runner.variables.set('testvar1', 99);
     runner.load(dialogue);
     const run = runner.run('Start');
-    runner.variables.set('testvar1', 99);
     const value = run.next().value;
     expect(value.text).to.equal('99');
     expect(run.next().done).to.be.true;
@@ -1422,8 +1422,16 @@ title: Start
     expect(() => { runner.load(dialogue); }).to.throw();
   });
 
-  // it('throws an error if a variable value overwrites a different type', () => {
-  it.only('throws an error if a variable value overwrites a different type', () => {
+  it('throws an error if declaration value and explicit type do not match', () => {
+    const dialogue = `
+title: Start
+---
+<<declare $testvar1 = 1 as Bool>>
+===`;
+    expect(() => { runner.load(dialogue); }).to.throw();
+  });
+
+  it('throws an error if a variable value overwrites a different type', () => {
     const dialogue = `
 title: Start
 ---

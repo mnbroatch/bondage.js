@@ -5,6 +5,7 @@
 
 const chai = require('chai');
 const Lexer = require('../src/lexer/lexer');
+const LexerState = require('../src/lexer/lexer-state');
 
 const expect = chai.expect;
 
@@ -496,5 +497,25 @@ describe('Lexer', () => {
     expect(lexer.lex()).to.equal('EndInlineExp');
     expect(lexer.lex()).to.equal('Text');
     expect(lexer.lex()).to.equal('EndOfInput');
+  });
+
+  it('throws an error on invalid syntax', () => {
+    const lexer = new Lexer();
+    lexer.setInput('<<jump somewhere $good>>');
+    expect(lexer.lex()).to.equal('BeginCommand');
+    expect(lexer.lex()).to.equal('Jump');
+    expect(lexer.lex()).to.equal('Identifier');
+    expect(() => { lexer.lex(); }).to.throw();
+  });
+
+  it('throws an error if lexer is set to unknown state', () => {
+    const lexer = new Lexer();
+    expect(() => { lexer.setState('SomeUnknownState'); }).to.throw();
+  });
+
+  it('throws an error if one attempts to add two text states', () => {
+    const lexerState = new LexerState();
+    lexerState.addTextRule('Text', 'something');
+    expect(() => { lexerState.addTextRule('Text', 'somethingElse'); }).to.throw();
   });
 });

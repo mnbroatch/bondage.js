@@ -78,17 +78,13 @@ class Lexer {
       return 'EndOfInput';
     }
 
-    if (!this.isAtTheEndOfLine()) {
+    if (this.isAtTheEndOfLine()) {
       // Get the next token on the current line
-      return this.lexNextTokenOnCurrentLine();
-    } else if (!this.isAtTheEndOfText()) {
-      // end of line
       this.advanceLine();
       return 'EndOfLine';
     }
 
-    // Something went wrong. TODO: Throw exception?
-    return 'Invalid';
+    return this.lexNextTokenOnCurrentLine();
   }
 
   advanceLine() {
@@ -182,7 +178,7 @@ class Lexer {
         ) {
           // Remove leading whitespace characters
           const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
-          if (spaceMatch.length !== 0) {
+          if (spaceMatch[0]) {
             this.yylloc.last_column += spaceMatch[0].length;
           }
         }
@@ -191,8 +187,7 @@ class Lexer {
       }
     }
 
-    // Something went wrong. TODO: Throw exception?
-    return 'Invalid';
+    throw new Error(`Invalid syntax in: ${this.getCurrentLine()}`);
   }
 
   // /////////////// Getters & Setters
@@ -240,17 +235,8 @@ class Lexer {
     return this.lines[this.yylineno - 1];
   }
 
-  setCurrentLine(line) {
-    this.lines[this.yylineno - 1] = line;
-  }
-
   getCurrentLineIndentation() {
     const match = this.getCurrentLine().match(/^(\s*)/g);
-
-    if (match === null && match[0] === null) {
-      return 0;
-    }
-
     return match[0].length;
   }
 

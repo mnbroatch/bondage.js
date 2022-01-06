@@ -3,9 +3,11 @@
 
 'use strict';
 
+// TODO: Make less painful to look at
+
 const fs = require('fs');
 const chai = require('chai');
-const bondage = require('../src/bondage');
+const bondage = require('../index');
 
 const expect = chai.expect;
 

@@ -128,15 +128,17 @@ class Runner {
     const parserNodes = Array.from(parser.parse(yarnNode.body));
     const metadata = { ...yarnNode };
     delete metadata.body;
-    return yield* this.evalNodes(parserNodes, metadata);
+    return yield* this.evalNodes(parserNodes, metadata, true);
   }
 
   /**
    * Evaluate a list of parser nodes, yielding the ones that need to be seen by
    * the user. Calls itself recursively if that is required by nested nodes
-   * @param {any[]} nodes
+   * @param {Node[]} nodes
+   * @param {YarnNode[]} metadata
+   * @param {boolean} isRoot - did we get here from run()
    */
-  * evalNodes(nodes, metadata) {
+  * evalNodes(nodes, metadata, isRoot) {
     let shortcutNodes = [];
     let prevnode = null;
     let textRun = '';
@@ -203,12 +205,12 @@ class Runner {
           yield* this.run(node.destination);
           // ignore the rest of this outer loop and
           // tell parent loops to ignore following nodes
-          return { stop: true };
+          return isRoot ? undefined : { stop: true };
         }
         if (node.type === 'StopNode') {
           // ignore the rest of this outer loop and
           // tell parent loops to ignore following nodes
-          return { stop: true };
+          return isRoot ? undefined : { stop: true };
         }
         const funcArgs = node.args.map(this.evaluateExpressionOrLiteral, this);
         yield new results.CommandResult(node.functionName, funcArgs, node.hashtags, metadata);
@@ -222,7 +224,7 @@ class Runner {
       return yield* this.handleShortcuts(shortcutNodes, metadata);
     }
 
-    return { stop: false };
+    return;
   }
 
   /**
@@ -263,7 +265,7 @@ class Runner {
       throw new Error('No option selected before resuming dialogue');
     }
 
-    return { stop: false };
+    return;
   }
 
   /**

@@ -9,9 +9,9 @@
     "lint": "node_modules/.bin/eslint .",
     "build": "rollup -c -o dist/bondage.min.js"
   },
-  "bin": {
-    "bondage": "dist/bondage.js"
-  },
+  "files": [
+    "dist/bondage.min.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mnbroatch/bondage.js.git"

@@ -23,17 +23,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 module.exports = function convertYarn(content) {
   const objects = [];
-  const lines = content.split(/\r?\n+/);
+
+  const lines = content.split(/\r?\n+/)
+    .filter((line) => {
+      return !line.match(/^\s*$/);
+    });
+
   let obj = null;
   let readingBody = false;
   let filetags;
 
   let i = 0;
   while (lines[i][0] === '#' || !lines[i].trim()) {
-    if (lines[i].trim()) {
-      if (!filetags) filetags = [];
-      filetags.push(lines[i].substr(1));
-    }
+    if (!filetags) filetags = [];
+    filetags.push(lines[i].substr(1).trim());
     i += 1;
   }
   for (; i < lines.length; i += 1) {
@@ -49,12 +52,14 @@ module.exports = function convertYarn(content) {
       obj.body = '';
     } else if (lines[i].indexOf(':') > -1) {
       const [key, value] = lines[i].split(':');
-      if (key !== 'body') {
+      const trimmedKey = key.trim();
+      const trimmedValue = value.trim();
+      if (trimmedKey !== 'body') {
         if (obj == null) obj = {};
-        if (obj[key]) {
-          throw new Error(`Duplicate tag on node: ${key}`);
+        if (obj[trimmedKey]) {
+          throw new Error(`Duplicate tag on node: ${trimmedKey}`);
         }
-        obj[key] = value.trim();
+        obj[trimmedKey] = trimmedValue;
       }
     }
   }

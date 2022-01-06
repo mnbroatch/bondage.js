@@ -27,6 +27,7 @@ class Runner {
     if (typeof data === 'string') {
       nodes = convertYarn(data);
     }
+
     nodes.forEach((node) => {
       if (!node.title) {
         throw new Error(`Node needs a title: ${JSON.stringify(node)}`);
@@ -125,10 +126,9 @@ class Runner {
 
     // Parse the entire node
     const parserNodes = Array.from(parser.parse(yarnNode.body));
-    if (yarnNode.tags && typeof yarnNode.tags === 'string') {
-      yarnNode.tags = yarnNode.tags.split(' ');
-    }
-    return yield* this.evalNodes(parserNodes, yarnNode);
+    const metadata = { ...yarnNode };
+    delete metadata.body;
+    return yield* this.evalNodes(parserNodes, metadata);
   }
 
   /**
@@ -136,7 +136,7 @@ class Runner {
    * the user. Calls itself recursively if that is required by nested nodes
    * @param {any[]} nodes
    */
-  * evalNodes(nodes, yarnNode) {
+  * evalNodes(nodes, metadata) {
     let shortcutNodes = [];
     let prevnode = null;
     let textRun = '';
@@ -152,7 +152,7 @@ class Runner {
 
       if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
         // Last shortcut in the series, so yield the shortcuts.
-        const result = yield* this.handleShortcuts(shortcutNodes, yarnNode);
+        const result = yield* this.handleShortcuts(shortcutNodes, metadata);
         if (result && result.stop) {
           return result;
         }
@@ -178,7 +178,7 @@ class Runner {
           // Same line, with another text equivalent to add to the
           // text run further on in the loop, so don't yield.
         } else {
-          yield new results.TextResult(textRun, node.hashtags, yarnNode);
+          yield new results.TextResult(textRun, node.hashtags, metadata);
           textRun = '';
         }
 
@@ -192,7 +192,7 @@ class Runner {
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
           // Run the remaining results
-          const result = yield* this.evalNodes(evalResult, yarnNode);
+          const result = yield* this.evalNodes(evalResult, metadata);
           if (result && result.stop) {
             return result;
           }
@@ -211,7 +211,7 @@ class Runner {
           return { stop: true };
         }
         const funcArgs = node.args.map(this.evaluateExpressionOrLiteral, this);
-        yield new results.CommandResult(node.functionName, funcArgs, node.hashtags, yarnNode);
+        yield new results.CommandResult(node.functionName, funcArgs, node.hashtags, metadata);
       }
 
       prevnode = node;
@@ -219,7 +219,7 @@ class Runner {
 
     // The last node might be a shortcut
     if (shortcutNodes.length > 0) {
-      return yield* this.handleShortcuts(shortcutNodes, yarnNode);
+      return yield* this.handleShortcuts(shortcutNodes, metadata);
     }
 
     return { stop: false };
@@ -229,7 +229,7 @@ class Runner {
    * yield a shortcut result then handle the subsequent selection
    * @param {any[]} selections
    */
-  * handleShortcuts(selections, yarnNode) {
+  * handleShortcuts(selections, metadata) {
     // Multiple options to choose from (or just a single shortcut)
     // Tag any conditional dialog options that result to false,
     // the consuming app does the actual filtering or whatever
@@ -251,13 +251,13 @@ class Runner {
       return Object.assign(s, { isAvailable, text });
     });
 
-    const optionsResult = new results.OptionsResult(transformedSelections, yarnNode);
+    const optionsResult = new results.OptionsResult(transformedSelections, metadata);
     yield optionsResult;
-    if (optionsResult.selected !== -1) {
+    if (typeof optionsResult.selected === 'number') {
       const selectedOption = transformedSelections[optionsResult.selected];
       if (selectedOption.content) {
         // Recursively go through the nodes nested within
-        return yield* this.evalNodes(selectedOption.content, yarnNode);
+        return yield* this.evalNodes(selectedOption.content, metadata);
       }
     } else {
       throw new Error('No option selected before resuming dialogue');

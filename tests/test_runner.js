@@ -35,53 +35,58 @@ describe('Dialogue', () => {
   it('Can run through a single line', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNode');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNode'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNode'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can run through two lines', () => {
     runner.load(linksYarnData);
     const run = runner.run('TwoLines');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'TwoLines'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'TwoLines'; }) } };
+    delete metadata.body;
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can start at a different node', () => {
     runner.load(linksYarnData);
     const run = runner.run('Option2');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'Option2'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option2'; }) } };
+    delete metadata.body;
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option2\'s test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option2\'s test line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can run through a first option to another node', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeNodes');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeNodes'; });
-    const yarnData2 = linksYarnData.find((n) => { return n.title === 'Option1'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option1'; }) } };
+    delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'First choice' },
       { text: 'Second choice' },
-    ], yarnData));
+    ], metadata));
 
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], metadata2));
 
     expect(run.next().done).to.be.true;
   });
@@ -89,23 +94,25 @@ describe('Dialogue', () => {
   it('Can run through a second option to another node', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeNodes');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeNodes'; });
-    const yarnData2 = linksYarnData.find((n) => { return n.title === 'Option2'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option2'; }) } };
+    delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'First choice' },
       { text: 'Second choice' },
-    ], yarnData));
+    ], metadata));
 
     value.select(1);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option2\'s test line', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option2\'s test line', [], metadata2));
 
     expect(run.next().done).to.be.true;
   });
@@ -114,21 +121,23 @@ describe('Dialogue', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeMetadata');
     const value = run.next().value;
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeMetadata'; });
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
-    expect(value.yarnNode.someProp).to.equal('Hello');
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeMetadata'; }) } };
+    delete metadata.body;
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value.metadata.someProp).to.equal('Hello');
     expect(run.next().done).to.be.true;
   });
 
   it('Includes hashtags with text results', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeHashtag');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeHashtag'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeHashtag'; }) } };
+    delete metadata.body;
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult(
       'This is a test line',
       ['someHashtag', 'someOtherHashtag', 'lastHashtag'],
-      yarnData,
+      metadata,
     ));
     expect(run.next().done).to.be.true;
   });
@@ -136,16 +145,17 @@ describe('Dialogue', () => {
   it('Ignores comments on option lines', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('NonNestedHashtag');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'NonNestedHashtag'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNestedHashtag'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1', hashtags: ['someHashtag', 'someOtherHashtag', 'lastHashtag'] },
       { text: 'Option 2' },
-    ], yarnData));
+    ], metadata));
     value.select(1);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is the second option', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is the second option', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -153,49 +163,52 @@ describe('Dialogue', () => {
   it('includes hashtags on conditional option lines', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('ConditionalHashtag');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'ConditionalHashtag'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'ConditionalHashtag'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2', isAvailable: false, hashtags: ['someHashtag', 'someOtherHashtag'] },
       { text: 'Option 3' },
-    ], yarnData));
+    ], metadata));
 
     value.select(2);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is the third option', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is the third option', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('includes hashtags on command lines', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('BasicCommandsHashtag');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsHashtag'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsHashtag'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], ['someHashtag'], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], ['someHashtag'], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('includes hashtags on lines only containing inline expression', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('SimpleInlineExpHashtag');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpHashtag'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpHashtag'; }) } };
+    delete metadata.body;
 
     runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('1', ['someHashtag'], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('1', ['someHashtag'], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -203,36 +216,39 @@ describe('Dialogue', () => {
   it('Ignores comments on text lines', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeComment');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeComment'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeComment'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Ignores comments on their own line', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeWholeLineComment');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeWholeLineComment'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeWholeLineComment'; }) } };
+    delete metadata.body;
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Hello', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Hello', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Ignores comments on option lines', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('NonNestedComment');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'NonNestedComment'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNestedComment'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], yarnData));
+    ], metadata));
     value.select(1);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is the second option', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is the second option', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -240,49 +256,52 @@ describe('Dialogue', () => {
   it('ignores comments on conditional option lines', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('ConditionalComment');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'ConditionalComment'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'ConditionalComment'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2', isAvailable: false },
       { text: 'Option 3' },
-    ], yarnData));
+    ], metadata));
 
     value.select(2);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is the third option', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is the third option', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('ignores comments on command lines', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('BasicCommandsComment');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsComment'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsComment'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('ignores comments on lines only containing inline expression', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('SimpleInlineExpComment');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpComment'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpComment'; }) } };
+    delete metadata.body;
 
     runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('1', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('1', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -290,123 +309,132 @@ describe('Dialogue', () => {
   it('Automatically goes to the jump node', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneJumpPassthrough');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneJumpPassthrough'; });
-    const yarnData2 = linksYarnData.find((n) => { return n.title === 'Option1'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneJumpPassthrough'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...linksYarnData.find((n) => { return n.title === 'Option1'; }) };
+    delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('First test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('First test line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], metadata2));
     expect(run.next().done).to.be.true;
   });
 
   it('Automatically goes through two jumps', () => {
     runner.load(linksYarnData);
     const run = runner.run('TwoJumpPassthrough');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'TwoJumpPassthrough'; });
-    const yarnData2 = linksYarnData.find((n) => { return n.title === 'OneJumpPassthrough'; });
-    const yarnData3 = linksYarnData.find((n) => { return n.title === 'Option1'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'TwoJumpPassthrough'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...linksYarnData.find((n) => { return n.title === 'OneJumpPassthrough'; }) };
+    delete metadata2.body;
+    const metadata3 = { ...linksYarnData.find((n) => { return n.title === 'Option1'; }) };
+    delete metadata3.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Real First test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Real First test line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('First test line', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('First test line', [], metadata2));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], yarnData3));
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test line', [], metadata3));
     expect(run.next().done).to.be.true;
   });
 
   it('Can run through shortcuts', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('NonNested');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'NonNested'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNested'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], yarnData));
+    ], metadata));
 
     value.select(1);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is the second option', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is the second option', [], metadata));
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can run through nested shortcuts', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('Nested');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'Nested'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'Nested'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('text', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('text', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'shortcut1a' },
       { text: 'shortcut2a' },
-    ], yarnData));
+    ], metadata));
 
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text1', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text1', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'nestedshortcut1' },
       { text: 'nestedshortcut2' },
-    ], yarnData));
+    ], metadata));
 
     value.select(1);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('NestedText2', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('NestedText2', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('more text', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('more text', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can exclude a conditional shortcut', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('Conditional');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'Conditional'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'Conditional'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2', isAvailable: false },
       { text: 'Option 3' },
-    ], yarnData));
+    ], metadata));
 
     value.select(2);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is the third option', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is the third option', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can set a custom variable storage', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('Numeric');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'Numeric'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Numeric'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     runner.setVariableStorage(new Map());
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal(-123.4);
 
@@ -416,15 +444,16 @@ describe('Dialogue', () => {
   it('Can evaluate a numeric assignment', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('Numeric');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'Numeric'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Numeric'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal(-123.4);
 
@@ -434,15 +463,16 @@ describe('Dialogue', () => {
   it('Can evaluate a numeric assignment with an expression', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('NumericExpression');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'NumericExpression'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'NumericExpression'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal(((1 + 2) * -3) + 4.3);
 
@@ -452,15 +482,16 @@ describe('Dialogue', () => {
   it('Can evaluate a numeric assignment with division expression', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('AssignmentWithDivision');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'AssignmentWithDivision'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'AssignmentWithDivision'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line2', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line2', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal(100 / 5);
 
@@ -470,15 +501,16 @@ describe('Dialogue', () => {
   it('Can evaluate an string assignment', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('String');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'String'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'String'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal('Variable String');
 
@@ -488,15 +520,16 @@ describe('Dialogue', () => {
   it('Can evaluate a string assignment with an expression', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('StringExpression');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'StringExpression'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'StringExpression'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal('Variable String Appended');
 
@@ -506,15 +539,16 @@ describe('Dialogue', () => {
   it('Can evaluate a boolean assignment', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('Boolean');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'Boolean'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Boolean'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal(true);
 
@@ -524,14 +558,15 @@ describe('Dialogue', () => {
   it('Can evaluate a function boolean assignment', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('AssignmentWithFunction');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'AssignmentWithFunction'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'AssignmentWithFunction'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line2', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line2', [], metadata));
     expect(runner.variables.get('testvar')).to.equal(false);
 
     value = run.next().value;
@@ -543,15 +578,16 @@ describe('Dialogue', () => {
   it('Can evaluate a boolean assignment with expression', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('BooleanExpression');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'BooleanExpression'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'BooleanExpression'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal(true);
 
@@ -561,16 +597,17 @@ describe('Dialogue', () => {
   it('Can evaluate an assignment from one variable to another', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('Variable');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'Variable'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Variable'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('firstvar')).to.be.undefined;
     expect(runner.variables.get('secondvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('secondvar')).to.equal('First variable string');
 
@@ -580,16 +617,17 @@ describe('Dialogue', () => {
   it('Can evaluate an assignment from one variable to another via an expression', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('VariableExpression');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'VariableExpression'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'VariableExpression'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('firstvar')).to.be.undefined;
     expect(runner.variables.get('secondvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('secondvar')).to.equal(-4.3 + 100);
 
@@ -599,16 +637,17 @@ describe('Dialogue', () => {
   it('Can evaluate an assignment from one variable to another via an expression with self reference', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('VariableExpression2');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'VariableExpression2'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'VariableExpression2'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('firstvar')).to.be.undefined;
     expect(runner.variables.get('secondvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('firstvar')).to.equal(300);
 
@@ -618,16 +657,17 @@ describe('Dialogue', () => {
   it('Can handle an if conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIf');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'BasicIf'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIf'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside if2', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if2', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -635,14 +675,15 @@ describe('Dialogue', () => {
   it('Can handle an if else conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIfElse');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'BasicIfElse'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElse'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside else', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside else', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -650,14 +691,15 @@ describe('Dialogue', () => {
   it('Can handle an if elseif conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIfElseIf');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'BasicIfElseIf'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElseIf'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside elseif', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside elseif', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -665,14 +707,15 @@ describe('Dialogue', () => {
   it('Can handle an if elseif else conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('BasicIfElseIfElse');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'BasicIfElseIfElse'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElseIfElse'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside else', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside else', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -680,56 +723,62 @@ describe('Dialogue', () => {
   it('Halts when given the <<stop>> command', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('StopCommand');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'StopCommand'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'StopCommand'; }) } };
+    delete metadata.body;
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('First line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('First line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Ignores content after jumps when going through multiple options', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('Option1');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'Option1'; });
-    const yarnData2 = commandAndFunctionYarnData.find((n) => { return n.title === 'Option2'; });
-    const yarnData3 = commandAndFunctionYarnData.find((n) => { return n.title === 'StopCommand'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'Option1'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...commandAndFunctionYarnData.find((n) => { return n.title === 'Option2'; }) };
+    delete metadata2.body;
+    const metadata3 = { ...commandAndFunctionYarnData.find((n) => { return n.title === 'StopCommand'; }) };
+    delete metadata3.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Prompt1', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Prompt1', [], metadata));
     value = run.next().value;
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Prompt2', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('Prompt2', [], metadata2));
     value = run.next().value;
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('First line', [], yarnData3));
+    expect(value).to.deep.equal(new bondage.TextResult('First line', [], metadata3));
     expect(run.next().done).to.be.true;
   });
 
   it('Returns commands to the user', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('BasicCommands');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommands'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommands'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Returns commands to the user with inline expression arguments', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('ExpressionArgumentCommand');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; }) } };
+    delete metadata.body;
     runner.variables.set('testvar1', 1);
     runner.variables.set('testvar2', 5);
     runner.variables.set('testvar3', 10);
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 5, 'apple', 10], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [1, 5, 'apple', 10], [], metadata));
     expect(run.next().done).to.be.true;
   });
 
@@ -740,24 +789,26 @@ describe('Dialogue', () => {
 
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('BasicCommands');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommands'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommands'; }) } };
+    delete metadata.body;
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], metadata));
   });
 
 
   it('Returns complex commands to the user', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('ComplexCommands');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'ComplexCommands'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'ComplexCommands'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', [], [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('text in between commands', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], [], yarnData));
+    expect(value).to.deep.equal(new bondage.CommandResult('command', ['with', 'space'], [], metadata));
     expect(run.next().done).to.be.true;
   });
 
@@ -777,14 +828,15 @@ describe('Dialogue', () => {
 
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('FunctionConditional');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'FunctionConditional'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'FunctionConditional'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('First line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('First line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This should show', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This should show', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('After both', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('After both', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -792,13 +844,15 @@ describe('Dialogue', () => {
   it('Correctly defines the built-in visited() function', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('VisitedFunctionStart');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'VisitedFunctionStart'; });
-    const yarnData2 = commandAndFunctionYarnData.find((n) => { return n.title === 'VisitedFunction'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'VisitedFunctionStart'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...commandAndFunctionYarnData.find((n) => { return n.title === 'VisitedFunction'; }) };
+    delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Hello', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Hello', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('you have visited VisitedFunctionStart!', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('you have visited VisitedFunctionStart!', [], metadata2));
 
     expect(run.next().done).to.be.true;
   });
@@ -806,12 +860,13 @@ describe('Dialogue', () => {
   it('Correctly handles not visited()', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('NotVisitedFunction');
-    const yarnData = commandAndFunctionYarnData.find((n) => { return n.title === 'NotVisitedFunction'; });
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'NotVisitedFunction'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Hello', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Hello', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('you have not visited VisitedFunctionStart!', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('you have not visited VisitedFunctionStart!', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -819,22 +874,24 @@ describe('Dialogue', () => {
   it('Should ignore text after a jump after an option', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('TextAfterJumpAfterOption');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'TextAfterJumpAfterOption'; });
-    const yarnData2 = conditionalYarnData.find((n) => { return n.title === 'give_key'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'TextAfterJumpAfterOption'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'give_key'; }) };
+    delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Give key' },
-    ], yarnData));
+    ], metadata));
 
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('You give the key to the troll.', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('You give the key to the troll.', [], metadata2));
 
     expect(run.next().done).to.be.true;
   });
@@ -842,20 +899,22 @@ describe('Dialogue', () => {
   it('Should ignore text after a jump after a conditional option', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('ConditionalOption');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'ConditionalOption'; });
-    const yarnData2 = conditionalYarnData.find((n) => { return n.title === 'Objective'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'ConditionalOption'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'Objective'; }) };
+    delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Cond Option' },
-    ], yarnData));
+    ], metadata));
 
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('You reach the objective.', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('You reach the objective.', [], metadata2));
 
     expect(run.next().done).to.be.true;
   });
@@ -863,23 +922,25 @@ describe('Dialogue', () => {
   it('Should ignore text after a jump after an option in a conditional block', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('OptionAfterOptionWithinConditional');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'OptionAfterOptionWithinConditional'; });
-    const yarnData2 = conditionalYarnData.find((n) => { return n.title === 'give_key'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'OptionAfterOptionWithinConditional'; }) } };
+    delete metadata.body;
+    const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'give_key'; }) };
+    delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text before', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Give key' },
       { text: 'You keep the key.' },
-    ], yarnData));
+    ], metadata));
 
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('You give the key to the troll.', [], yarnData2));
+    expect(value).to.deep.equal(new bondage.TextResult('You give the key to the troll.', [], metadata2));
     value = run.next().value;
 
     expect(run.next().done).to.be.true;
@@ -888,66 +949,70 @@ describe('Dialogue', () => {
   it('Should move on after a first option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptyFirstOption');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'EmptyFirstOption'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptyFirstOption'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], yarnData));
+    ], metadata));
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Should move on after a second option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptySecondOption');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'EmptySecondOption'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptySecondOption'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], yarnData));
+    ], metadata));
     value.select(1);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Should move on after a conditional option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
     const run = runner.run('EmptyConditional');
-    const yarnData = shortcutsYarnData.find((n) => { return n.title === 'EmptyConditional'; });
+    const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptyConditional'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], yarnData));
+    ], metadata));
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is after both options', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can handle a simple inline expression', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('SimpleInlineExp');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExp'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExp'; }) } };
+    delete metadata.body;
 
     runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('1', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('1', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -955,13 +1020,14 @@ describe('Dialogue', () => {
   it('Can handle sequential inline expressions', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('SequentialInlineExpressions');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'SequentialInlineExpressions'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SequentialInlineExpressions'; }) } };
+    delete metadata.body;
 
     runner.variables.set('firstvar', 1);
     runner.variables.set('secondvar', 2);
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('12', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('12', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -969,13 +1035,14 @@ describe('Dialogue', () => {
   it('Can handle non-sequential inline expressions', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('NonSequentialInlineExpressions');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'NonSequentialInlineExpressions'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'NonSequentialInlineExpressions'; }) } };
+    delete metadata.body;
 
     runner.variables.set('firstvar', 1);
     runner.variables.set('secondvar', 2);
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('1textbetween2', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('1textbetween2', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -983,12 +1050,13 @@ describe('Dialogue', () => {
   it('Can handle a simple inline expression in a sentence', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpSentence');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpSentence'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpSentence'; }) } };
+    delete metadata.body;
 
     runner.variables.set('firstvar', 'test');
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test.', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -996,10 +1064,11 @@ describe('Dialogue', () => {
   it('Can handle an arithmetic inline expression', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpArithmetic');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpArithmetic'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpArithmetic'; }) } };
+    delete metadata.body;
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('The results are 10 and 12 and 1.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are 10 and 12 and 1.', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -1007,9 +1076,10 @@ describe('Dialogue', () => {
   it('Can handle an inline expression with a variable', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpVariable');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpVariable'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpVariable'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('The results are -1 and true and true and true and true and true.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are -1 and true and true and true and true and true.', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -1017,21 +1087,22 @@ describe('Dialogue', () => {
   it('Can handle an inline expression in an option', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('OptionInlineExpression');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'OptionInlineExpression'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'OptionInlineExpression'; }) } };
+    delete metadata.body;
     runner.variables.set('firstvar', 'test');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'First test choice' },
       { text: 'Second choice' },
-    ], yarnData));
+    ], metadata));
 
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test text', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test text', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -1039,21 +1110,22 @@ describe('Dialogue', () => {
   it('Can handle an inline expression in a conditional option', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('ConditionalOptionInlineExpression');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'ConditionalOptionInlineExpression'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'ConditionalOptionInlineExpression'; }) } };
+    delete metadata.body;
     runner.variables.set('firstvar', 'test');
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
 
     value = run.next().value;
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'First test choice' },
       { text: 'Second choice' },
-    ], yarnData));
+    ], metadata));
 
     value.select(0);
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test text', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is Option1\'s test text', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -1061,12 +1133,13 @@ describe('Dialogue', () => {
   it('Can handle a simple inline expression whitespace in a sentence', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpAddSentence');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpAddSentence'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpAddSentence'; }) } };
+    delete metadata.body;
 
     runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a 2 sentence.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a 2 sentence.', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -1074,14 +1147,15 @@ describe('Dialogue', () => {
   it('Can handle an if arithmetic expression elseif conditional', () => {
     runner.load(conditionalYarnData);
     const run = runner.run('ArithmeticExpressionConditional');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'ArithmeticExpressionConditional'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'ArithmeticExpressionConditional'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Final text', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Final text', [], metadata));
 
     expect(run.next().done).to.be.true;
   });
@@ -1089,15 +1163,16 @@ describe('Dialogue', () => {
   it('Can evaluate a numeric assignment with exponent expression', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('ExponentExpression');
-    const yarnData = assignmentYarnData.find((n) => { return n.title === 'ExponentExpression'; });
+    const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'ExponentExpression'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line', [], metadata));
 
     expect(runner.variables.get('testvar')).to.be.undefined;
 
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Test Line After', [], metadata));
 
     expect(runner.variables.get('testvar')).to.equal(2 ** 2);
 
@@ -1109,11 +1184,12 @@ describe('Dialogue', () => {
 
     runner.load(conditionalYarnData);
     const run = runner.run('IfNotFunction');
-    const yarnData = conditionalYarnData.find((n) => { return n.title === 'IfNotFunction'; });
+    const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'IfNotFunction'; }) } };
+    delete metadata.body;
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Inside if', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Text after', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
@@ -1133,18 +1209,20 @@ describe('Dialogue', () => {
 
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpFunctionResult');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpFunctionResult'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpFunctionResult'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('The results are true.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are true.', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can handle inline expression containing equality', () => {
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpEquality');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpEquality'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpEquality'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a true sentence.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a true sentence.', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
@@ -1153,48 +1231,53 @@ describe('Dialogue', () => {
 
     runner.load(inlineExpressionYarnData);
     const run = runner.run('InlineExpFunctionResultExp');
-    const yarnData = inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpFunctionResultExp'; });
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpFunctionResultExp'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('The results are 2.', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('The results are 2.', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can run through a single line with an escaped curly brace', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeEscapeCurlyBrace');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeEscapeCurlyBrace'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeCurlyBrace'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a {test} line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a {test} line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can run through a single line with two consecutive escaped curly braces', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeEscapeTwoCurlyBraces');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeEscapeTwoCurlyBraces'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeTwoCurlyBraces'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a {{test} line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a {{test} line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can run through a single line with an escaped hashtag', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeEscapeHashtag');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtag'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtag'; }) } };
+    delete metadata.body;
     const value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a #test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a #test line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Can escape hashtags and comments together', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeEscapeHashtagComment');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtagComment'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtagComment'; }) } };
+    delete metadata.body;
     const value = run.next().value;
     expect(value).to.deep.equal(new bondage.TextResult(
       'This is a test line#escaped//',
       ['lastHashtag'],
-      yarnData,
+      metadata,
     ));
     expect(run.next().done).to.be.true;
   });
@@ -1202,20 +1285,22 @@ describe('Dialogue', () => {
   it('Can run through three lines when the first ends on an escaped character', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeLineEscape');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeLineEscape'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeLineEscape'; }) } };
+    delete metadata.body;
     let value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is a test line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('This is another test line', [], metadata));
     value = run.next().value;
-    expect(value).to.deep.equal(new bondage.TextResult('Yet another test line', [], yarnData));
+    expect(value).to.deep.equal(new bondage.TextResult('Yet another test line', [], metadata));
     expect(run.next().done).to.be.true;
   });
 
   it('Throws an error if an out-of-range option is selected', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeNodes');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeNodes'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
     value = run.next().value;
@@ -1223,7 +1308,7 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'First choice' },
       { text: 'Second choice' },
-    ], yarnData));
+    ], metadata));
 
     expect(() => { value.select(100); }).to.throw();
     expect(() => { value.select(); }).to.throw();
@@ -1232,7 +1317,8 @@ describe('Dialogue', () => {
   it('Throws an error if no option is selected before next() is called', () => {
     runner.load(linksYarnData);
     const run = runner.run('ThreeNodes');
-    const yarnData = linksYarnData.find((n) => { return n.title === 'ThreeNodes'; });
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
+    delete metadata.body;
 
     let value = run.next().value;
     value = run.next().value;
@@ -1240,7 +1326,7 @@ describe('Dialogue', () => {
     expect(value).to.deep.equal(new bondage.OptionsResult([
       { text: 'First choice' },
       { text: 'Second choice' },
-    ], yarnData));
+    ], metadata));
 
     expect(() => { run.next(); }).to.throw();
   });
@@ -1312,7 +1398,6 @@ This is a test line.
 #someOtherFiletag
 
 title: Start
-tags: hello
 otherkey: someValue
 body: should be ignored
 ---
@@ -1334,9 +1419,7 @@ This is another test line.
       [],
       {
         title: 'Start',
-        tags: ['hello'],
         otherkey: 'someValue',
-        body: 'This is a test line.\n<<jump End>>\n',
         filetags: ['someFiletag', 'someOtherFiletag'],
       },
     ));
@@ -1346,7 +1429,6 @@ This is another test line.
       [],
       {
         title: 'End',
-        body: 'This is another test line.\n',
         filetags: ['someFiletag', 'someOtherFiletag'],
       },
     ));
@@ -1366,10 +1448,7 @@ This is a test line.
     expect(value).to.deep.equal(new bondage.TextResult(
       'This is a test line.',
       [],
-      {
-        title: 'Start',
-        body: 'This is a test line.\n',
-      },
+      { title: 'Start' },
     ));
     expect(run.next().done).to.be.true;
   });

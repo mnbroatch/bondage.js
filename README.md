@@ -277,3 +277,7 @@ is equivalent to:
 ]
 ```
 
+# Development
+
+The parser is compiled ahead of time, so after making changes to the grammar you will need to run `node src/parser/make-parser`. This is run automatically during `npm run build`.
+

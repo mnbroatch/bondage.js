@@ -1,10 +1,8 @@
-This project attempts to be a runner for [Yarn](https://yarnspinner.dev/) dialogues, compliant with the 2.0 language specification.
+**It is not recommended to use this package.** API improvements and additional features are present in [YarnBound](https://github.com/mnbroatch/yarn-bound), which uses this package under the hood. Conversely, this package's API has been kept mostly the same from [the original bondage.js](https://github.com/hylyh/bondage.js).
 
-This repo is a fork of a [fork](https://github.com/alforno/bondage.js) of [the original](https://github.com/hylyh/bondage.js).
+This project is a runner for [Yarn](https://yarnspinner.dev/) dialogues, attempting compliance with the 2.0 language specification.
 
-The API has been kept mostly the same from the original bondage.js. Some of the weirdness (like the use of javascript generators) will be abstracted away in a convenience layer, currently in development.
-
-Live demo also under development.
+A live demo is under development.
 
 
 # Known Deviations from Yarn 2.0 spec
@@ -12,24 +10,22 @@ Live demo also under development.
 - Reading from a .yarn file is left to the user; dialogues should be supplied to bondage.js as a text string or array of node objects.
 - Some minutia about what unicode characters define a string has not been considered.
 
-There are features in the Yarn docs that are not present in the language spec. These have not been implemented. Known examples are:
+There are features in the Yarn docs that are not present in the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md). These have not yet been implemented. Known examples are:
   - `Character: some text` annotation
   - `[b]Markup[/b]`
   
 
 # Usage
 
-For information on how to write Yarn, visit the [official documentation](https://docs.yarnspinner.dev/) and the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md).
+For information on how to write Yarn, visit the [official documentation](https://docs.yarnspinner.dev/).
 
-
-
-The examples below should show you how bondage.js works:
+The examples below illustrate how `bondage.js` in particular works:
 
 
 ### Basic Dialogue
 
 ```javascript
-import bondage from 'bondage'; // or whatever import method
+import bondage from '@mnbroatch/bondage'; // or whatever import method
 
 // bondage.js strips empty lines, but make sure lines have
 // no leading whitespace!

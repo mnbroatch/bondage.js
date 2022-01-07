@@ -224,7 +224,7 @@ class Runner {
       return yield* this.handleShortcuts(shortcutNodes, metadata);
     }
 
-    return;
+    return undefined;
   }
 
   /**
@@ -265,7 +265,7 @@ class Runner {
       throw new Error('No option selected before resuming dialogue');
     }
 
-    return;
+    return undefined;
   }
 
   /**

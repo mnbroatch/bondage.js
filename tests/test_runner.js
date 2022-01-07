@@ -814,10 +814,25 @@ describe('Dialogue', () => {
     expect(run.next().done).to.be.true;
   });
 
+  it('handles a simple function call with numbers', () => {
+    runner.registerFunction('addOne', (num) => { return num + 1; });
+    runner.load(commandAndFunctionYarnData);
+    const run = runner.run('NumberFunction');
+
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'NumberFunction'; }) } };
+    delete metadata.body;
+
+    let value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('4', [], metadata));
+    value = run.next().value;
+    expect(value).to.deep.equal(new bondage.TextResult('5', [], metadata));
+    expect(run.next().done).to.be.true;
+  });
+
   it('Evaluates a function and uses it in a conditional', () => {
-    runner.registerFunction('testfunc', (args) => {
-      if (args[0] === 'firstarg') {
-        if (args[1] === 'secondarg') {
+    runner.registerFunction('testfunc', (arg1, arg2) => {
+      if (arg1 === 'firstarg') {
+        if (arg2 === 'secondarg') {
           // Test returning true
           return true;
         }
@@ -825,7 +840,7 @@ describe('Dialogue', () => {
         return false;
       }
 
-      throw new Error(`Args ${args} were not expected in testfunc`);
+      throw new Error(`Args ${[arg1, arg2]} were not expected in testfunc`);
     });
 
     runner.load(commandAndFunctionYarnData);
@@ -1196,9 +1211,9 @@ describe('Dialogue', () => {
   });
 
   it('Can handle inline expression containing function call', () => {
-    runner.registerFunction('testfunc', (args) => {
-      if (args[0] === 'frank') {
-        if (args[1] === 2) {
+    runner.registerFunction('testfunc', (arg1, arg2) => {
+      if (arg1 === 'frank') {
+        if (arg2 === 2) {
           // Test returning true
           return true;
         }
@@ -1206,7 +1221,7 @@ describe('Dialogue', () => {
         return false;
       }
 
-      throw new Error(`Args ${args} were not expected in testfunc`);
+      throw new Error(`Args ${[arg1, arg2]} were not expected in testfunc`);
     });
 
     runner.load(inlineExpressionYarnData);

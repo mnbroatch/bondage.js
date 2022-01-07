@@ -13,8 +13,8 @@ class Runner {
     this.functions = {};
     this.visited = {}; // Which nodes have been visited
 
-    this.registerFunction('visited', (args) => {
-      return !!this.visited[args[0]];
+    this.registerFunction('visited', (nodeTitle) => {
+      return !!this.visited[nodeTitle];
     });
   }
 
@@ -308,7 +308,7 @@ class Runner {
   evaluateFunctionCall(node) {
     if (this.functions[node.functionName]) {
       return this.functions[node.functionName](
-        node.args.map(this.evaluateExpressionOrLiteral, this),
+        ...node.args.map(this.evaluateExpressionOrLiteral, this),
       );
     }
     throw new Error(`Function "${node.functionName}" not found`);

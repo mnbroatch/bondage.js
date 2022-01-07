@@ -15,7 +15,7 @@ var bondage = (function () {
 
   class FunctionCall {}
 
-  var nodes = {
+  var types = {
     types: {
       Text,
       Shortcut,
@@ -2608,7 +2608,7 @@ var bondage = (function () {
   parser.Parser = Parser;
 
   parser.lexer = new Lexer();
-  parser.yy = nodes;
+  parser.yy = types;
   parser.yy.declarations = {};
 
   parser.yy.registerDeclaration = function registerDeclaration(variableName, expression, explicitType) {
@@ -2799,7 +2799,7 @@ var bondage = (function () {
     return objects;
   };
 
-  const nodeTypes = nodes.types;
+  const nodeTypes = types.types;
 
   class Runner {
     constructor() {

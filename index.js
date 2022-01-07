@@ -1,3 +1,5 @@
 'use strict';
 
-module.exports = require('./src/runner');
+import runner from './src/runner';
+
+export default runner;

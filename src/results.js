@@ -73,4 +73,4 @@ class OptionsResult extends Result {
   }
 }
 
-module.exports = { Result, TextResult, CommandResult, OptionsResult };
+export default { Result, TextResult, CommandResult, OptionsResult };

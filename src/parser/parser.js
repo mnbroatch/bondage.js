@@ -1,8 +1,8 @@
 'use strict';
 
-const Nodes = require('./nodes');
-const Lexer = require('../lexer/lexer');
-const parser = require('./compiledParser').parser;
+import Nodes from './nodes';
+import Lexer from '../lexer/lexer';
+import { parser } from './compiledParser';
 
 parser.lexer = new Lexer();
 parser.yy = Nodes;
@@ -25,4 +25,4 @@ parser.yy.registerDeclaration = function registerDeclaration(
 };
 
 
-module.exports = parser;
+export default parser;

@@ -8,7 +8,7 @@ class Literal { }
 class Expression { }
 class FunctionCall { }
 
-module.exports = {
+export default {
   types: {
     Text,
     Shortcut,

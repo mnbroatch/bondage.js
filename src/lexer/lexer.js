@@ -3,7 +3,7 @@
 // Syncs with YarnSpinner@e0f6807,
 // see https://github.com/thesecretlab/YarnSpinner/blob/master/YarnSpinner/Lexer.cs
 
-const StateMaker = require('./states');
+import StateMaker from './states';
 
 // As opposed to the original C# implemntation which, tokenize the entire input, before emiting
 // a list of tokens, this parser will emit a token each time `lex()` is called. This change
@@ -265,4 +265,4 @@ class Lexer {
   }
 }
 
-module.exports = Lexer;
+export default Lexer;

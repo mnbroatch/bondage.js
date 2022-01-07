@@ -1,6 +1,6 @@
 'use strict';
 
-const LexerState = require('./lexer-state');
+import LexerState from './lexer-state';
 
 /**
  * @return {Object}  all states in which the lexer can be with their associated transitions.
@@ -216,6 +216,6 @@ function makeStates() {
   };
 }
 
-module.exports = {
+export default {
   makeStates: makeStates,
 };

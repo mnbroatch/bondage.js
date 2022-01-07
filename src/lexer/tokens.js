@@ -109,4 +109,4 @@ const Tokens = {
 };
 /* eslint-enable key-spacing */
 
-module.exports = Tokens;
+export default Tokens;

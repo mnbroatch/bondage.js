@@ -1,6 +1,6 @@
 'use strict';
 
-const Tokens = require('./tokens');
+import Tokens from './tokens';
 
 /**
  * A LexState object represents one of the states in which the lexer can be.
@@ -91,4 +91,4 @@ class LexerState {
   }
 }
 
-module.exports = LexerState;
+export default LexerState;

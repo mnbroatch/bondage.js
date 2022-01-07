@@ -1,10 +1,12 @@
 'use strict';
 
-const parser = require('./parser/parser');
-const results = require('./results');
-const DefaultVariableStorage = require('./default-variable-storage');
-const nodeTypes = require('./parser/nodes').types;
-const convertYarn = require('./convert-yarn');
+import parser from './parser/parser';
+import results from './results';
+import DefaultVariableStorage from './default-variable-storage';
+import convertYarn from './convert-yarn';
+import nodes from './parser/nodes';
+
+const nodeTypes = nodes.types
 
 class Runner {
   constructor() {
@@ -361,7 +363,7 @@ class Runner {
   }
 }
 
-module.exports = {
+export default {
   Runner,
   TextResult: results.TextResult,
   CommandResult: results.CommandResult,

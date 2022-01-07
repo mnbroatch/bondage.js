@@ -3,11 +3,8 @@
 
 'use strict';
 
-const chai = require('chai');
-const parser = require('../src/parser/parser');
-const nodes = require('../src/parser/nodes');
-
-const expect = chai.expect;
+import parser from '../src/parser/parser';
+import nodes from '../src/parser/nodes';
 
 describe('Parser', () => {
   it('can parse simple text', () => {
@@ -17,7 +14,7 @@ describe('Parser', () => {
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   // it.only('can parse a simple function call', () => {
@@ -28,7 +25,7 @@ describe('Parser', () => {
       new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a function call with one open arg', () => {
@@ -38,7 +35,7 @@ describe('Parser', () => {
       new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('1')], { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a function call with two open args', () => {
@@ -55,7 +52,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a function call with three open args', () => {
@@ -73,7 +70,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a function call with multiple identifiers', () => {
@@ -84,7 +81,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   // it.only('can parse some text followed by a newline and a command', () => {
@@ -96,7 +93,7 @@ describe('Parser', () => {
       new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 1 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a simple assignment', () => {
@@ -106,7 +103,7 @@ describe('Parser', () => {
       new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an assignment with function call', () => {
@@ -117,7 +114,7 @@ describe('Parser', () => {
         new nodes.FunctionResultNode('visited', [new nodes.NumericLiteralNode('1')])),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an assignment with function call containing expression', () => {
@@ -130,7 +127,7 @@ describe('Parser', () => {
           new nodes.NumericLiteralNode('2'))])),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an assignment with function call containing expression 2', () => {
@@ -146,7 +143,7 @@ describe('Parser', () => {
         ])),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an assignment involving arithmetic', () => {
@@ -171,7 +168,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a shortcut command', () => {
@@ -192,7 +189,7 @@ describe('Parser', () => {
       new nodes.TextNode('more text', { first_line: 7 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse nested shortcut commands', () => {
@@ -223,7 +220,7 @@ describe('Parser', () => {
       new nodes.TextNode('more text', { first_line: 10 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a shortcut option containing an assignment', () => {
@@ -246,7 +243,7 @@ describe('Parser', () => {
       new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: 7 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('correctly ignores a double newline', () => {
@@ -257,7 +254,7 @@ describe('Parser', () => {
       new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 2 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('correctly ignores a bunch of newlines', () => {
@@ -268,7 +265,7 @@ describe('Parser', () => {
       new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 6 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a simple inline expression', () => {
@@ -278,7 +275,7 @@ describe('Parser', () => {
       new nodes.InlineExpressionNode(new nodes.VariableNode('testvar'), { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an escaped curly brace', () => {
@@ -288,7 +285,7 @@ describe('Parser', () => {
       new nodes.TextNode('{testtext}', { first_line: 1 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an escaped command', () => {
@@ -298,7 +295,7 @@ describe('Parser', () => {
       new nodes.TextNode('<<testtext>>', { first_line: 1 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an escaped comment', () => {
@@ -308,7 +305,7 @@ describe('Parser', () => {
       new nodes.TextNode('//testtext', { first_line: 1 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an escaped hashtag', () => {
@@ -318,7 +315,7 @@ describe('Parser', () => {
       new nodes.TextNode('#testtext', { first_line: 1 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an escaped regular character', () => {
@@ -328,7 +325,7 @@ describe('Parser', () => {
       new nodes.TextNode('testtext', { first_line: 1 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a simple inline expression within a sentence', () => {
@@ -342,7 +339,7 @@ describe('Parser', () => {
       new nodes.TextNode('.', { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an inline expression within a command', () => {
@@ -361,7 +358,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse inline expression with function call', () => {
@@ -378,7 +375,7 @@ describe('Parser', () => {
       new nodes.TextNode('.', { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse inline expression with addition within a sentence', () => {
@@ -395,7 +392,7 @@ describe('Parser', () => {
       new nodes.TextNode(' test.', { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a simple If expression', () => {
@@ -411,7 +408,7 @@ describe('Parser', () => {
         [new nodes.TextNode('Hi', { first_line: 2 })]),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   // it.only('can parse a nested If expression', () => {
@@ -429,7 +426,7 @@ describe('Parser', () => {
         ]),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an assignment within an If expression', () => {
@@ -446,7 +443,7 @@ describe('Parser', () => {
           new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5'))]),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse am assignment within nested If expression', () => {
@@ -464,7 +461,7 @@ describe('Parser', () => {
         ]),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an AND OR If expression', () => {
@@ -488,7 +485,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an AND OR If expression2', () => {
@@ -518,7 +515,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a function call within an If expression', () => {
@@ -537,7 +534,7 @@ describe('Parser', () => {
         ]),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a function call within an If not expression', () => {
@@ -558,7 +555,7 @@ describe('Parser', () => {
         ]),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a function negated boolean expression', () => {
@@ -575,7 +572,7 @@ describe('Parser', () => {
         ]),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an assignment involving exponent', () => {
@@ -589,7 +586,7 @@ describe('Parser', () => {
           new nodes.NumericLiteralNode('2'))),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an assignment involving exponent 2', () => {
@@ -605,7 +602,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse an inline expression with exponent within a sentence', () => {
@@ -622,7 +619,7 @@ describe('Parser', () => {
       new nodes.TextNode(' test.', { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a comment on a text node', () => {
@@ -632,7 +629,7 @@ describe('Parser', () => {
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse hashtags on a text node', () => {
@@ -646,7 +643,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse comments on a simple function call', () => {
@@ -656,7 +653,7 @@ describe('Parser', () => {
       new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse hashtags on a simple function call', () => {
@@ -671,7 +668,7 @@ describe('Parser', () => {
       ),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse a shortcut option containing a comment', () => {
@@ -693,7 +690,7 @@ describe('Parser', () => {
       new nodes.TextNode('more text', { first_line: 7 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 
   it('can parse hashtags on shortcut options', () => {
@@ -721,6 +718,6 @@ describe('Parser', () => {
       new nodes.TextNode('more text', { first_line: 7 }),
     ];
 
-    expect(results).to.deep.equal(expected);
+    expect(results).toEqual(expected);
   });
 });

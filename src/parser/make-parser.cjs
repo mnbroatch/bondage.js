@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const Jison = require('jison');
+const Jison = require('jison-es');
 
 const grammar = {
   operators: [
@@ -200,5 +200,6 @@ const grammar = {
 };
 
 const parser = new Jison.Parser(grammar);
+console.log('parser.generate', parser.generate.toString())
 const parserSource = parser.generate();
 fs.writeFileSync('./compiledParser.js', parserSource);

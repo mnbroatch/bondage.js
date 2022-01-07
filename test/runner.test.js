@@ -19,12 +19,12 @@ describe('Dialogue', () => {
   let runner;
 
   beforeAll(() => {
-    linksYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/links.json'));
-    shortcutsYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/shortcuts.json'));
-    assignmentYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/assignment.json'));
-    conditionalYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/conditions.json'));
-    commandAndFunctionYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/commandsandfunctions.json'));
-    inlineExpressionYarnData = JSON.parse(fs.readFileSync('./tests/yarn_files/inlineexpression.json'));
+    linksYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/links.json'));
+    shortcutsYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/shortcuts.json'));
+    assignmentYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/assignment.json'));
+    conditionalYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/conditions.json'));
+    commandAndFunctionYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/commandsandfunctions.json'));
+    inlineExpressionYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/inlineexpression.json'));
   });
 
   beforeEach(() => {

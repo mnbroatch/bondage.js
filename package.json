@@ -25,26 +25,13 @@
   },
   "homepage": "https://github.com/mnbroatch/bondage.js#readme",
   "devDependencies": {
-    "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.7",
-    "@babel/register": "^7.16.7",
-    "@rollup/plugin-babel": "",
-    "@rollup/plugin-commonjs": "^21.0.1",
-    "babel-preset-env": "^1.7.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",
     "jison-es": "^0.4.18",
-    "nyc": "^15.1.0",
-    "rollup-plugin-terser": "^7.0.2",
     "babel-jest": "^27.4.4",
     "jest": "^27.4.3"
   },
-  "directories": {
-    "test": "tests"
-  },
-  "author": "mnbroatch",
-  "dependencies": {
-    "jest": "^27.4.7"
-  }
+  "author": "mnbroatch"
 }

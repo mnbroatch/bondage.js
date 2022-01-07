@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions: "off" */
-/* eslint-env mocha */
+/* eslint-env jest */
 
 'use strict';
 

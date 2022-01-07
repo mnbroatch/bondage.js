@@ -1,12 +1,10 @@
-'use strict';
-
 import parser from './parser/parser';
 import results from './results';
 import DefaultVariableStorage from './default-variable-storage';
 import convertYarn from './convert-yarn';
-import nodes from './parser/nodes';
+import types from './parser/nodes';
 
-const nodeTypes = nodes.types
+const nodeTypes = types.types;
 
 class Runner {
   constructor() {

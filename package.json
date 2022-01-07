@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "build": "rollup -c -o dist/bondage.min.js"
   },
+  "prepare" : "npm run build",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mnbroatch/bondage.js.git"

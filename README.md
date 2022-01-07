@@ -28,13 +28,13 @@ The examples below illustrate how `bondage.js` in particular works:
 import bondage from '@mnbroatch/bondage'; // or whatever import method
 
 // bondage.js strips empty lines, but make sure lines have
-// no leading whitespace!
+// no leading whitespace (besides indentation)!
 const dialogue = ` 
 # someFiletag
 title: StartingNode
 someTag: someTag
 ---
-This is another line of text.#someHashtag
+This is a line of text.#someHashtag
 ===
 `
 
@@ -42,14 +42,15 @@ const runner = new bondage.Runner()
 runner.load(dialogue)
 const generator = runner.run('StartingNode')
 let node = generator.next().value
+console.log('node', node)
 ```
 
-If we log out `node` after the last line above, we will see this object structure:
+When we log out `node` above, we will see this object structure:
 
 ```javascript
 {
   "text": "This is a line of text.",
-  "hashtags": [],
+  "hashtags": ['someHashtag'],
   "metadata": {
     "title": "StartingNode",
     "someTag": "someTag",

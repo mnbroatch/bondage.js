@@ -1,8 +1,5 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('fs'), require('path')) :
-	typeof define === 'function' && define.amd ? define(['fs', 'path'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, (global.bondage = global.bondage || {}, global.bondage.js = factory(global.require$$0, global.require$$1)));
-})(this, (function (require$$0, require$$1) { 'use strict';
+var bondage = (function (require$$0, require$$1) {
+	'use strict';
 
 	function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -3356,4 +3353,4 @@
 
 	return bondage_js;
 
-}));
+})(require$$0, require$$1);

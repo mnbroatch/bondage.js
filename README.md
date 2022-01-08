@@ -19,6 +19,8 @@ These are unlikely to be added to this project, but would instead be added to [Y
 
 # Usage
 
+Install with `npm i -S @mnbroatch/bondage` or grab `bondage.js` from the `/dist/` folder.
+
 For information on how to write Yarn, visit the [official documentation](https://docs.yarnspinner.dev/).
 
 The examples below illustrate how `bondage.js` in particular works:
@@ -41,6 +43,7 @@ title: StartingNode
 someTag: someTag
 ---
 This is a line of text.#someHashtag
+This is another line of text.
 ===
 `
 
@@ -67,6 +70,8 @@ When we log out `node` above, we will see this object structure:
 }
 ```
 
+Notice that hashtags at the end of a line go in a `hashtags` array.
+
 to continue, we call
 
 ```javascript
@@ -78,9 +83,7 @@ again, and if we log the new node, we see:
 ```javascript
 {
   "text": "This is another line of text.",
-  "hashtags": [
-    "someHashtag"
-  ],
+  "hashtags": [],
   "metadata": {
     "title": "StartingNode",
     "someTag": "someTag",
@@ -91,9 +94,7 @@ again, and if we log the new node, we see:
 }
 ```
 
-If we had jumped, we would see the new node's metadata under the `metadata` property.
-
-Notice that hashtags at the end of the line go in a `hashtags` array, and filetags (hashtags at the beginning of the dialogue) are on every node's `metadata` along with node-specific header tags.
+If we had jumped, we would see the new node's title and header tags under the `metadata` property (along with the same fileTags).
 
 
 ### Options

@@ -18,11 +18,9 @@ const common = {
           presets: [
             ['@babel/preset-env',
               {
-                targets: [
-                  '>0.25%',
-                  'not ie 11',
-                  'not op_mini all',
-                ],
+                targets: {
+                  chrome: '58',
+                },
               },
             ],
           ],

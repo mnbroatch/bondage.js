@@ -1,15 +1,15 @@
 {
   "name": "@mnbroatch/bondage",
-  "version": "3.0.7",
+  "version": "3.0.10",
   "description": "Yarn parser for Javascript",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest --verbose false",
     "test:coverage": "jest --coverage --verbose false",
     "lint": "eslint .",
     "build": "jison-es src/parser/grammar.json -o src/parser/compiledParser.js && webpack"
   },
-  "prepare": "npm run build",
+  "prepublish": "npm run build",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mnbroatch/bondage.js.git"

@@ -1,6 +1,6 @@
 {
   "name": "@mnbroatch/bondage",
-  "version": "3.0.19",
+  "version": "3.0.21",
   "description": "Yarn parser for Javascript",
   "main": "dist/bondage.js",
   "scripts": {
@@ -35,6 +35,7 @@
     "eslint-plugin-import": "^2.3.0",
     "jest": "^27.4.3",
     "jison-es": "^0.4.18",
+    "regenerator-runtime": "^0.13.9",
     "webpack": "^5.65.0",
     "webpack-cli": "^4.9.1",
     "webpack-merge": "^5.8.0"

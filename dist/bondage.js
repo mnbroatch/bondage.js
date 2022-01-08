@@ -9,10 +9,13 @@
 		root["bondage"] = factory();
 })(this, function() {
 return /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 722:
 /***/ ((module) => {
+
+
 
 /* eslint-disable */
 
@@ -90,7 +93,6 @@ module.exports = function convertYarn(content) {
 /***/ 826:
 /***/ ((module) => {
 
-"use strict";
 
 
 class DefaultVariableStorage {
@@ -111,549 +113,45 @@ class DefaultVariableStorage {
 
 module.exports = DefaultVariableStorage;
 
-/***/ })
+/***/ }),
 
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-// ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "default": () => (/* binding */ src)
-});
-
-;// CONCATENATED MODULE: ./src/parser/nodes.js
+/***/ 352:
+/***/ ((module, exports, __webpack_require__) => {
 
 
-class Text {}
 
-class Shortcut {}
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
 
-class Conditional {}
+var _runner = _interopRequireDefault(__webpack_require__(359));
 
-class Assignment {}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-class Literal {}
+var _default = _runner.default;
+exports["default"] = _default;
+module.exports = exports.default;
 
-class Expression {}
+/***/ }),
 
-class FunctionCall {}
-
-/* harmony default export */ const nodes = ({
-  types: {
-    Text,
-    Shortcut,
-    Conditional,
-    Assignment,
-    Literal,
-    Expression,
-    FunctionCall
-  },
-  // /////////////// Dialog Nodes
-  DialogShortcutNode: class extends Shortcut {
-    constructor(text, content, lineNo) {
-      let hashtags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-      let conditionalExpression = arguments.length > 4 ? arguments[4] : undefined;
-      super();
-      this.type = 'DialogShortcutNode';
-      this.text = text;
-      this.content = content;
-      this.lineNum = lineNo.first_line;
-      this.hashtags = hashtags;
-      this.conditionalExpression = conditionalExpression;
-    }
-
-  },
-  // /////////////// Conditional Nodes
-  IfNode: class extends Conditional {
-    constructor(expression, statement) {
-      super();
-      this.type = 'IfNode';
-      this.expression = expression;
-      this.statement = statement;
-    }
-
-  },
-  IfElseNode: class extends Conditional {
-    constructor(expression, statement, elseStatement) {
-      super();
-      this.type = 'IfElseNode';
-      this.expression = expression;
-      this.statement = statement;
-      this.elseStatement = elseStatement;
-    }
-
-  },
-  ElseNode: class extends Conditional {
-    constructor(statement) {
-      super();
-      this.type = 'ElseNode';
-      this.statement = statement;
-    }
-
-  },
-  ElseIfNode: class extends Conditional {
-    constructor(expression, statement, elseStatement) {
-      super();
-      this.type = 'ElseIfNode';
-      this.expression = expression;
-      this.statement = statement;
-      this.elseStatement = elseStatement;
-    }
-
-  },
-  // /////////////// Contents Nodes
-  TextNode: class extends Text {
-    constructor(text, lineNo) {
-      let hashtags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-      super();
-      this.type = 'TextNode';
-      this.text = text;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
-      this.hashtags = hashtags;
-    }
-
-  },
-  // /////////////// Literal Nodes
-  NumericLiteralNode: class extends Literal {
-    constructor(numericLiteral) {
-      super();
-      this.type = 'NumericLiteralNode';
-      this.numericLiteral = numericLiteral;
-    }
-
-  },
-  StringLiteralNode: class extends Literal {
-    constructor(stringLiteral) {
-      super();
-      this.type = 'StringLiteralNode';
-      this.stringLiteral = stringLiteral;
-    }
-
-  },
-  BooleanLiteralNode: class extends Literal {
-    constructor(booleanLiteral) {
-      super();
-      this.type = 'BooleanLiteralNode';
-      this.booleanLiteral = booleanLiteral;
-    }
-
-  },
-  VariableNode: class extends Literal {
-    constructor(variableName) {
-      super();
-      this.type = 'VariableNode';
-      this.variableName = variableName;
-    }
-
-  },
-  // /////////////// Arithmetic Expression Nodes
-  UnaryMinusExpressionNode: class extends Expression {
-    constructor(expression) {
-      super();
-      this.type = 'UnaryMinusExpressionNode';
-      this.expression = expression;
-    }
-
-  },
-  ArithmeticExpressionAddNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'ArithmeticExpressionAddNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  ArithmeticExpressionMinusNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'ArithmeticExpressionMinusNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  ArithmeticExpressionMultiplyNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'ArithmeticExpressionMultiplyNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  ArithmeticExpressionExponentNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'ArithmeticExpressionExponentNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  ArithmeticExpressionDivideNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'ArithmeticExpressionDivideNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  ArithmeticExpressionModuloNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'ArithmeticExpressionModuloNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  // /////////////// Boolean Expression Nodes
-  NegatedBooleanExpressionNode: class extends Expression {
-    constructor(expression) {
-      super();
-      this.type = 'NegatedBooleanExpressionNode';
-      this.expression = expression;
-    }
-
-  },
-  BooleanOrExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'BooleanOrExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  BooleanAndExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'BooleanAndExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  BooleanXorExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'BooleanXorExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  EqualToExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'EqualToExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  NotEqualToExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'NotEqualToExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  GreaterThanExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'GreaterThanExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  GreaterThanOrEqualToExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'GreaterThanOrEqualToExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  LessThanExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'LessThanExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  LessThanOrEqualToExpressionNode: class extends Expression {
-    constructor(expression1, expression2) {
-      super();
-      this.type = 'LessThanOrEqualToExpressionNode';
-      this.expression1 = expression1;
-      this.expression2 = expression2;
-    }
-
-  },
-  // /////////////// Assignment Expression Nodes
-  SetVariableEqualToNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableEqualToNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-
-  },
-  // /////////////// Function Nodes
-  FunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args, lineNo) {
-      let hashtags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-      super();
-      this.type = 'FunctionResultNode';
-      this.functionName = functionName;
-      this.args = args;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
-      this.hashtags = hashtags;
-    }
-
-  },
-  JumpNode: class extends FunctionCall {
-    constructor(destination) {
-      super();
-      this.type = 'JumpNode';
-      this.destination = destination;
-    }
-
-  },
-  StopNode: class extends FunctionCall {
-    constructor() {
-      super();
-      this.type = 'StopNode';
-    }
-
-  },
-  // /////////////// Inline Expression
-  InlineExpressionNode: class extends Expression {
-    constructor(expression, lineNo) {
-      let hashtags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-      super();
-      this.type = 'InlineExpressionNode';
-      this.expression = expression;
-      this.lineNum = lineNo.first_line;
-      this.hashtags = hashtags;
-    }
-
-  }
-});
-;// CONCATENATED MODULE: ./src/lexer/tokens.js
-
-/**
- * Token identifier -> regular expression to match the lexeme. That's a list of all the token
- * which can be emitted by the lexer. For now, we're slightly bending the style guide,
- * to make sure the debug output of the javascript lexer will (kinda) match the original C# one.
- */
-
-/* eslint-disable key-spacing */
-
-const Tokens = {
-  // Special tokens
-  Whitespace: null,
-  // (not used currently)
-  Indent: null,
-  Dedent: null,
-  EndOfLine: /\n/,
-  EndOfInput: null,
-  // Literals in ("<<commands>>")
-  Number: /-?[0-9]+(\.[0-9+])?/,
-  String: /"([^"\\]*(?:\\.[^"\\]*)*)"/,
-  // Command syntax ("<<foo>>")
-  BeginCommand: /<</,
-  EndCommand: />>/,
-  // Variables ("$foo")
-  Variable: /\$([A-Za-z0-9_.])+/,
-  // Shortcut syntax ("->")
-  ShortcutOption: /->/,
-  // Hashtag ("#something")
-  Hashtag: /#([^(\s|#|//)]+)/,
-  // seems a little hacky to explicitly consider comments here
-  // Comment ("// some stuff")
-  Comment: /\/\/.*/,
-  // Option syntax ("[[Let's go here|Destination]]")
-  OptionStart: /\[\[/,
-  // [[
-  OptionDelimit: /\|/,
-  // |
-  OptionEnd: /\]\]/,
-  // ]]
-  // Command types (specially recognized command word)
-  If: /if(?!\w)/,
-  ElseIf: /elseif(?!\w)/,
-  Else: /else(?!\w)/,
-  EndIf: /endif(?!\w)/,
-  Jump: /jump(?!\w)/,
-  Stop: /stop(?!\w)/,
-  Set: /set(?!\w)/,
-  Declare: /declare(?!\w)/,
-  As: /as(?!\w)/,
-  ExplicitType: /(String|Number|Bool)(?=>>)/,
-  // Boolean values
-  True: /true(?!\w)/,
-  False: /false(?!\w)/,
-  // The null value
-  Null: /null(?!\w)/,
-  // Parentheses
-  LeftParen: /\(/,
-  RightParen: /\)/,
-  // Parameter delimiters
-  Comma: /,/,
-  // Operators
-  UnaryMinus: /-(?!\s)/,
-  EqualTo: /(==|is(?!\w)|eq(?!\w))/,
-  // ==, eq, is
-  GreaterThan: /(>|gt(?!\w))/,
-  // >, gt
-  GreaterThanOrEqualTo: /(>=|gte(?!\w))/,
-  // >=, gte
-  LessThan: /(<|lt(?!\w))/,
-  // <, lt
-  LessThanOrEqualTo: /(<=|lte(?!\w))/,
-  // <=, lte
-  NotEqualTo: /(!=|neq(?!\w))/,
-  // !=, neq
-  // Logical operators
-  Or: /(\|\||or(?!\w))/,
-  // ||, or
-  And: /(&&|and(?!\w))/,
-  // &&, and
-  Xor: /(\^|xor(?!\w))/,
-  // ^, xor
-  Not: /(!|not(?!\w))/,
-  // !, not
-  // this guy's special because '=' can mean either 'equal to'
-  // or 'becomes' depending on context
-  EqualToOrAssign: /(=|to(?!\w))/,
-  // =, to
-  Add: /\+/,
-  // +
-  Minus: /-/,
-  // -
-  Exponent: /\*\*/,
-  // **
-  Multiply: /\*/,
-  // *
-  Divide: /\//,
-  // /
-  Modulo: /%/,
-  // /
-  AddAssign: /\+=/,
-  // +=
-  MinusAssign: /-=/,
-  // -=
-  MultiplyAssign: /\*=/,
-  // *=
-  DivideAssign: /\/=/,
-  // /=
-  Identifier: /[a-zA-Z0-9_:.]+/,
-  // a single word (used for functions)
-  EscapedCharacter: /\\./,
-  // for escaping \# special characters
-  Text: /[^\\]/,
-  // generic until we hit other syntax
-  // Braces are used for inline expressions. Ignore escaped braces
-  // TODO: doesn't work ios
-  BeginInlineExp: /{/,
-  // {
-  EndInlineExp: /}/ // }
-
-};
-/* eslint-enable key-spacing */
-
-/* harmony default export */ const tokens = (Tokens);
-;// CONCATENATED MODULE: ./src/lexer/lexer-state.js
+/***/ 269:
+/***/ ((module, exports, __webpack_require__) => {
 
 
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _tokens = _interopRequireDefault(__webpack_require__(902));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * A LexState object represents one of the states in which the lexer can be.
  */
-
 class LexerState {
   constructor() {
     /** A list of transition for the given state. */
@@ -689,7 +187,7 @@ class LexerState {
   addTransition(token, state, delimitsText) {
     this.transitions.push({
       token: token,
-      regex: tokens[token],
+      regex: _tokens.default[token],
       state: state || null,
       delimitsText: delimitsText || false
     });
@@ -742,54 +240,35 @@ class LexerState {
 
 }
 
-/* harmony default export */ const lexer_state = (LexerState);
-;// CONCATENATED MODULE: ./src/lexer/states.js
+var _default = LexerState;
+exports["default"] = _default;
+module.exports = exports.default;
 
+/***/ }),
 
+/***/ 271:
+/***/ ((module, exports, __webpack_require__) => {
 
-/**
- * @return {Object}  all states in which the lexer can be with their associated transitions.
- */
-
-function makeStates() {
-  return {
-    base: new lexer_state().addTransition('EscapedCharacter', null, true).addTransition('Comment', null, true).addTransition('Hashtag', null, true).addTransition('BeginCommand', 'command', true).addTransition('BeginInlineExp', 'inlineExpression', true).addTransition('ShortcutOption', 'shortcutOption').addTextRule('Text'),
-    shortcutOption: new lexer_state().setTrackNextIndentation(true).addTransition('EscapedCharacter', null, true).addTransition('Comment', null, true).addTransition('Hashtag', null, true).addTransition('BeginCommand', 'expression', true).addTransition('BeginInlineExp', 'inlineExpressionInShortcut', true).addTextRule('Text', 'base'),
-    command: new lexer_state().addTransition('If', 'expression').addTransition('Else').addTransition('ElseIf', 'expression').addTransition('EndIf').addTransition('Set', 'assignment').addTransition('Declare', 'declare').addTransition('Jump', 'jump').addTransition('Stop', 'stop').addTransition('EndCommand', 'base', true).addTransition('Identifier', 'commandArg', true).addTextRule('Text'),
-    commandArg: new lexer_state().addTransition('BeginInlineExp', 'inlineExpressionInCommand', true).addTransition('EndCommand', 'base', true).addTransition('LeftParen', 'commandParenArgOrExpression').addTransition('Variable').addTransition('Number').addTransition('String').addTransition('True').addTransition('False').addTransition('Identifier').addTransition('Comma').addTransition('RightParen'),
-    commandParenArgOrExpression: new lexer_state().addTransition('EndCommand', 'base', true).addTransition('LeftParen', 'expression').addTransition('Variable', 'expression').addTransition('Number', 'expression').addTransition('String').addTransition('True').addTransition('False').addTransition('Null').addTransition('RightParen'),
-    assignment: new lexer_state().addTransition('Variable').addTransition('EqualToOrAssign', 'expression'),
-    declare: new lexer_state().addTransition('Variable').addTransition('EndCommand', 'base').addTransition('EqualToOrAssign', 'expression'),
-    jump: new lexer_state().addTransition('Identifier').addTransition('BeginInlineExp', 'inlineExpressionInCommand', true).addTransition('EndCommand', 'base', true),
-    stop: new lexer_state().addTransition('EndCommand', 'base', true),
-    expression: new lexer_state().addTransition('As').addTransition('ExplicitType').addTransition('EndCommand', 'base').addTransition('Number').addTransition('String').addTransition('LeftParen').addTransition('RightParen').addTransition('EqualTo').addTransition('EqualToOrAssign').addTransition('NotEqualTo').addTransition('GreaterThanOrEqualTo').addTransition('GreaterThan').addTransition('LessThanOrEqualTo').addTransition('LessThan').addTransition('Add').addTransition('UnaryMinus').addTransition('Minus').addTransition('Exponent').addTransition('Multiply').addTransition('Divide').addTransition('Modulo').addTransition('And').addTransition('Or').addTransition('Xor').addTransition('Not').addTransition('Variable').addTransition('Comma').addTransition('True').addTransition('False').addTransition('Null').addTransition('Identifier').addTextRule(),
-    inlineExpression: new lexer_state().addTransition('EndInlineExp', 'base').addTransition('Number').addTransition('String').addTransition('LeftParen').addTransition('RightParen').addTransition('EqualTo').addTransition('EqualToOrAssign').addTransition('NotEqualTo').addTransition('GreaterThanOrEqualTo').addTransition('GreaterThan').addTransition('LessThanOrEqualTo').addTransition('LessThan').addTransition('Add').addTransition('UnaryMinus').addTransition('Minus').addTransition('Exponent').addTransition('Multiply').addTransition('Divide').addTransition('Modulo').addTransition('And').addTransition('Or').addTransition('Xor').addTransition('Not').addTransition('Variable').addTransition('Comma').addTransition('True').addTransition('False').addTransition('Null').addTransition('Identifier').addTextRule('Text', 'base'),
-    // TODO: Copied from above
-    // There has to be a non-stupid way to do this, right?
-    // I'm just not familiar enough yet to know how to
-    // transition from inline expression back to base OR command
-    // states depending on how we got there
-    inlineExpressionInCommand: new lexer_state().addTransition('EndInlineExp', 'commandArg').addTransition('Number').addTransition('String').addTransition('LeftParen').addTransition('RightParen').addTransition('EqualTo').addTransition('EqualToOrAssign').addTransition('NotEqualTo').addTransition('GreaterThanOrEqualTo').addTransition('GreaterThan').addTransition('LessThanOrEqualTo').addTransition('LessThan').addTransition('Add').addTransition('UnaryMinus').addTransition('Minus').addTransition('Exponent').addTransition('Multiply').addTransition('Divide').addTransition('Modulo').addTransition('And').addTransition('Or').addTransition('Xor').addTransition('Not').addTransition('Variable').addTransition('Comma').addTransition('True').addTransition('False').addTransition('Null').addTransition('Identifier').addTextRule('Text', 'base'),
-    inlineExpressionInShortcut: new lexer_state().addTransition('EndInlineExp', 'shortcutOption').addTransition('Number').addTransition('String').addTransition('LeftParen').addTransition('RightParen').addTransition('EqualTo').addTransition('EqualToOrAssign').addTransition('NotEqualTo').addTransition('GreaterThanOrEqualTo').addTransition('GreaterThan').addTransition('LessThanOrEqualTo').addTransition('LessThan').addTransition('Add').addTransition('UnaryMinus').addTransition('Minus').addTransition('Exponent').addTransition('Multiply').addTransition('Divide').addTransition('Modulo').addTransition('And').addTransition('Or').addTransition('Xor').addTransition('Not').addTransition('Variable').addTransition('Comma').addTransition('True').addTransition('False').addTransition('Null').addTransition('Identifier').addTextRule('Text', 'base')
-  };
-}
-
-/* harmony default export */ const states = ({
-  makeStates: makeStates
-});
-;// CONCATENATED MODULE: ./src/lexer/lexer.js
  // Syncs with YarnSpinner@e0f6807,
 // see https://github.com/thesecretlab/YarnSpinner/blob/master/YarnSpinner/Lexer.cs
 
- // As opposed to the original C# implemntation which, tokenize the entire input, before emiting
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _states = _interopRequireDefault(__webpack_require__(304));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// As opposed to the original C# implemntation which, tokenize the entire input, before emiting
 // a list of tokens, this parser will emit a token each time `lex()` is called. This change
 // accomodates the Jison parser. Given the lexer is not entirely context-free
 // (Off-side rule, lookaheads), context needs to be remembered between each `lex()` calls.
-
 class Lexer {
   constructor() {
     /** All the possible states for the lexer. */
-    this.states = states.makeStates();
+    this.states = _states.default.makeStates();
     /** Current state identifier. */
 
     this.state = 'base';
@@ -1042,8 +521,206 @@ class Lexer {
 
 }
 
-/* harmony default export */ const lexer = (Lexer);
-;// CONCATENATED MODULE: ./src/parser/compiledParser.js
+var _default = Lexer;
+exports["default"] = _default;
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ 304:
+/***/ ((module, exports, __webpack_require__) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _lexerState = _interopRequireDefault(__webpack_require__(269));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * @return {Object}  all states in which the lexer can be with their associated transitions.
+ */
+function makeStates() {
+  return {
+    base: new _lexerState.default().addTransition('EscapedCharacter', null, true).addTransition('Comment', null, true).addTransition('Hashtag', null, true).addTransition('BeginCommand', 'command', true).addTransition('BeginInlineExp', 'inlineExpression', true).addTransition('ShortcutOption', 'shortcutOption').addTextRule('Text'),
+    shortcutOption: new _lexerState.default().setTrackNextIndentation(true).addTransition('EscapedCharacter', null, true).addTransition('Comment', null, true).addTransition('Hashtag', null, true).addTransition('BeginCommand', 'expression', true).addTransition('BeginInlineExp', 'inlineExpressionInShortcut', true).addTextRule('Text', 'base'),
+    command: new _lexerState.default().addTransition('If', 'expression').addTransition('Else').addTransition('ElseIf', 'expression').addTransition('EndIf').addTransition('Set', 'assignment').addTransition('Declare', 'declare').addTransition('Jump', 'jump').addTransition('Stop', 'stop').addTransition('EndCommand', 'base', true).addTransition('Identifier', 'commandArg', true).addTextRule('Text'),
+    commandArg: new _lexerState.default().addTransition('BeginInlineExp', 'inlineExpressionInCommand', true).addTransition('EndCommand', 'base', true).addTransition('LeftParen', 'commandParenArgOrExpression').addTransition('Variable').addTransition('Number').addTransition('String').addTransition('True').addTransition('False').addTransition('Identifier').addTransition('Comma').addTransition('RightParen'),
+    commandParenArgOrExpression: new _lexerState.default().addTransition('EndCommand', 'base', true).addTransition('LeftParen', 'expression').addTransition('Variable', 'expression').addTransition('Number', 'expression').addTransition('String').addTransition('True').addTransition('False').addTransition('Null').addTransition('RightParen'),
+    assignment: new _lexerState.default().addTransition('Variable').addTransition('EqualToOrAssign', 'expression'),
+    declare: new _lexerState.default().addTransition('Variable').addTransition('EndCommand', 'base').addTransition('EqualToOrAssign', 'expression'),
+    jump: new _lexerState.default().addTransition('Identifier').addTransition('BeginInlineExp', 'inlineExpressionInCommand', true).addTransition('EndCommand', 'base', true),
+    stop: new _lexerState.default().addTransition('EndCommand', 'base', true),
+    expression: new _lexerState.default().addTransition('As').addTransition('ExplicitType').addTransition('EndCommand', 'base').addTransition('Number').addTransition('String').addTransition('LeftParen').addTransition('RightParen').addTransition('EqualTo').addTransition('EqualToOrAssign').addTransition('NotEqualTo').addTransition('GreaterThanOrEqualTo').addTransition('GreaterThan').addTransition('LessThanOrEqualTo').addTransition('LessThan').addTransition('Add').addTransition('UnaryMinus').addTransition('Minus').addTransition('Exponent').addTransition('Multiply').addTransition('Divide').addTransition('Modulo').addTransition('And').addTransition('Or').addTransition('Xor').addTransition('Not').addTransition('Variable').addTransition('Comma').addTransition('True').addTransition('False').addTransition('Null').addTransition('Identifier').addTextRule(),
+    inlineExpression: new _lexerState.default().addTransition('EndInlineExp', 'base').addTransition('Number').addTransition('String').addTransition('LeftParen').addTransition('RightParen').addTransition('EqualTo').addTransition('EqualToOrAssign').addTransition('NotEqualTo').addTransition('GreaterThanOrEqualTo').addTransition('GreaterThan').addTransition('LessThanOrEqualTo').addTransition('LessThan').addTransition('Add').addTransition('UnaryMinus').addTransition('Minus').addTransition('Exponent').addTransition('Multiply').addTransition('Divide').addTransition('Modulo').addTransition('And').addTransition('Or').addTransition('Xor').addTransition('Not').addTransition('Variable').addTransition('Comma').addTransition('True').addTransition('False').addTransition('Null').addTransition('Identifier').addTextRule('Text', 'base'),
+    // TODO: Copied from above
+    // There has to be a non-stupid way to do this, right?
+    // I'm just not familiar enough yet to know how to
+    // transition from inline expression back to base OR command
+    // states depending on how we got there
+    inlineExpressionInCommand: new _lexerState.default().addTransition('EndInlineExp', 'commandArg').addTransition('Number').addTransition('String').addTransition('LeftParen').addTransition('RightParen').addTransition('EqualTo').addTransition('EqualToOrAssign').addTransition('NotEqualTo').addTransition('GreaterThanOrEqualTo').addTransition('GreaterThan').addTransition('LessThanOrEqualTo').addTransition('LessThan').addTransition('Add').addTransition('UnaryMinus').addTransition('Minus').addTransition('Exponent').addTransition('Multiply').addTransition('Divide').addTransition('Modulo').addTransition('And').addTransition('Or').addTransition('Xor').addTransition('Not').addTransition('Variable').addTransition('Comma').addTransition('True').addTransition('False').addTransition('Null').addTransition('Identifier').addTextRule('Text', 'base'),
+    inlineExpressionInShortcut: new _lexerState.default().addTransition('EndInlineExp', 'shortcutOption').addTransition('Number').addTransition('String').addTransition('LeftParen').addTransition('RightParen').addTransition('EqualTo').addTransition('EqualToOrAssign').addTransition('NotEqualTo').addTransition('GreaterThanOrEqualTo').addTransition('GreaterThan').addTransition('LessThanOrEqualTo').addTransition('LessThan').addTransition('Add').addTransition('UnaryMinus').addTransition('Minus').addTransition('Exponent').addTransition('Multiply').addTransition('Divide').addTransition('Modulo').addTransition('And').addTransition('Or').addTransition('Xor').addTransition('Not').addTransition('Variable').addTransition('Comma').addTransition('True').addTransition('False').addTransition('Null').addTransition('Identifier').addTextRule('Text', 'base')
+  };
+}
+
+var _default = {
+  makeStates: makeStates
+};
+exports["default"] = _default;
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ 902:
+/***/ ((module, exports) => {
+
+
+/**
+ * Token identifier -> regular expression to match the lexeme. That's a list of all the token
+ * which can be emitted by the lexer. For now, we're slightly bending the style guide,
+ * to make sure the debug output of the javascript lexer will (kinda) match the original C# one.
+ */
+
+/* eslint-disable key-spacing */
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+const Tokens = {
+  // Special tokens
+  Whitespace: null,
+  // (not used currently)
+  Indent: null,
+  Dedent: null,
+  EndOfLine: /\n/,
+  EndOfInput: null,
+  // Literals in ("<<commands>>")
+  Number: /-?[0-9]+(\.[0-9+])?/,
+  String: /"([^"\\]*(?:\\.[^"\\]*)*)"/,
+  // Command syntax ("<<foo>>")
+  BeginCommand: /<</,
+  EndCommand: />>/,
+  // Variables ("$foo")
+  Variable: /\$([A-Za-z0-9_.])+/,
+  // Shortcut syntax ("->")
+  ShortcutOption: /->/,
+  // Hashtag ("#something")
+  Hashtag: /#([^(\s|#|//)]+)/,
+  // seems a little hacky to explicitly consider comments here
+  // Comment ("// some stuff")
+  Comment: /\/\/.*/,
+  // Option syntax ("[[Let's go here|Destination]]")
+  OptionStart: /\[\[/,
+  // [[
+  OptionDelimit: /\|/,
+  // |
+  OptionEnd: /\]\]/,
+  // ]]
+  // Command types (specially recognized command word)
+  If: /if(?!\w)/,
+  ElseIf: /elseif(?!\w)/,
+  Else: /else(?!\w)/,
+  EndIf: /endif(?!\w)/,
+  Jump: /jump(?!\w)/,
+  Stop: /stop(?!\w)/,
+  Set: /set(?!\w)/,
+  Declare: /declare(?!\w)/,
+  As: /as(?!\w)/,
+  ExplicitType: /(String|Number|Bool)(?=>>)/,
+  // Boolean values
+  True: /true(?!\w)/,
+  False: /false(?!\w)/,
+  // The null value
+  Null: /null(?!\w)/,
+  // Parentheses
+  LeftParen: /\(/,
+  RightParen: /\)/,
+  // Parameter delimiters
+  Comma: /,/,
+  // Operators
+  UnaryMinus: /-(?!\s)/,
+  EqualTo: /(==|is(?!\w)|eq(?!\w))/,
+  // ==, eq, is
+  GreaterThan: /(>|gt(?!\w))/,
+  // >, gt
+  GreaterThanOrEqualTo: /(>=|gte(?!\w))/,
+  // >=, gte
+  LessThan: /(<|lt(?!\w))/,
+  // <, lt
+  LessThanOrEqualTo: /(<=|lte(?!\w))/,
+  // <=, lte
+  NotEqualTo: /(!=|neq(?!\w))/,
+  // !=, neq
+  // Logical operators
+  Or: /(\|\||or(?!\w))/,
+  // ||, or
+  And: /(&&|and(?!\w))/,
+  // &&, and
+  Xor: /(\^|xor(?!\w))/,
+  // ^, xor
+  Not: /(!|not(?!\w))/,
+  // !, not
+  // this guy's special because '=' can mean either 'equal to'
+  // or 'becomes' depending on context
+  EqualToOrAssign: /(=|to(?!\w))/,
+  // =, to
+  Add: /\+/,
+  // +
+  Minus: /-/,
+  // -
+  Exponent: /\*\*/,
+  // **
+  Multiply: /\*/,
+  // *
+  Divide: /\//,
+  // /
+  Modulo: /%/,
+  // /
+  AddAssign: /\+=/,
+  // +=
+  MinusAssign: /-=/,
+  // -=
+  MultiplyAssign: /\*=/,
+  // *=
+  DivideAssign: /\/=/,
+  // /=
+  Identifier: /[a-zA-Z0-9_:.]+/,
+  // a single word (used for functions)
+  EscapedCharacter: /\\./,
+  // for escaping \# special characters
+  Text: /[^\\]/,
+  // generic until we hit other syntax
+  // Braces are used for inline expressions. Ignore escaped braces
+  // TODO: doesn't work ios
+  BeginInlineExp: /{/,
+  // {
+  EndInlineExp: /}/ // }
+
+};
+/* eslint-enable key-spacing */
+
+var _default = Tokens;
+exports["default"] = _default;
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ 87:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Parser = Parser;
+exports.parser = void 0;
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
@@ -2842,6 +2519,7 @@ var parser = {
     return true;
   }
 };
+exports.parser = parser;
 
 function Parser() {
   this.yy = {};
@@ -2851,17 +2529,372 @@ function Parser() {
 Parser.prototype = parser;
 parser.Parser = Parser;
 
-;// CONCATENATED MODULE: ./src/parser/parser.js
+/***/ }),
+
+/***/ 987:
+/***/ ((module, exports) => {
 
 
 
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+class Text {}
+
+class Shortcut {}
+
+class Conditional {}
+
+class Assignment {}
+
+class Literal {}
+
+class Expression {}
+
+class FunctionCall {}
+
+var _default = {
+  types: {
+    Text,
+    Shortcut,
+    Conditional,
+    Assignment,
+    Literal,
+    Expression,
+    FunctionCall
+  },
+  // /////////////// Dialog Nodes
+  DialogShortcutNode: class extends Shortcut {
+    constructor(text, content, lineNo) {
+      let hashtags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+      let conditionalExpression = arguments.length > 4 ? arguments[4] : undefined;
+      super();
+      this.type = 'DialogShortcutNode';
+      this.text = text;
+      this.content = content;
+      this.lineNum = lineNo.first_line;
+      this.hashtags = hashtags;
+      this.conditionalExpression = conditionalExpression;
+    }
+
+  },
+  // /////////////// Conditional Nodes
+  IfNode: class extends Conditional {
+    constructor(expression, statement) {
+      super();
+      this.type = 'IfNode';
+      this.expression = expression;
+      this.statement = statement;
+    }
+
+  },
+  IfElseNode: class extends Conditional {
+    constructor(expression, statement, elseStatement) {
+      super();
+      this.type = 'IfElseNode';
+      this.expression = expression;
+      this.statement = statement;
+      this.elseStatement = elseStatement;
+    }
+
+  },
+  ElseNode: class extends Conditional {
+    constructor(statement) {
+      super();
+      this.type = 'ElseNode';
+      this.statement = statement;
+    }
+
+  },
+  ElseIfNode: class extends Conditional {
+    constructor(expression, statement, elseStatement) {
+      super();
+      this.type = 'ElseIfNode';
+      this.expression = expression;
+      this.statement = statement;
+      this.elseStatement = elseStatement;
+    }
+
+  },
+  // /////////////// Contents Nodes
+  TextNode: class extends Text {
+    constructor(text, lineNo) {
+      let hashtags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+      super();
+      this.type = 'TextNode';
+      this.text = text;
+      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.hashtags = hashtags;
+    }
+
+  },
+  // /////////////// Literal Nodes
+  NumericLiteralNode: class extends Literal {
+    constructor(numericLiteral) {
+      super();
+      this.type = 'NumericLiteralNode';
+      this.numericLiteral = numericLiteral;
+    }
+
+  },
+  StringLiteralNode: class extends Literal {
+    constructor(stringLiteral) {
+      super();
+      this.type = 'StringLiteralNode';
+      this.stringLiteral = stringLiteral;
+    }
+
+  },
+  BooleanLiteralNode: class extends Literal {
+    constructor(booleanLiteral) {
+      super();
+      this.type = 'BooleanLiteralNode';
+      this.booleanLiteral = booleanLiteral;
+    }
+
+  },
+  VariableNode: class extends Literal {
+    constructor(variableName) {
+      super();
+      this.type = 'VariableNode';
+      this.variableName = variableName;
+    }
+
+  },
+  // /////////////// Arithmetic Expression Nodes
+  UnaryMinusExpressionNode: class extends Expression {
+    constructor(expression) {
+      super();
+      this.type = 'UnaryMinusExpressionNode';
+      this.expression = expression;
+    }
+
+  },
+  ArithmeticExpressionAddNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'ArithmeticExpressionAddNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  ArithmeticExpressionMinusNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'ArithmeticExpressionMinusNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  ArithmeticExpressionMultiplyNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'ArithmeticExpressionMultiplyNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  ArithmeticExpressionExponentNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'ArithmeticExpressionExponentNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  ArithmeticExpressionDivideNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'ArithmeticExpressionDivideNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  ArithmeticExpressionModuloNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'ArithmeticExpressionModuloNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  // /////////////// Boolean Expression Nodes
+  NegatedBooleanExpressionNode: class extends Expression {
+    constructor(expression) {
+      super();
+      this.type = 'NegatedBooleanExpressionNode';
+      this.expression = expression;
+    }
+
+  },
+  BooleanOrExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'BooleanOrExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  BooleanAndExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'BooleanAndExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  BooleanXorExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'BooleanXorExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  EqualToExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'EqualToExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  NotEqualToExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'NotEqualToExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  GreaterThanExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'GreaterThanExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  GreaterThanOrEqualToExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'GreaterThanOrEqualToExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  LessThanExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'LessThanExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  LessThanOrEqualToExpressionNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
+      this.type = 'LessThanOrEqualToExpressionNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+
+  },
+  // /////////////// Assignment Expression Nodes
+  SetVariableEqualToNode: class extends Assignment {
+    constructor(variableName, expression) {
+      super();
+      this.type = 'SetVariableEqualToNode';
+      this.variableName = variableName;
+      this.expression = expression;
+    }
+
+  },
+  // /////////////// Function Nodes
+  FunctionResultNode: class extends FunctionCall {
+    constructor(functionName, args, lineNo) {
+      let hashtags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+      super();
+      this.type = 'FunctionResultNode';
+      this.functionName = functionName;
+      this.args = args;
+      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.hashtags = hashtags;
+    }
+
+  },
+  JumpNode: class extends FunctionCall {
+    constructor(destination) {
+      super();
+      this.type = 'JumpNode';
+      this.destination = destination;
+    }
+
+  },
+  StopNode: class extends FunctionCall {
+    constructor() {
+      super();
+      this.type = 'StopNode';
+    }
+
+  },
+  // /////////////// Inline Expression
+  InlineExpressionNode: class extends Expression {
+    constructor(expression, lineNo) {
+      let hashtags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+      super();
+      this.type = 'InlineExpressionNode';
+      this.expression = expression;
+      this.lineNum = lineNo.first_line;
+      this.hashtags = hashtags;
+    }
+
+  }
+};
+exports["default"] = _default;
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ 625:
+/***/ ((module, exports, __webpack_require__) => {
 
 
-parser.lexer = new lexer();
-parser.yy = nodes;
-parser.yy.declarations = {};
 
-parser.yy.registerDeclaration = function registerDeclaration(variableName, expression, explicitType) {
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _nodes = _interopRequireDefault(__webpack_require__(987));
+
+var _lexer = _interopRequireDefault(__webpack_require__(271));
+
+var _compiledParser = __webpack_require__(87);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_compiledParser.parser.lexer = new _lexer.default();
+_compiledParser.parser.yy = _nodes.default;
+_compiledParser.parser.yy.declarations = {};
+
+_compiledParser.parser.yy.registerDeclaration = function registerDeclaration(variableName, expression, explicitType) {
   if (!this.areDeclarationsHandled) {
     if (this.declarations[variableName]) {
       throw new Error("Duplicate declaration found for variable: ".concat(variableName));
@@ -2875,9 +2908,21 @@ parser.yy.registerDeclaration = function registerDeclaration(variableName, expre
   }
 };
 
-/* harmony default export */ const parser_parser = (parser);
-;// CONCATENATED MODULE: ./src/results.js
+var _default = _compiledParser.parser;
+exports["default"] = _default;
+module.exports = exports.default;
 
+/***/ }),
+
+/***/ 457:
+/***/ ((module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
 
 class Result {}
 
@@ -2962,36 +3007,51 @@ class OptionsResult extends Result {
 
 }
 
-/* harmony default export */ const results = ({
+var _default = {
   Result,
   TextResult,
   CommandResult,
   OptionsResult
-});
-// EXTERNAL MODULE: ./src/default-variable-storage.js
-var default_variable_storage = __webpack_require__(826);
-var default_variable_storage_default = /*#__PURE__*/__webpack_require__.n(default_variable_storage);
-// EXTERNAL MODULE: ./src/convert-yarn.js
-var convert_yarn = __webpack_require__(722);
-var convert_yarn_default = /*#__PURE__*/__webpack_require__.n(convert_yarn);
-;// CONCATENATED MODULE: ./src/runner.js
-function runner_ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+};
+exports["default"] = _default;
+module.exports = exports.default;
 
-function runner_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? runner_ownKeys(Object(source), !0).forEach(function (key) { runner_defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : runner_ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+/***/ }),
 
-function runner_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+/***/ 359:
+/***/ ((module, exports, __webpack_require__) => {
 
 
 
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
 
+var _parser = _interopRequireDefault(__webpack_require__(625));
 
+var _results = _interopRequireDefault(__webpack_require__(457));
 
-const nodeTypes = nodes.types;
+var _defaultVariableStorage = _interopRequireDefault(__webpack_require__(826));
+
+var _convertYarn = _interopRequireDefault(__webpack_require__(722));
+
+var _nodes = _interopRequireDefault(__webpack_require__(987));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+const nodeTypes = _nodes.default.types;
 
 class Runner {
   constructor() {
     this.yarnNodes = {};
-    this.variables = new (default_variable_storage_default())();
+    this.variables = new _defaultVariableStorage.default();
     this.functions = {};
     this.visited = {}; // Which nodes have been visited
 
@@ -3009,7 +3069,7 @@ class Runner {
     let nodes = data;
 
     if (typeof data === 'string') {
-      nodes = convert_yarn_default()(data);
+      nodes = (0, _convertYarn.default)(data);
     }
 
     nodes.forEach(node => {
@@ -3029,10 +3089,10 @@ class Runner {
 
       this.yarnNodes[node.title] = node;
     });
-    parser_parser.yy.areDeclarationsHandled = false;
-    parser_parser.yy.declarations = {};
+    _parser.default.yy.areDeclarationsHandled = false;
+    _parser.default.yy.declarations = {};
     this.handleDeclarations(nodes);
-    parser_parser.yy.areDeclarationsHandled = true;
+    _parser.default.yy.areDeclarationsHandled = true;
   }
   /**
    * Set a new variable storage object
@@ -3071,10 +3131,10 @@ class Runner {
     }, []);
 
     if (declareLines.length) {
-      parser_parser.parse(declareLines.join('\n'));
+      _parser.default.parse(declareLines.join('\n'));
     }
 
-    Object.entries(parser_parser.yy.declarations).forEach(_ref => {
+    Object.entries(_parser.default.yy.declarations).forEach(_ref => {
       let [variableName, {
         expression,
         explicitType
@@ -3113,9 +3173,9 @@ class Runner {
 
     this.visited[startNode] = true; // Parse the entire node
 
-    const parserNodes = Array.from(parser_parser.parse(yarnNode.body));
+    const parserNodes = Array.from(_parser.default.parse(yarnNode.body));
 
-    const metadata = runner_objectSpread({}, yarnNode);
+    const metadata = _objectSpread({}, yarnNode);
 
     delete metadata.body;
     return yield* this.evalNodes(parserNodes, metadata, true);
@@ -3160,7 +3220,7 @@ class Runner {
         if (nextNode && node.lineNum === nextNode.lineNum && (nextNode instanceof nodeTypes.Text || nextNode instanceof nodeTypes.Expression)) {// Same line, with another text equivalent to add to the
           // text run further on in the loop, so don't yield.
         } else {
-          yield new results.TextResult(textRun, node.hashtags, metadata);
+          yield new _results.default.TextResult(textRun, node.hashtags, metadata);
           textRun = '';
         } // Other nodes are more straightforward:
 
@@ -3200,7 +3260,7 @@ class Runner {
         }
 
         const funcArgs = node.args.map(this.evaluateExpressionOrLiteral, this);
-        yield new results.CommandResult(node.functionName, funcArgs, node.hashtags, metadata);
+        yield new _results.default.CommandResult(node.functionName, funcArgs, node.hashtags, metadata);
       }
 
       prevnode = node;
@@ -3239,7 +3299,7 @@ class Runner {
         text
       });
     });
-    const optionsResult = new results.OptionsResult(transformedSelections, metadata);
+    const optionsResult = new _results.default.OptionsResult(transformedSelections, metadata);
     yield optionsResult;
 
     if (typeof optionsResult.selected === 'number') {
@@ -3396,19 +3456,50 @@ class Runner {
 
 }
 
-/* harmony default export */ const runner = ({
+var _default = {
   Runner,
-  TextResult: results.TextResult,
-  CommandResult: results.CommandResult,
-  OptionsResult: results.OptionsResult
-});
-;// CONCATENATED MODULE: ./src/index.js
+  TextResult: _results.default.TextResult,
+  CommandResult: _results.default.CommandResult,
+  OptionsResult: _results.default.OptionsResult
+};
+exports["default"] = _default;
+module.exports = exports.default;
 
+/***/ })
 
-
-/* harmony default export */ const src = (runner);
-})();
-
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(352);
+/******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
 ;

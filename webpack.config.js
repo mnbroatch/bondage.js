@@ -18,6 +18,7 @@ const common = {
           presets: [
             ['@babel/preset-env',
               {
+                modules: 'cjs',
                 targets: 'last 4 years',
               },
             ],
@@ -56,12 +57,14 @@ module.exports = [
           loader: 'babel-loader',
           options: {
             presets: [
-              ['@babel/preset-env', {
-                targets: { ie: '11' },
-                useBuiltIns: 'usage',
-                corejs: 3,
-              }],
+              ['@babel/preset-env',
+                {
+                  modules: 'cjs',
+                  targets: 'ie 11',
+                },
+              ],
             ],
+            plugins: ['add-module-exports'],
           },
         },
       }],

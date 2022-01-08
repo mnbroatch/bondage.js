@@ -61,7 +61,7 @@ module.exports = function convertYarn(content) {
       objects.push(obj);
       obj = null;
     } else if (readingBody) {
-      obj.body += `${lines[i]}\n`;
+      obj.body += "".concat(lines[i], "\n");
     } else if (lines[i].trim() === '---') {
       readingBody = true;
       obj.body = '';
@@ -74,7 +74,7 @@ module.exports = function convertYarn(content) {
         if (obj == null) obj = {};
 
         if (obj[trimmedKey]) {
-          throw new Error(`Duplicate tag on node: ${trimmedKey}`);
+          throw new Error("Duplicate tag on node: ".concat(trimmedKey));
         }
 
         obj[trimmedKey] = trimmedValue;
@@ -222,7 +222,9 @@ class FunctionCall {}
   },
   // /////////////// Dialog Nodes
   DialogShortcutNode: class extends Shortcut {
-    constructor(text, content, lineNo, hashtags = [], conditionalExpression) {
+    constructor(text, content, lineNo) {
+      let hashtags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+      let conditionalExpression = arguments.length > 4 ? arguments[4] : undefined;
       super();
       this.type = 'DialogShortcutNode';
       this.text = text;
@@ -273,7 +275,8 @@ class FunctionCall {}
   },
   // /////////////// Contents Nodes
   TextNode: class extends Text {
-    constructor(text, lineNo, hashtags = []) {
+    constructor(text, lineNo) {
+      let hashtags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
       super();
       this.type = 'TextNode';
       this.text = text;
@@ -480,7 +483,8 @@ class FunctionCall {}
   },
   // /////////////// Function Nodes
   FunctionResultNode: class extends FunctionCall {
-    constructor(functionName, args, lineNo, hashtags = []) {
+    constructor(functionName, args, lineNo) {
+      let hashtags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
       super();
       this.type = 'FunctionResultNode';
       this.functionName = functionName;
@@ -507,7 +511,8 @@ class FunctionCall {}
   },
   // /////////////// Inline Expression
   InlineExpressionNode: class extends Expression {
-    constructor(expression, lineNo, hashtags = []) {
+    constructor(expression, lineNo) {
+      let hashtags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
       super();
       this.type = 'InlineExpressionNode';
       this.expression = expression;
@@ -711,11 +716,11 @@ class LexerState {
     this.transitions.forEach(transition => {
       if (transition.delimitsText) {
         // Surround the rule in parens
-        rules.push(`(${transition.regex.source})`);
+        rules.push("(".concat(transition.regex.source, ")"));
       }
     }); // Join the rules that we got above on a |, then put them all into a negative lookahead.
 
-    const textPattern = `((?!${rules.join('|')}).)+`;
+    const textPattern = "((?!".concat(rules.join('|'), ").)+");
     this.addTransition(type, state); // Update the regex in the transition we just added to our new one.
 
     this.textRule = this.transitions[this.transitions.length - 1];
@@ -954,7 +959,7 @@ class Lexer {
       }
     }
 
-    throw new Error(`Invalid syntax in: ${this.getCurrentLine()}`);
+    throw new Error("Invalid syntax in: ".concat(this.getCurrentLine()));
   } // /////////////// Getters & Setters
 
   /**
@@ -966,7 +971,7 @@ class Lexer {
 
   setState(state) {
     if (this.states[state] === undefined) {
-      throw new Error(`Cannot set the unknown state [${state}]`);
+      throw new Error("Cannot set the unknown state [".concat(state, "]"));
     }
 
     this.state = state;
@@ -1045,10 +1050,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var o = function (k, v, o, l) {
-  for (o = o || {}, l = k.length; l--; o[k[l]] = v);
+var o = function o(k, v, _o, l) {
+  for (_o = _o || {}, l = k.length; l--; _o[k[l]] = v);
 
-  return o;
+  return _o;
 },
     $V0 = [1, 19],
     $V1 = [1, 20],
@@ -2707,7 +2712,7 @@ var parser = {
       lstack.length = lstack.length - n;
     }
 
-    _token_stack: var lex = function () {
+    _token_stack: var lex = function lex() {
       var token;
       token = lexer.lex() || EOF;
 
@@ -2859,7 +2864,7 @@ parser.yy.declarations = {};
 parser.yy.registerDeclaration = function registerDeclaration(variableName, expression, explicitType) {
   if (!this.areDeclarationsHandled) {
     if (this.declarations[variableName]) {
-      throw new Error(`Duplicate declaration found for variable: ${variableName}`);
+      throw new Error("Duplicate declaration found for variable: ".concat(variableName));
     }
 
     this.declarations[variableName] = {
@@ -2918,7 +2923,10 @@ class OptionResult extends Result {
    * @param {string[]} [hashtags] the hashtags for the line
    * @param {object} [metadata] the parent yarn node
    */
-  constructor(text, isAvailable = true, hashtags = [], metadata) {
+  constructor(text) {
+    let isAvailable = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    let hashtags = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let metadata = arguments.length > 3 ? arguments[3] : undefined;
     super();
     this.text = text;
     this.isAvailable = isAvailable;
@@ -2942,9 +2950,11 @@ class OptionsResult extends Result {
     this.metadata = metadata;
   }
 
-  select(index = -1) {
+  select() {
+    let index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : -1;
+
     if (index < 0 || index >= this.options.length) {
-      throw new Error(`Cannot select option #${index}, there are ${this.options.length} options`);
+      throw new Error("Cannot select option #".concat(index, ", there are ").concat(this.options.length, " options"));
     }
 
     this.selected = index;
@@ -3004,17 +3014,17 @@ class Runner {
 
     nodes.forEach(node => {
       if (!node.title) {
-        throw new Error(`Node needs a title: ${JSON.stringify(node)}`);
+        throw new Error("Node needs a title: ".concat(JSON.stringify(node)));
       } else if (node.title.split('.').length > 1) {
-        throw new Error(`Node title cannot contain a dot: ${node.title}`);
+        throw new Error("Node title cannot contain a dot: ".concat(node.title));
       }
 
       if (!node.body) {
-        throw new Error(`Node needs a body: ${JSON.stringify(node)}`);
+        throw new Error("Node needs a body: ".concat(JSON.stringify(node)));
       }
 
       if (this.yarnNodes[node.title]) {
-        throw new Error(`Duplicate node title: ${node.title}`);
+        throw new Error("Duplicate node title: ".concat(node.title));
       }
 
       this.yarnNodes[node.title] = node;
@@ -3064,14 +3074,15 @@ class Runner {
       parser_parser.parse(declareLines.join('\n'));
     }
 
-    Object.entries(parser_parser.yy.declarations).forEach(([variableName, {
-      expression,
-      explicitType
-    }]) => {
+    Object.entries(parser_parser.yy.declarations).forEach(_ref => {
+      let [variableName, {
+        expression,
+        explicitType
+      }] = _ref;
       const value = this.evaluateExpressionOrLiteral(expression);
 
       if (explicitType && typeof value !== typeof exampleValues[explicitType]) {
-        throw new Error(`Cannot declare value ${value} as type ${explicitType} for variable ${variableName}`);
+        throw new Error("Cannot declare value ".concat(value, " as type ").concat(explicitType, " for variable ").concat(variableName));
       }
 
       if (!this.variables.get(variableName)) {
@@ -3097,7 +3108,7 @@ class Runner {
     const yarnNode = this.yarnNodes[startNode];
 
     if (yarnNode === undefined) {
-      throw new Error(`Node "${startNode}" does not exist`);
+      throw new Error("Node \"".concat(startNode, "\" does not exist"));
     }
 
     this.visited[startNode] = true; // Parse the entire node
@@ -3254,7 +3265,7 @@ class Runner {
     const oldValue = this.variables.get(node.variableName);
 
     if (oldValue && typeof oldValue !== typeof result) {
-      throw new Error(`Variable ${node.variableName} is already type ${typeof oldValue}; cannot set equal to ${result} of type ${typeof result}`);
+      throw new Error("Variable ".concat(node.variableName, " is already type ").concat(typeof oldValue, "; cannot set equal to ").concat(result, " of type ").concat(typeof result));
     }
 
     this.variables.set(node.variableName, result);
@@ -3291,7 +3302,7 @@ class Runner {
       return this.functions[node.functionName](...node.args.map(this.evaluateExpressionOrLiteral, this));
     }
 
-    throw new Error(`Function "${node.functionName}" not found`);
+    throw new Error("Function \"".concat(node.functionName, "\" not found"));
   }
   /**
    * Evaluates an expression or literal down to its final value
@@ -3359,7 +3370,7 @@ class Runner {
         return parseFloat(a.numericLiteral);
       },
       StringLiteralNode: a => {
-        return `${a.stringLiteral}`;
+        return "".concat(a.stringLiteral);
       },
       BooleanLiteralNode: a => {
         return a.booleanLiteral === 'true';
@@ -3377,7 +3388,7 @@ class Runner {
     const handler = nodeHandlers[node.type];
 
     if (!handler) {
-      throw new Error(`node type not recognized: ${node.type}`);
+      throw new Error("node type not recognized: ".concat(node.type));
     }
 
     return handler(node instanceof nodeTypes.Expression ? this.evaluateExpressionOrLiteral(node.expression || node.expression1) : node, node.expression2 ? this.evaluateExpressionOrLiteral(node.expression2) : node);

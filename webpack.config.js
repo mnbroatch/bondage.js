@@ -18,9 +18,7 @@ const common = {
           presets: [
             ['@babel/preset-env',
               {
-                targets: {
-                  chrome: '58',
-                },
+                targets: 'last 4 years',
               },
             ],
           ],

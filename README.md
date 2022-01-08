@@ -25,8 +25,12 @@ The examples below illustrate how `bondage.js` in particular works:
 ### Basic Dialogue
 
 ```javascript
-import bondage from '@mnbroatch/bondage'; // or whatever import method
-
+import bondage from '@mnbroatch/bondage';
+// or node: 
+// const bondage = require('@mnbroatch/bondage')
+// or in a script tag:
+// <script src="path-to-file/bondage.js"></script>
+ 
 // bondage.js strips empty lines, but make sure lines have
 // no leading whitespace (besides indentation)!
 const dialogue = ` 
@@ -278,11 +282,11 @@ is equivalent to:
 ```
 
 
-# Compatibility
+# Other included versions
 
-If you need compatibility with internet explorer, you can transpile yourself or use `dist/bondage.ie.js`.
+A minified version exists at `@mnbroatch/bondage/dist/bondage.ie.js`.
 
-The necessary polyfills will increase the footprint.
+If you need compatibility with internet explorer, you can transpile yourself or use `@mnbroatch/bondage/dist/bondage.ie.js`.
 
 
 # Development

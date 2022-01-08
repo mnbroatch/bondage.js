@@ -50,10 +50,6 @@ module.exports = [
       ...common.output,
       filename: 'bondage.ie.js',
     },
-    optimization: {
-      ...common.optimization,
-      minimize: false,
-    },
     module: {
       rules: [{
         test: /\.js/,

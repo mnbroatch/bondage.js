@@ -282,7 +282,7 @@ is equivalent to:
 
 If you need compatibility with internet explorer, you can transpile yourself or use `dist/bondage.ie.js`.
 
-The necessary polyfills increase footprint considerably.
+The necessary polyfills will increase the footprint.
 
 
 # Development

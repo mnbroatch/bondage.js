@@ -1,8 +1,8 @@
 {
   "name": "@mnbroatch/bondage",
-  "version": "3.0.10",
+  "version": "3.0.11",
   "description": "Yarn parser for Javascript",
-  "main": "src/index.js",
+  "main": "dist/bondage.js",
   "scripts": {
     "test": "jest --verbose false",
     "test:coverage": "jest --coverage --verbose false",

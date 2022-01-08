@@ -1,4 +1,14 @@
-/******/ (() => { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["bondage"] = factory();
+	else
+		root["bondage"] = factory();
+})(self, function() {
+return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 495:
@@ -157,13 +167,29 @@ module.exports = DefaultVariableStorage;
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
 
-// UNUSED EXPORTS: default
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ src)
+});
 
 ;// CONCATENATED MODULE: ./src/parser/nodes.js
 
@@ -2027,7 +2053,7 @@ class Runner {
   }
 }
 
-/* harmony default export */ const src_runner = ({
+/* harmony default export */ const runner = ({
   Runner,
   TextResult: results.TextResult,
   CommandResult: results.CommandResult,
@@ -2039,9 +2065,11 @@ class Runner {
 
 
 
-/* harmony default export */ const src = ((/* unused pure expression or super */ null && (runner)));
+/* harmony default export */ const src = (runner);
 
 })();
 
+/******/ 	return __webpack_exports__;
 /******/ })()
 ;
+});

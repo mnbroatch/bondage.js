@@ -7,7 +7,7 @@
 		exports["bondage"] = factory();
 	else
 		root["bondage"] = factory();
-})(self, function() {
+})(this, function() {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 

@@ -7,6 +7,7 @@ module.exports = [
         name: 'bondage',
         type: 'umd',
       },
+      globalObject: 'this',
     },
   },
   {
@@ -17,6 +18,7 @@ module.exports = [
         name: 'bondage',
         type: 'umd',
       },
+      globalObject: 'this',
     },
     optimization: {
       minimize: false,

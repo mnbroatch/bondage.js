@@ -1,6 +1,6 @@
 {
   "name": "@mnbroatch/bondage",
-  "version": "3.0.14",
+  "version": "3.0.15",
   "description": "Yarn parser for Javascript",
   "main": "dist/bondage.js",
   "scripts": {
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.7",
     "babel-jest": "^27.4.4",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",

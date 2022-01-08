@@ -7,7 +7,7 @@
     "test": "jest --verbose false",
     "test:coverage": "jest --coverage --verbose false",
     "lint": "eslint .",
-    "build": "jison-es src/parser/grammar.json -o src/parser/compiledParser.js && rollup -c"
+    "build": "jison-es src/parser/grammar.json -o src/parser/compiledParser.js && webpack"
   },
   "prepare": "npm run build",
   "repository": {
@@ -26,12 +26,14 @@
   "homepage": "https://github.com/mnbroatch/bondage.js#readme",
   "devDependencies": {
     "@babel/preset-env": "^7.16.7",
+    "babel-jest": "^27.4.4",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",
+    "jest": "^27.4.3",
     "jison-es": "^0.4.18",
-    "babel-jest": "^27.4.4",
-    "jest": "^27.4.3"
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
   },
   "author": "mnbroatch"
 }

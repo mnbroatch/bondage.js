@@ -1,5 +1,5 @@
 'use strict';
 
-import runner from './src/runner';
+import runner from './runner';
 
 export default runner;

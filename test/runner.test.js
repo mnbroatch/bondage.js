@@ -6,7 +6,7 @@
 // TODO: Make less painful to look at
 
 import fs from 'fs';
-import bondage from '../index';
+import bondage from '../src/index';
 
 describe('Dialogue', () => {
   let linksYarnData;

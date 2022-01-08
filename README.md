@@ -277,6 +277,14 @@ is equivalent to:
 ]
 ```
 
+
+# Compatibility
+
+If you need compatibility with internet explorer, you can transpile yourself or use `dist/bondage.ie.js`.
+
+The necessary polyfills increase footprint considerably.
+
+
 # Development
 
 The parser is compiled ahead of time, so after making changes to the grammar you will need to run `node src/parser/make-parser`. This is run automatically during `npm run build`.

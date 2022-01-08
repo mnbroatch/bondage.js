@@ -1,27 +1,66 @@
-module.exports = [
-  {
-    entry: './src/index.js',
-    output: {
-      filename: 'bondage.min.js',
-      library: {
-        name: 'bondage',
-        type: 'umd',
+const common = {
+  entry: './src/index.js',
+  output: {
+    filename: 'bondage.min.js',
+    library: {
+      name: 'bondage',
+      type: 'umd',
+    },
+    globalObject: 'this',
+  },
+  module: {
+    rules: [{
+      // test: /\.js/,
+      // exclude: /node_modules/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            ['@babel/preset-env'],
+          ],
+          plugins: ['add-module-exports'],
+        },
       },
-      globalObject: 'this',
+    }],
+  },
+};
+
+module.exports = [
+  common,
+  {
+    ...common,
+    output: {
+      ...common.output,
+      filename: 'bondage.js',
+    },
+    optimization: {
+      ...common.optimization,
+      minimize: false,
     },
   },
   {
-    entry: './src/index.js',
+    ...common,
     output: {
-      filename: 'bondage.js',
-      library: {
-        name: 'bondage',
-        type: 'umd',
-      },
-      globalObject: 'this',
+      ...common.output,
+      filename: 'bondage.ie.js',
     },
-    optimization: {
-      minimize: false,
+    module: {
+      rules: [{
+        // test: /\.js/,
+        // exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['@babel/preset-env', {
+                targets: { ie: '11' },
+                useBuiltIns: 'usage',
+                corejs: 3,
+              }],
+            ],
+          },
+        },
+      }],
     },
   },
 ];

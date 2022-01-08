@@ -10,8 +10,8 @@ const common = {
   },
   module: {
     rules: [{
-      // test: /\.js/,
-      // exclude: /node_modules/,
+      test: /\.js/,
+      exclude: /node_modules/,
       use: {
         loader: 'babel-loader',
         options: {
@@ -45,14 +45,19 @@ module.exports = [
   },
   {
     ...common,
+    target: ['web', 'es5'],
     output: {
       ...common.output,
       filename: 'bondage.ie.js',
     },
+    optimization: {
+      ...common.optimization,
+      minimize: false,
+    },
     module: {
       rules: [{
-        // test: /\.js/,
-        // exclude: /node_modules/,
+        test: /\.js/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {

@@ -13,6 +13,8 @@ A live demo is under development.
 There are features in the Yarn docs that are not present in the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md). These have not yet been implemented. Known examples are:
   - `Character: some text` annotation
   - `[b]Markup[/b]`
+
+These are unlikely to be added to this project, but would instead be added to [YarnBound](https://github.com/mnbroatch/yarn-bound).
   
 
 # Usage
@@ -284,9 +286,9 @@ is equivalent to:
 
 # Other included versions
 
-A minified version exists at `@mnbroatch/bondage/dist/bondage.ie.js`.
+A minified version exists at `@mnbroatch/bondage/dist/bondage.min.js`.
 
-If you need compatibility with internet explorer, you can transpile yourself or use `@mnbroatch/bondage/dist/bondage.ie.js`.
+If you need compatibility with internet explorer, you can transpile for yourself or use `@mnbroatch/bondage/dist/bondage.ie.js`.
 
 
 # Development

@@ -35,9 +35,6 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-# istanbul overage temp file
-.nyc_output
-
 # Why OSX, why
 .DS_Store
 

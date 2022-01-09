@@ -720,4 +720,9 @@ describe('Parser', () => {
 
     expect(results).toEqual(expected);
   });
+
+  it('should throw an error if parsing invalid input', () => {
+    const invalid = '<<al#ksjd #{sdasd}>>'
+    expect(() => { parser.parse(invalid); }).toThrow(`Invalid syntax in: ${invalid}`);
+  });
 });

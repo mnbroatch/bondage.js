@@ -200,20 +200,20 @@ class Runner {
           }
         }
       } else {
-        // FunctionCall
-        if (node.type === 'JumpNode') {
+        // Command
+        if (node.type === 'JumpCommandNode') {
           yield* this.run(node.destination);
           // ignore the rest of this outer loop and
           // tell parent loops to ignore following nodes
           return isRoot ? undefined : { stop: true };
         }
-        if (node.type === 'StopNode') {
+        if (node.type === 'StopCommandNode') {
           // ignore the rest of this outer loop and
           // tell parent loops to ignore following nodes
           return isRoot ? undefined : { stop: true };
         }
-        const funcArgs = node.args.map(this.evaluateExpressionOrLiteral, this);
-        yield new results.CommandResult(node.functionName, funcArgs, node.hashtags, metadata);
+        const command = this.evaluateExpressionOrLiteral(node.command);
+        yield new results.CommandResult(command, node.hashtags, metadata);
       }
 
       prevnode = node;
@@ -237,7 +237,6 @@ class Runner {
     // the consuming app does the actual filtering or whatever
     const transformedSelections = selections.map((s) => {
       let isAvailable = true;
-      let text = '';
 
       if (
         s.conditionalExpression
@@ -246,10 +245,7 @@ class Runner {
         isAvailable = false;
       }
 
-      text = s.text.reduce((acc, node) => {
-        return acc + this.evaluateExpressionOrLiteral(node).toString();
-      }, '');
-
+      const text = this.evaluateExpressionOrLiteral(s.text);
       return Object.assign(s, { isAvailable, text });
     });
 
@@ -318,6 +314,14 @@ class Runner {
    * Evaluates an expression or literal down to its final value
    */
   evaluateExpressionOrLiteral(node) {
+    // A combined array of text and inline expressions to be treated as one.
+    // Could probably be cleaned up by introducing a new node type.
+    if (Array.isArray(node)) {
+      return node.reduce((acc, n) => {
+        return acc + this.evaluateExpressionOrLiteral(n).toString();
+      }, '');
+    }
+
     const nodeHandlers = {
       UnaryMinusExpressionNode: (a) => { return -a; },
       ArithmeticExpressionAddNode: (a, b) => { return a + b; },

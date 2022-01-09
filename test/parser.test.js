@@ -7,6 +7,12 @@ import parser from '../src/parser/parser';
 import nodes from '../src/parser/nodes';
 
 describe('Parser', () => {
+  it('blah', () => {
+    const results = parser.parse( `About to send a command!
+<<someCommand $a {"I'm an arg!"}>>
+Command sent!`)
+  });
+
   it('can parse simple text', () => {
     const results = parser.parse('some text');
 
@@ -17,37 +23,12 @@ describe('Parser', () => {
     expect(results).toEqual(expected);
   });
 
-  // it.only('can parse a simple function call', () => {
-  it('can parse a simple function call', () => {
+  it('can parse a simple command', () => {
     const results = parser.parse('<<commandtext>>');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum }),
-    ];
-
-    expect(results).toEqual(expected);
-  });
-
-  it('can parse a function call with one open arg', () => {
-    const results = parser.parse('<<commandtext 1>>');
-
-    const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.NumericLiteralNode('1')], { first_line: results[0].lineNum }),
-    ];
-
-    expect(results).toEqual(expected);
-  });
-
-  it('can parse a function call with two open args', () => {
-    const results = parser.parse('<<commandtext 2 "face">>');
-
-    const expected = [
-      new nodes.FunctionResultNode(
-        'commandtext',
-        [
-          new nodes.NumericLiteralNode('2'),
-          new nodes.StringLiteralNode('face'),
-        ],
+      new nodes.GenericCommandNode(
+        [new nodes.TextNode('commandtext', { first_line: results[0].lineNum })],
         { first_line: results[0].lineNum },
       ),
     ];
@@ -55,17 +36,12 @@ describe('Parser', () => {
     expect(results).toEqual(expected);
   });
 
-  it('can parse a function call with three open args', () => {
+  it('can parse a function call with spaces', () => {
     const results = parser.parse('<<commandtext 2 "face" true>>');
 
     const expected = [
-      new nodes.FunctionResultNode(
-        'commandtext',
-        [
-          new nodes.NumericLiteralNode('2'),
-          new nodes.StringLiteralNode('face'),
-          new nodes.BooleanLiteralNode('true'),
-        ],
+      new nodes.GenericCommandNode(
+        [new nodes.TextNode('commandtext 2 "face" true', { first_line: results[0].lineNum })],
         { first_line: results[0].lineNum },
       ),
     ];
@@ -73,24 +49,15 @@ describe('Parser', () => {
     expect(results).toEqual(expected);
   });
 
-  it('can parse a function call with multiple identifiers', () => {
-    const results = parser.parse('<<commandtext ident1 ident2 true>>');
-
-    const expected = [
-      new nodes.FunctionResultNode('commandtext', [new nodes.TextNode('ident1'), new nodes.TextNode('ident2'), new nodes.BooleanLiteralNode('true')], { first_line: results[0].lineNum },
-      ),
-    ];
-
-    expect(results).toEqual(expected);
-  });
-
-  // it.only('can parse some text followed by a newline and a command', () => {
   it('can parse some text followed by a newline and a command', () => {
     const results = parser.parse('some text\n<<commandtext>>');
 
     const expected = [
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 1 }),
+      new nodes.GenericCommandNode(
+        [new nodes.TextNode('commandtext', { first_line: results[1].lineNum })],
+        { first_line: results[1].lineNum },
+      ),
     ];
 
     expect(results).toEqual(expected);
@@ -251,7 +218,10 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 2 }),
+      new nodes.GenericCommandNode(
+        [new nodes.TextNode('commandtext', { first_line: results[1].lineNum })],
+        { first_line: results[1].lineNum },
+      ),
     ];
 
     expect(results).toEqual(expected);
@@ -262,7 +232,10 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.TextNode('some text', { first_line: results[0].lineNum }),
-      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum + 6 }),
+      new nodes.GenericCommandNode(
+        [new nodes.TextNode('commandtext', { first_line: results[1].lineNum })],
+        { first_line: results[1].lineNum },
+      ),
     ];
 
     expect(results).toEqual(expected);
@@ -346,9 +319,9 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext {$testvar}>>');
 
     const expected = [
-      new nodes.FunctionResultNode(
-        'commandtext',
+      new nodes.GenericCommandNode(
         [
+          new nodes.TextNode('commandtext ', { first_line: results[0].lineNum }),
           new nodes.InlineExpressionNode(
             new nodes.VariableNode('testvar'),
             { first_line: results[0].lineNum },
@@ -650,7 +623,10 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext>>// blah #ignore');
 
     const expected = [
-      new nodes.FunctionResultNode('commandtext', [], { first_line: results[0].lineNum }),
+      new nodes.GenericCommandNode(
+        [new nodes.TextNode('commandtext', { first_line: results[0].lineNum })],
+        { first_line: results[0].lineNum },
+      ),
     ];
 
     expect(results).toEqual(expected);
@@ -660,9 +636,8 @@ describe('Parser', () => {
     const results = parser.parse('<<commandtext>>#someHashtag#anotherHashtag #lastHashtag // #ignore');
 
     const expected = [
-      new nodes.FunctionResultNode(
-        'commandtext',
-        [],
+      new nodes.GenericCommandNode(
+        [new nodes.TextNode('commandtext', { first_line: results[0].lineNum })],
         { first_line: results[0].lineNum },
         ['someHashtag', 'anotherHashtag', 'lastHashtag'],
       ),
@@ -722,7 +697,7 @@ describe('Parser', () => {
   });
 
   it('should throw an error if parsing invalid input', () => {
-    const invalid = '<<al#ksjd #{sdasd}>>'
-    expect(() => { parser.parse(invalid); }).toThrow(`Invalid syntax in: ${invalid}`);
+    const invalid = '<<al#ksjd #{sdasd}>>';
+    expect(() => { parser.parse(invalid); }).toThrow("Parse error on line 2: Unexpected 'EndInlineExp'");
   });
 });

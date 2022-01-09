@@ -7,6 +7,7 @@ class Assignment { }
 class Literal { }
 class Expression { }
 class FunctionCall { }
+class Command { }
 
 export default {
   types: {
@@ -17,6 +18,7 @@ export default {
     Literal,
     Expression,
     FunctionCall,
+    Command,
   },
 
   // /////////////// Dialog Nodes
@@ -70,6 +72,34 @@ export default {
       this.elseStatement = elseStatement;
     }
   },
+
+
+  // /////////////// Command Nodes
+  GenericCommandNode: class extends Command {
+    constructor(command, lineNo, hashtags = []) {
+      super();
+      this.type = 'GenericCommandNode';
+      this.command = command;
+      this.hashtags = hashtags;
+      this.lineNum = lineNo ? lineNo.first_line : -1;
+    }
+  },
+
+  JumpCommandNode: class extends Command {
+    constructor(destination) {
+      super();
+      this.type = 'JumpCommandNode';
+      this.destination = destination;
+    }
+  },
+
+  StopCommandNode: class extends Command {
+    constructor() {
+      super();
+      this.type = 'StopCommandNode';
+    }
+  },
+
 
   // /////////////// Contents Nodes
   TextNode: class extends Text {
@@ -289,21 +319,6 @@ export default {
       this.args = args;
       this.lineNum = lineNo ? lineNo.first_line : -1;
       this.hashtags = hashtags;
-    }
-  },
-
-  JumpNode: class extends FunctionCall {
-    constructor(destination) {
-      super();
-      this.type = 'JumpNode';
-      this.destination = destination;
-    }
-  },
-
-  StopNode: class extends FunctionCall {
-    constructor() {
-      super();
-      this.type = 'StopNode';
     }
   },
 

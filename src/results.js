@@ -20,15 +20,13 @@ class TextResult extends Result {
 class CommandResult extends Result {
   /**
    * Return a command string
-   * @param {string} [name] the function name being called
-   * @param {[]} [args] the array of arguments for the function
+   * @param {string} [name] the command text
    * @param {string[]} [hashtags] the hashtags for the line
    * @param {object} [metadata] the parent yarn node
    */
-  constructor(name, args, hashtags, metadata) {
+  constructor(name, hashtags, metadata) {
     super();
     this.name = name;
-    this.args = args;
     this.hashtags = hashtags;
     this.metadata = metadata;
   }

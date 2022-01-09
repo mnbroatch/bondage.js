@@ -34,22 +34,12 @@ function makeStates() {
       .addTransition('Declare', 'declare')
       .addTransition('Jump', 'jump')
       .addTransition('Stop', 'stop')
+      .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true)
       .addTransition('EndCommand', 'base', true)
-      .addTransition('Identifier', 'commandArg', true)
       .addTextRule('Text'),
 
     commandArg: new LexerState()
-      .addTransition('BeginInlineExp', 'inlineExpressionInCommand', true)
-      .addTransition('EndCommand', 'base', true)
-      .addTransition('LeftParen', 'commandParenArgOrExpression')
-      .addTransition('Variable')
-      .addTransition('Number')
-      .addTransition('String')
-      .addTransition('True')
-      .addTransition('False')
-      .addTransition('Identifier')
-      .addTransition('Comma')
-      .addTransition('RightParen'),
+      .addTextRule('Text'),
 
     commandParenArgOrExpression: new LexerState()
       .addTransition('EndCommand', 'base', true)
@@ -151,7 +141,7 @@ function makeStates() {
     // transition from inline expression back to base OR command
     // states depending on how we got there
     inlineExpressionInCommand: new LexerState()
-      .addTransition('EndInlineExp', 'commandArg')
+      .addTransition('EndInlineExp', 'command')
       .addTransition('Number')
       .addTransition('String')
       .addTransition('LeftParen')

@@ -179,7 +179,7 @@ title: StartingNode
 someTag: someTag
 ---
 Sending a command...
-<<someCommand someArg someOtherArg>>
+<<someCommand with spaces>>
 ===
 ```
 
@@ -188,11 +188,7 @@ You will see a "Sending a command..." TextResult, but the next node will look li
 
 ```javascript
 {
-  "name": "someCommand",
-  "args": [
-    "someArg",
-    "someOtherArg"
-  ],
+  "name": "someCommand with spaces",
   "hashtags": [],
   "metadata": {
     "title": "StartingNode",

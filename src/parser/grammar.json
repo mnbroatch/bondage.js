@@ -264,52 +264,24 @@
     ],
     "genericCommand": [
       [
-        "BeginCommand Identifier EndCommand",
-        "$$ = new yy.FunctionResultNode($2, [], @$);"
-      ],
-      [
-        "BeginCommand Identifier genericCommandArguments EndCommand",
-        "$$ = new yy.FunctionResultNode($2, $3, @$);"
-      ]
-    ],
-    "genericCommandArguments": [
-      [
-        "genericCommandArgument",
-        "$$ = [$1];"
-      ],
-      [
-        "genericCommandArguments genericCommandArgument",
-        "$$ = $1.concat([$2]);"
-      ]
-    ],
-    "genericCommandArgument": [
-      [
-        "inlineExpression",
-        "$$ = $1;"
-      ],
-      [
-        "literal",
-        "$$ = $1;"
-      ],
-      [
-        "Identifier",
-        "$$ = new yy.TextNode($1);"
+        "BeginCommand text EndCommand",
+        "$$ = new yy.GenericCommandNode($2, @$);"
       ]
     ],
     "jumpCommand": [
       [
         "BeginCommand Jump Identifier EndCommand",
-        "$$ = new yy.JumpNode($3);"
+        "$$ = new yy.JumpCommandNode($3);"
       ],
       [
         "BeginCommand Jump inlineExpression EndCommand",
-        "$$ = new yy.JumpNode($3);"
+        "$$ = new yy.JumpCommandNode($3);"
       ]
     ],
     "stopCommand": [
       [
         "BeginCommand Stop EndCommand",
-        "$$ = new yy.StopNode();"
+        "$$ = new yy.StopCommandNode();"
       ]
     ],
     "assignmentCommand": [

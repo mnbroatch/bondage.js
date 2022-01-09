@@ -28,108 +28,41 @@ describe('Lexer', () => {
     expect(lexer.lex()).toBe('Text');
     expect(lexer.lex()).toBe('Hashtag');
   });
+
   it('can tokenize a command', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand>>');
 
     expect(lexer.lex()).toBe('BeginCommand');
-    expect(lexer.lex()).toBe('Identifier');
+    expect(lexer.lex()).toBe('Text');
     expect(lexer.lex()).toBe('EndCommand');
     expect(lexer.lex()).toBe('EndOfInput');
   });
 
-  it('can tokenize a command with paren no argument', () => {
-    const lexer = new Lexer();
-    lexer.setInput('<<somecommand()>>');
-
-    expect(lexer.lex()).toBe('BeginCommand');
-    expect(lexer.lex()).toBe('Identifier');
-    expect(lexer.lex()).toBe('LeftParen');
-    expect(lexer.lex()).toBe('RightParen');
-    expect(lexer.lex()).toBe('EndCommand');
-    expect(lexer.lex()).toBe('EndOfInput');
-  });
-
-  it('can tokenize a command with an open argument', () => {
-    const lexer = new Lexer();
-    lexer.setInput('<<somecommand 2>>');
-
-    expect(lexer.lex()).toBe('BeginCommand');
-    expect(lexer.lex()).toBe('Identifier');
-    expect(lexer.lex()).toBe('Number');
-    expect(lexer.lex()).toBe('EndCommand');
-    expect(lexer.lex()).toBe('EndOfInput');
-  });
-
-
-  it('can tokenize a command with two open arguments', () => {
+  it('can tokenize a command with spaces', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand 2 "face">>');
 
     expect(lexer.lex()).toBe('BeginCommand');
-    expect(lexer.lex()).toBe('Identifier');
-    expect(lexer.lex()).toBe('Number');
-    expect(lexer.lex()).toBe('String');
+    expect(lexer.lex()).toBe('Text');
     expect(lexer.lex()).toBe('EndCommand');
     expect(lexer.lex()).toBe('EndOfInput');
   });
 
-  it('can tokenize a command with a paren argument', () => {
+  it('can tokenize a command with inline expressions', () => {
     const lexer = new Lexer();
-    lexer.setInput('<<somecommand(2)>>');
+    lexer.setInput('<<This is a {$test} {1} sentence>>');
 
     expect(lexer.lex()).toBe('BeginCommand');
-    expect(lexer.lex()).toBe('Identifier');
-    expect(lexer.lex()).toBe('LeftParen');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('BeginInlineExp');
+    expect(lexer.lex()).toBe('Variable');
+    expect(lexer.lex()).toBe('EndInlineExp');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('BeginInlineExp');
     expect(lexer.lex()).toBe('Number');
-    expect(lexer.lex()).toBe('RightParen');
-    expect(lexer.lex()).toBe('EndCommand');
-    expect(lexer.lex()).toBe('EndOfInput');
-  });
-
-  it('can tokenize a command with two paren arguments', () => {
-    const lexer = new Lexer();
-    lexer.setInput('<<somecommand(2, "Face")>>');
-
-    expect(lexer.lex()).toBe('BeginCommand');
-    expect(lexer.lex()).toBe('Identifier');
-    expect(lexer.lex()).toBe('LeftParen');
-    expect(lexer.lex()).toBe('Number');
-    expect(lexer.lex()).toBe('Comma');
-    expect(lexer.lex()).toBe('String');
-    expect(lexer.lex()).toBe('RightParen');
-    expect(lexer.lex()).toBe('EndCommand');
-    expect(lexer.lex()).toBe('EndOfInput');
-  });
-
-  it('can tokenize a command with an expression argument', () => {
-    const lexer = new Lexer();
-    lexer.setInput('<<somecommand(2 + 1)>>');
-
-    expect(lexer.lex()).toBe('BeginCommand');
-    expect(lexer.lex()).toBe('Identifier');
-    expect(lexer.lex()).toBe('LeftParen');
-    expect(lexer.lex()).toBe('Number');
-    expect(lexer.lex()).toBe('Add');
-    expect(lexer.lex()).toBe('Number');
-    expect(lexer.lex()).toBe('RightParen');
-    expect(lexer.lex()).toBe('EndCommand');
-    expect(lexer.lex()).toBe('EndOfInput');
-  });
-
-  it('can tokenize a command with an expression argument 2', () => {
-    const lexer = new Lexer();
-    lexer.setInput('<<somecommand((2 + 1))>>');
-
-    expect(lexer.lex()).toBe('BeginCommand');
-    expect(lexer.lex()).toBe('Identifier');
-    expect(lexer.lex()).toBe('LeftParen');
-    expect(lexer.lex()).toBe('LeftParen');
-    expect(lexer.lex()).toBe('Number');
-    expect(lexer.lex()).toBe('Add');
-    expect(lexer.lex()).toBe('Number');
-    expect(lexer.lex()).toBe('RightParen');
-    expect(lexer.lex()).toBe('RightParen');
+    expect(lexer.lex()).toBe('EndInlineExp');
+    expect(lexer.lex()).toBe('Text');
     expect(lexer.lex()).toBe('EndCommand');
     expect(lexer.lex()).toBe('EndOfInput');
   });

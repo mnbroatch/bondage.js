@@ -190,11 +190,11 @@ describe('Dialogue', () => {
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [], [], metadata));
+    expect(value).toEqual(new bondage.CommandResult('command', [], metadata));
     value = run.next().value;
     expect(value).toEqual(new bondage.TextResult('text in between commands', [], metadata));
     value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', ['with', 'space'], ['someHashtag'], metadata));
+    expect(value).toEqual(new bondage.CommandResult('command with "space"', ['someHashtag'], metadata));
     expect(run.next().done).toBe(true);
   });
 
@@ -283,11 +283,11 @@ describe('Dialogue', () => {
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [], [], metadata));
+    expect(value).toEqual(new bondage.CommandResult('command', [], metadata));
     value = run.next().value;
     expect(value).toEqual(new bondage.TextResult('text in between commands', [], metadata));
     value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', ['with', 'space'], [], metadata));
+    expect(value).toEqual(new bondage.CommandResult('command with "space"', [], metadata));
     expect(run.next().done).toBe(true);
   });
 
@@ -760,15 +760,15 @@ describe('Dialogue', () => {
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [], [], metadata));
+    expect(value).toEqual(new bondage.CommandResult('command', [], metadata));
     value = run.next().value;
     expect(value).toEqual(new bondage.TextResult('text in between commands', [], metadata));
     value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', ['with', 'space'], [], metadata));
+    expect(value).toEqual(new bondage.CommandResult('command with "space"', [], metadata));
     expect(run.next().done).toBe(true);
   });
 
-  it('Returns commands to the user with inline expression arguments', () => {
+  it('Returns commands with inline expressions to the user', () => {
     runner.load(commandAndFunctionYarnData);
     const run = runner.run('ExpressionArgumentCommand');
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; }) } };
@@ -777,37 +777,7 @@ describe('Dialogue', () => {
     runner.variables.set('testvar2', 5);
     runner.variables.set('testvar3', 10);
     const value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [1, 5, 'apple', 10], [], metadata));
-    expect(run.next().done).toBe(true);
-  });
-
-  it('Does not execute commands as functions', () => {
-    runner.registerFunction('command', () => {
-      throw new Error('function was called when it should not be');
-    });
-
-    runner.load(commandAndFunctionYarnData);
-    const run = runner.run('BasicCommands');
-    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommands'; }) } };
-    delete metadata.body;
-
-    const value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [], [], metadata));
-  });
-
-
-  it('Returns complex commands to the user', () => {
-    runner.load(commandAndFunctionYarnData);
-    const run = runner.run('ComplexCommands');
-    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'ComplexCommands'; }) } };
-    delete metadata.body;
-
-    let value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [], [], metadata));
-    value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('text in between commands', [], metadata));
-    value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', ['with', 'space'], [], metadata));
+    expect(value).toEqual(new bondage.CommandResult('command 1 5 apple 10', [], metadata));
     expect(run.next().done).toBe(true);
   });
 

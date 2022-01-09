@@ -7,6 +7,9 @@ import { parser } from './compiledParser';
 parser.lexer = new Lexer();
 parser.yy = Nodes;
 parser.yy.declarations = {};
+parser.yy.parseError = function parseError(e) {
+  throw e;
+};
 parser.yy.registerDeclaration = function registerDeclaration(
   variableName,
   expression,

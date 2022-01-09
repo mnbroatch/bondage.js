@@ -7,7 +7,7 @@ class TextResult extends Result {
    * Create a text display result
    * @param {string} [text] text to be displayed
    * @param {string[]} [hashtags] the hashtags for the line
-   * @param {object} [metadata] the parent yarn node
+   * @param {object} [metadata] the parent yarn data
    */
   constructor(text, hashtags, metadata) {
     super();
@@ -20,13 +20,13 @@ class TextResult extends Result {
 class CommandResult extends Result {
   /**
    * Return a command string
-   * @param {string} [name] the command text
+   * @param {string} [command] the command text
    * @param {string[]} [hashtags] the hashtags for the line
-   * @param {object} [metadata] the parent yarn node
+   * @param {object} [metadata] the parent yarn data
    */
-  constructor(name, hashtags, metadata) {
+  constructor(command, hashtags, metadata) {
     super();
-    this.name = name;
+    this.command = command;
     this.hashtags = hashtags;
     this.metadata = metadata;
   }
@@ -38,7 +38,7 @@ class OptionResult extends Result {
    * @param {string} [text] option text to display
    * @param {boolean} [isAvailable] whether option is available
    * @param {string[]} [hashtags] the hashtags for the line
-   * @param {object} [metadata] the parent yarn node
+   * @param {object} [metadata] the parent yarn data
    */
   constructor(text, isAvailable = true, hashtags = [], metadata) {
     super();
@@ -53,7 +53,7 @@ class OptionsResult extends Result {
   /**
    * Create a selectable list of options from the given list of text
    * @param {OptionResult[]} [options] list of the text of options to be shown
-   * @param {object} [metadata] the parent yarn node
+   * @param {object} [metadata] the parent yarn data
    */
   constructor(options, metadata) {
     super();

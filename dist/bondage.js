@@ -3174,31 +3174,35 @@ class Runner {
 
 
   *run(startNode) {
-    const yarnNode = this.yarnNodes[startNode];
+    let jumpTo = startNode;
 
-    if (yarnNode === undefined) {
-      throw new Error("Node \"".concat(startNode, "\" does not exist"));
+    while (jumpTo) {
+      const yarnNode = this.yarnNodes[jumpTo];
+
+      if (yarnNode === undefined) {
+        throw new Error("Node \"".concat(startNode, "\" does not exist"));
+      }
+
+      this.visited[startNode] = true; // Parse the entire node
+
+      const parserNodes = Array.from(_parser.default.parse(yarnNode.body));
+
+      const metadata = _objectSpread({}, yarnNode);
+
+      delete metadata.body;
+      const result = yield* this.evalNodes(parserNodes, metadata);
+      jumpTo = result && result.jump;
     }
-
-    this.visited[startNode] = true; // Parse the entire node
-
-    const parserNodes = Array.from(_parser.default.parse(yarnNode.body));
-
-    const metadata = _objectSpread({}, yarnNode);
-
-    delete metadata.body;
-    return yield* this.evalNodes(parserNodes, metadata, true);
   }
   /**
    * Evaluate a list of parser nodes, yielding the ones that need to be seen by
    * the user. Calls itself recursively if that is required by nested nodes
    * @param {Node[]} nodes
    * @param {YarnNode[]} metadata
-   * @param {boolean} isRoot - did we get here from run()
    */
 
 
-  *evalNodes(nodes, metadata, isRoot) {
+  *evalNodes(nodes, metadata) {
     let shortcutNodes = [];
     let prevnode = null;
     let textRun = '';
@@ -3214,7 +3218,7 @@ class Runner {
         // Last shortcut in the series, so yield the shortcuts.
         const result = yield* this.handleShortcuts(shortcutNodes, metadata);
 
-        if (result && result.stop) {
+        if (result && (result.stop || result.jump)) {
           return result;
         }
 
@@ -3245,25 +3249,25 @@ class Runner {
           // Run the remaining results
           const result = yield* this.evalNodes(evalResult, metadata);
 
-          if (result && result.stop) {
+          if (result && (result.stop || result.jump)) {
             return result;
           }
         }
       } else {
         // Command
         if (node.type === 'JumpCommandNode') {
-          yield* this.run(node.destination); // ignore the rest of this outer loop and
-          // tell parent loops to ignore following nodes
-
-          return isRoot ? undefined : {
-            stop: true
+          // ignore the rest of this outer loop and
+          // tell parent loops to ignore following nodes.
+          // Recursive call here would cause stack overflow
+          return {
+            jump: node.destination
           };
         }
 
         if (node.type === 'StopCommandNode') {
           // ignore the rest of this outer loop and
           // tell parent loops to ignore following nodes
-          return isRoot ? undefined : {
+          return {
             stop: true
           };
         }

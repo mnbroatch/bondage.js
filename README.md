@@ -10,11 +10,13 @@ A live demo is under development.
 - Reading from a .yarn file is left to the user; dialogues should be supplied to bondage.js as a text string or array of node objects.
 - Some minutia about what unicode characters define a string has not been considered.
 
-There are features in the Yarn docs that are not present in the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md). These have not yet been implemented. Known examples are:
+There are features in the Yarn docs that are not present in the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md). Known examples are:
   - `Character: some text` annotation
   - `[b]Markup[/b]`
 
-These are unlikely to be added to this project, but would instead be added to [YarnBound](https://github.com/mnbroatch/yarn-bound).
+These exist in [YarnBound](https://github.com/mnbroatch/yarn-bound) but not here.
+
+On the other hand, `declare` commands, which appear in the spec but not in the docs, are implemented here.
   
 
 # Usage

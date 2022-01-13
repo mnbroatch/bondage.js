@@ -52,7 +52,7 @@ class OptionResult extends Result {
 class OptionsResult extends Result {
   /**
    * Create a selectable list of options from the given list of text
-   * @param {OptionResult[]} [options] list of the text of options to be shown
+   * @param {Node[]} [options] list of the text of options to be shown
    * @param {object} [metadata] the parent yarn data
    */
   constructor(options, metadata) {

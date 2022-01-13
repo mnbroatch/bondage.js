@@ -33,7 +33,7 @@ The examples below illustrate how `bondage.js` in particular works:
 ```javascript
 import bondage from '@mnbroatch/bondage';
 // or node: 
-// const bondage = require('@mnbroatch/bondage')
+// const bondage = require('@mnbroatch/bondage/dist/bondage.js')
 // or in a script tag:
 // <script src="path-to-file/bondage.js"></script>
  

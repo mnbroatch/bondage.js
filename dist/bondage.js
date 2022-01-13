@@ -3075,6 +3075,10 @@ class Runner {
 
 
   load(data) {
+    if (!data) {
+      throw new Error('No dialogue supplied');
+    }
+
     let nodes = data;
 
     if (typeof data === 'string') {

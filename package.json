@@ -1,6 +1,6 @@
 {
   "name": "@mnbroatch/bondage",
-  "version": "3.0.35",
+  "version": "3.0.37",
   "description": "Yarn parser for Javascript",
   "main": "src/index.js",
   "scripts": {

@@ -23,6 +23,9 @@ class Runner {
    * @param {any[]} yarn dialogue as string or array
    */
   load(data) {
+    if (!data) {
+      throw new Error('No dialogue supplied');
+    }
     let nodes = data;
     if (typeof data === 'string') {
       nodes = convertYarn(data);

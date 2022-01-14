@@ -33,9 +33,9 @@ The examples below illustrate how `bondage.js` in particular works:
 ```javascript
 import bondage from '@mnbroatch/bondage';
 // or node: 
-// const bondage = require('@mnbroatch/bondage/dist/bondage.js')
+// const bondage = require('@mnbroatch/bondage')
 // or in a script tag:
-// <script src="path-to-file/bondage.js"></script>
+// <script src="path-to-file/bondage.min.js"></script>
  
 // bondage.js strips empty lines, but make sure lines have
 // no leading whitespace (besides indentation)!
@@ -289,8 +289,10 @@ A minified version exists at `@mnbroatch/bondage/dist/bondage.min.js`.
 
 If you need compatibility with internet explorer, you can transpile for yourself or use `@mnbroatch/bondage/dist/bondage.ie.js`.
 
+If you want to transpile for yourself, use `import bondage from '@mnbroatch/bondage/src/index'`
+
 
 # Development
 
-The parser is compiled ahead of time, so after making changes to the grammar you will need to run `node src/parser/make-parser`. This is run automatically during `npm run build`.
+The parser is compiled ahead of time, so after making changes to the grammar you will need to run `node src/parser/make-parser`. This is done automatically during `npm run build`.
 

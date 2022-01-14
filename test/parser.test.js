@@ -7,12 +7,6 @@ import parser from '../src/parser/parser';
 import nodes from '../src/parser/nodes';
 
 describe('Parser', () => {
-  it('blah', () => {
-    const results = parser.parse( `About to send a command!
-<<someCommand $a {"I'm an arg!"}>>
-Command sent!`)
-  });
-
   it('can parse simple text', () => {
     const results = parser.parse('some text');
 

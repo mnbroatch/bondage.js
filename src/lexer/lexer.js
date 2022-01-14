@@ -84,9 +84,7 @@ class Lexer {
       return 'EndOfLine';
     }
 
-    let x = this.lexNextTokenOnCurrentLine();
-    // console.log('x', x)
-    return x
+    return this.lexNextTokenOnCurrentLine();
   }
 
   advanceLine() {

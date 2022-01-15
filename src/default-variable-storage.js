@@ -15,4 +15,4 @@ class DefaultVariableStorage {
   }
 }
 
-module.exports = DefaultVariableStorage;
+export default DefaultVariableStorage;

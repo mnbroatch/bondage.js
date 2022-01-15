@@ -21,7 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 /* eslint-enable */
 
-module.exports = function convertYarn(content) {
+export default function convertYarn(content) {
   const objects = [];
 
   const lines = content.split(/\r?\n+/)

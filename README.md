@@ -287,9 +287,9 @@ is equivalent to:
 
 A minified version exists at `@mnbroatch/bondage/dist/bondage.min.js`.
 
-If you need compatibility with internet explorer, you can transpile for yourself or use `@mnbroatch/bondage/dist/bondage.ie.js`.
+If you want to transpile for yourself, use `import bondage from '@mnbroatch/bondage/src/index'` and make sure it's being included by your build system.
 
-If you want to transpile for yourself, use `import bondage from '@mnbroatch/bondage/src/index'`
+If you need compatibility with internet explorer, you can transpile for yourself or use `@mnbroatch/bondage/dist/bondage.ie.js`.
 
 
 # Development

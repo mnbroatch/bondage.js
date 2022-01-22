@@ -8,6 +8,7 @@ const nodeTypes = types.types;
 
 class Runner {
   constructor() {
+    this.noEscape = false;
     this.yarnNodes = {};
     this.variables = new DefaultVariableStorage();
     this.functions = {};
@@ -348,6 +349,7 @@ class Runner {
       LessThanExpressionNode: (a, b) => { return a < b; },
       LessThanOrEqualToExpressionNode: (a, b) => { return a <= b; },
       TextNode: (a) => { return a.text; },
+      EscapedCharacterNode: (a) => { return this.noEscape ? a.text : a.text.slice(1); },
       NumericLiteralNode: (a) => { return parseFloat(a.numericLiteral); },
       StringLiteralNode: (a) => { return `${a.stringLiteral}`; },
       BooleanLiteralNode: (a) => { return a.booleanLiteral === 'true'; },

@@ -1232,6 +1232,18 @@ describe('Dialogue', () => {
     expect(run.next().done).toBe(true);
   });
 
+  it('Does not remove backslashes if noEscape is on', () => {
+    runner.load(linksYarnData);
+    runner.noEscape = true;
+    const run = runner.run('OneNodeEscapeCurlyBrace');
+    const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeCurlyBrace'; }) } };
+    delete metadata.body;
+    const value = run.next().value;
+    expect(value).toEqual(new bondage.TextResult('This is a \\{test\\} line', [], metadata));
+    expect(run.next().done).toBe(true);
+    runner.noEscape = false;
+  });
+
   it('Can run through a single line with two consecutive escaped curly braces', () => {
     runner.load(linksYarnData);
     const run = runner.run('OneNodeEscapeTwoCurlyBraces');

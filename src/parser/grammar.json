@@ -34,17 +34,12 @@
       [ "statement hashtags", "$$ = $1.map(s => Object.assign(s, { hashtags: $2 }));" ],
       [ "statement EndOfLine", "$$ = $1;" ]
     ],
-    "escapedTextRaw": [
-      [ "Text", "$$ = $1;" ],
-      [ "EscapedCharacter", "$$ = $1.substring(1);" ],
-      [ "escapedTextRaw EscapedCharacter", "$$ = $1.concat($2.substring(1));" ],
-      [ "EscapedCharacter escapedTextRaw", "$$ = $1.substring(1).concat($2);" ]
-    ],
-    "escapedText": [
-      [ "escapedTextRaw", "$$ = new yy.TextNode($1, @$);" ]
+    "textNode": [
+      [ "Text", "$$ = new yy.TextNode($1, @$);" ],
+      [ "EscapedCharacter", "$$ = new yy.EscapedCharacterNode($1, @$);" ]
     ],
     "text": [
-      [ "escapedText", "$$ = [$1]" ],
+      [ "textNode", "$$ = [$1];" ],
       [ "inlineExpression", "$$ = [$1];" ],
       [ "text text", "$$ = $1.concat($2); " ]
     ],

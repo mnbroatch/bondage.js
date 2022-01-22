@@ -2,7 +2,7 @@
 
 import Nodes from './nodes';
 import Lexer from '../lexer/lexer';
-import { parser } from './compiledParser';
+import { parser } from './compiled-parser';
 
 parser.lexer = new Lexer();
 parser.yy = Nodes;

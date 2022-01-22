@@ -249,7 +249,9 @@ describe('Parser', () => {
     const results = parser.parse('\\{testtext\\}');
 
     const expected = [
-      new nodes.TextNode('{testtext}', { first_line: 1 }),
+      new nodes.EscapedCharacterNode('\\{', { first_line: 1 }),
+      new nodes.TextNode('testtext', { first_line: 1 }),
+      new nodes.EscapedCharacterNode('\\}', { first_line: 1 }),
     ];
 
     expect(results).toEqual(expected);
@@ -259,7 +261,8 @@ describe('Parser', () => {
     const results = parser.parse('\\<<testtext>>');
 
     const expected = [
-      new nodes.TextNode('<<testtext>>', { first_line: 1 }),
+      new nodes.EscapedCharacterNode('\\<', { first_line: 1 }),
+      new nodes.TextNode('<testtext>>', { first_line: 1 }),
     ];
 
     expect(results).toEqual(expected);
@@ -269,7 +272,8 @@ describe('Parser', () => {
     const results = parser.parse('\\//testtext');
 
     const expected = [
-      new nodes.TextNode('//testtext', { first_line: 1 }),
+      new nodes.EscapedCharacterNode('\\/', { first_line: 1 }),
+      new nodes.TextNode('/testtext', { first_line: 1 }),
     ];
 
     expect(results).toEqual(expected);
@@ -279,7 +283,8 @@ describe('Parser', () => {
     const results = parser.parse('\\#testtext');
 
     const expected = [
-      new nodes.TextNode('#testtext', { first_line: 1 }),
+      new nodes.EscapedCharacterNode('\\#', { first_line: 1 }),
+      new nodes.TextNode('testtext', { first_line: 1 }),
     ];
 
     expect(results).toEqual(expected);
@@ -289,7 +294,8 @@ describe('Parser', () => {
     const results = parser.parse('\\testtext');
 
     const expected = [
-      new nodes.TextNode('testtext', { first_line: 1 }),
+      new nodes.EscapedCharacterNode('\\t', { first_line: 1 }),
+      new nodes.TextNode('esttext', { first_line: 1 }),
     ];
 
     expect(results).toEqual(expected);

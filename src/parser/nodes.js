@@ -112,6 +112,16 @@ export default {
     }
   },
 
+  EscapedCharacterNode: class extends Text {
+    constructor(text, lineNo, hashtags = []) {
+      super();
+      this.type = 'EscapedCharacterNode';
+      this.text = text;
+      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.hashtags = hashtags;
+    }
+  },
+
   // /////////////// Literal Nodes
   NumericLiteralNode: class extends Literal {
     constructor(numericLiteral) {

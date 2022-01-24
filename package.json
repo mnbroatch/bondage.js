@@ -7,7 +7,7 @@
     "test": "jest --verbose false",
     "test:coverage": "jest --coverage --verbose false",
     "lint": "eslint .",
-    "build": "jison-es src/parser/grammar.json -o src/parser/compiled-parser.js && webpack",
+    "build": "jison-es src/core/parser/grammar.json -o src/core/parser/compiled-parser.js && webpack",
     "prepublish": "npm run build"
   },
   "repository": {

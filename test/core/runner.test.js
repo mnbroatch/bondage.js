@@ -6,7 +6,7 @@
 // TODO: Make less painful to look at
 
 import fs from 'fs';
-import bondage from '../src/index';
+import bondage from '../../src/core/index';
 
 describe('Dialogue', () => {
   let linksYarnData;
@@ -19,12 +19,12 @@ describe('Dialogue', () => {
   let runner;
 
   beforeAll(() => {
-    linksYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/links.json'));
-    shortcutsYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/shortcuts.json'));
-    assignmentYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/assignment.json'));
-    conditionalYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/conditions.json'));
-    commandAndFunctionYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/commandsandfunctions.json'));
-    inlineExpressionYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/inlineexpression.json'));
+    linksYarnData = JSON.parse(fs.readFileSync('./test/core/yarn_files/links.json'));
+    shortcutsYarnData = JSON.parse(fs.readFileSync('./test/core/yarn_files/shortcuts.json'));
+    assignmentYarnData = JSON.parse(fs.readFileSync('./test/core/yarn_files/assignment.json'));
+    conditionalYarnData = JSON.parse(fs.readFileSync('./test/core/yarn_files/conditions.json'));
+    commandAndFunctionYarnData = JSON.parse(fs.readFileSync('./test/core/yarn_files/commandsandfunctions.json'));
+    inlineExpressionYarnData = JSON.parse(fs.readFileSync('./test/core/yarn_files/inlineexpression.json'));
   });
 
   beforeEach(() => {
@@ -1378,37 +1378,33 @@ describe('Dialogue', () => {
   });
 
   it('Throws an error if a node has a duplicate tag', () => {
-    const dialogue = `
-      title: Start
-      title: Start
-      ---
-      This is a test line.
-      ===
-    `;
+    const dialogue = `title: Start
+title: Start
+---
+This is a test line.
+===`;
     expect(() => { runner.load(dialogue); }).toThrow();
   });
 
   it('handles a string yarn dialogue', () => {
-    const dialogue = `
-      #someFiletag
+    const dialogue = `#someFiletag
 
-      #someOtherFiletag
+#someOtherFiletag
 
-      title: Start
-      otherkey: someValue
-      body: should be ignored
-      ---
-      This is a test line.
-      <<jump End>>
-      ===
+title: Start
+otherkey: someValue
+body: should be ignored
+---
+This is a test line.
+<<jump End>>
+===
 
-      title: End
+title: End
 
-      ---
+---
 
-      This is another test line.
-      ===
-    `;
+This is another test line.
+===`;
     runner.load(dialogue);
     const run = runner.run('Start');
     let value = run.next().value;
@@ -1434,13 +1430,11 @@ describe('Dialogue', () => {
   });
 
   it('handles a string yarn with no tags', () => {
-    const dialogue = `
-      title: Start
-      ignoreme
-      ---
-      This is a test line.
-      ===
-    `;
+    const dialogue = `title: Start
+ignoreme
+---
+This is a test line.
+===`;
     runner.load(dialogue);
     const run = runner.run('Start');
     const value = run.next().value;
@@ -1453,18 +1447,16 @@ describe('Dialogue', () => {
   });
 
   it('handles declaration', () => {
-    const dialogue = `
-      title: Start
-      ---
-      <<declare $testvar1 = 1>>
-      <<set $testvar2 to 2>>
-      <<declare $testvar2 = 023984029384>>
-      { $testvar1 }
-      { $testvar2 }
-      { $testvar3 }
-      <<declare $testvar3 = 3>>
-      ===
-    `;
+    const dialogue = `title: Start
+---
+<<declare $testvar1 = 1>>
+<<set $testvar2 to 2>>
+<<declare $testvar2 = 023984029384>>
+{ $testvar1 }
+{ $testvar2 }
+{ $testvar3 }
+<<declare $testvar3 = 3>>
+===`;
     runner.load(dialogue);
     const run = runner.run('Start');
     let value = run.next().value;
@@ -1477,13 +1469,11 @@ describe('Dialogue', () => {
   });
 
   it('does not overwrite existing value with declaration', () => {
-    const dialogue = `
-      title: Start
-      ---
-      <<declare $testvar1 = 1>>
-      { $testvar1 }
-      ===
-    `;
+    const dialogue = `title: Start
+---
+<<declare $testvar1 = 1>>
+{ $testvar1 }
+===`;
     runner.variables.set('testvar1', 99);
     runner.load(dialogue);
     const run = runner.run('Start');
@@ -1493,34 +1483,28 @@ describe('Dialogue', () => {
   });
 
   it('throws an error on duplicate declaration', () => {
-    const dialogue = `
-      title: Start
-      ---
-      <<declare $testvar1 = 1>>
-      <<declare $testvar1 = 2>>
-      ===
-    `;
+    const dialogue = `title: Start
+---
+<<declare $testvar1 = 1>>
+<<declare $testvar1 = 2>>
+===`;
     expect(() => { runner.load(dialogue); }).toThrow();
   });
 
   it('throws an error if declaration value and explicit type do not match', () => {
-    const dialogue = `
-      title: Start
-      ---
-      <<declare $testvar1 = 1 as Bool>>
-      ===
-    `;
+    const dialogue = `title: Start
+---
+<<declare $testvar1 = 1 as Bool>>
+===`;
     expect(() => { runner.load(dialogue); }).toThrow();
   });
 
   it('throws an error if a variable value overwrites a different type', () => {
-    const dialogue = `
-      title: Start
-      ---
-      <<set $testvar1 = 1>>
-      <<set $testvar1 = "bad">>
-      ===
-    `;
+    const dialogue = `title: Start
+---
+<<set $testvar1 = 1>>
+<<set $testvar1 = "bad">>
+===`;
     runner.load(dialogue);
     const run = runner.run('Start');
     expect(() => { run.next(); }).toThrow();

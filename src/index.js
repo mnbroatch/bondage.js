@@ -1,5 +1,7 @@
-'use strict';
+import Runner from './runner.js';
+import { OptionsResult, TextResult, CommandResult } from './core/results.js'
 
-import runner from './runner';
-
-export default runner;
+Runner.OptionsResult = OptionsResult
+Runner.TextResult = TextResult
+Runner.CommandResult = CommandResult
+export default Runner

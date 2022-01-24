@@ -38,3 +38,4 @@ node_modules
 # Why OSX, why
 .DS_Store
 
+compiled_parser.js

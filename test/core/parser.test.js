@@ -3,8 +3,8 @@
 
 'use strict';
 
-import parser from '../src/parser/parser';
-import nodes from '../src/parser/nodes';
+import parser from '../../src/core/parser/parser';
+import nodes from '../../src/core/parser/nodes';
 
 describe('Parser', () => {
   it('can parse simple text', () => {

@@ -21,7 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 /* eslint-enable */
 
-export default function convertYarn(content) {
+export default function convertYarnToJS(content) {
   const objects = [];
 
   const lines = content.split(/\r?\n+/)
@@ -33,10 +33,15 @@ export default function convertYarn(content) {
   let readingBody = false;
   let filetags;
 
+  // per-node, we will uniformly strip leading space
+  // which can result from constructing dialogues
+  // using template strings.
+  let leadingSpace = '';
+
   let i = 0;
-  while (lines[i][0] === '#' || !lines[i].trim()) {
+  while (lines[i].trim()[0] === '#') {
     if (!filetags) filetags = [];
-    filetags.push(lines[i].substr(1).trim());
+    filetags.push(lines[i].trim().substr(1));
     i += 1;
   }
   for (; i < lines.length; i += 1) {
@@ -46,10 +51,11 @@ export default function convertYarn(content) {
       objects.push(obj);
       obj = null;
     } else if (readingBody) {
-      obj.body += `${lines[i]}\n`;
+      obj.body += `${lines[i].replace(leadingSpace, '')}\n`;
     } else if (lines[i].trim() === '---') {
       readingBody = true;
       obj.body = '';
+      leadingSpace = lines[i].match(/^\s*/)[0];
     } else if (lines[i].indexOf(':') > -1) {
       const [key, value] = lines[i].split(':');
       const trimmedKey = key.trim();
@@ -64,4 +70,4 @@ export default function convertYarn(content) {
     }
   }
   return objects;
-};
+}

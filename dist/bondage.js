@@ -12,7 +12,7 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 722:
+/***/ 309:
 /***/ ((module, exports) => {
 
 
@@ -20,7 +20,7 @@ return /******/ (() => { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports["default"] = convertYarn;
+exports["default"] = convertYarnToJS;
 
 /* eslint-disable */
 
@@ -46,19 +46,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 /* eslint-enable */
-function convertYarn(content) {
+function convertYarnToJS(content) {
   const objects = [];
   const lines = content.split(/\r?\n+/).filter(line => {
     return !line.match(/^\s*$/);
   });
   let obj = null;
   let readingBody = false;
-  let filetags;
+  let filetags; // per-node, we will uniformly strip leading space
+  // which can result from constructing dialogues
+  // using template strings.
+
+  let leadingSpace = '';
   let i = 0;
 
-  while (lines[i][0] === '#' || !lines[i].trim()) {
+  while (lines[i].trim()[0] === '#') {
     if (!filetags) filetags = [];
-    filetags.push(lines[i].substr(1).trim());
+    filetags.push(lines[i].trim().substr(1));
     i += 1;
   }
 
@@ -69,10 +73,11 @@ function convertYarn(content) {
       objects.push(obj);
       obj = null;
     } else if (readingBody) {
-      obj.body += "".concat(lines[i], "\n");
+      obj.body += "".concat(lines[i].replace(leadingSpace, ''), "\n");
     } else if (lines[i].trim() === '---') {
       readingBody = true;
       obj.body = '';
+      leadingSpace = lines[i].match(/^\s*/)[0];
     } else if (lines[i].indexOf(':') > -1) {
       const [key, value] = lines[i].split(':');
       const trimmedKey = key.trim();
@@ -93,12 +98,11 @@ function convertYarn(content) {
   return objects;
 }
 
-;
 module.exports = exports.default;
 
 /***/ }),
 
-/***/ 826:
+/***/ 313:
 /***/ ((module, exports) => {
 
 
@@ -130,7 +134,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 352:
+/***/ 565:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -140,7 +144,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _runner = _interopRequireDefault(__webpack_require__(359));
+var _runner = _interopRequireDefault(__webpack_require__(432));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -150,7 +154,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 269:
+/***/ 271:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -160,7 +164,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _tokens = _interopRequireDefault(__webpack_require__(902));
+var _tokens = _interopRequireDefault(__webpack_require__(692));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -261,7 +265,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 271:
+/***/ 506:
 /***/ ((module, exports, __webpack_require__) => {
 
  // Syncs with YarnSpinner@e0f6807,
@@ -272,7 +276,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _states = _interopRequireDefault(__webpack_require__(304));
+var _states = _interopRequireDefault(__webpack_require__(993));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -542,7 +546,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 304:
+/***/ 993:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -552,7 +556,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _lexerState = _interopRequireDefault(__webpack_require__(269));
+var _lexerState = _interopRequireDefault(__webpack_require__(271));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -590,7 +594,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 902:
+/***/ 692:
 /***/ ((module, exports) => {
 
 
@@ -725,7 +729,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 596:
+/***/ 759:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2494,7 +2498,7 @@ parser.Parser = Parser;
 
 /***/ }),
 
-/***/ 987:
+/***/ 451:
 /***/ ((module, exports) => {
 
 
@@ -2861,7 +2865,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 625:
+/***/ 204:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -2871,11 +2875,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _nodes = _interopRequireDefault(__webpack_require__(987));
+var _nodes = _interopRequireDefault(__webpack_require__(451));
 
-var _lexer = _interopRequireDefault(__webpack_require__(271));
+var _lexer = _interopRequireDefault(__webpack_require__(506));
 
-var _compiledParser = __webpack_require__(596);
+var _compiledParser = __webpack_require__(759);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2907,7 +2911,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 457:
+/***/ 819:
 /***/ ((module, exports) => {
 
 
@@ -3009,7 +3013,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 359:
+/***/ 432:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -3019,15 +3023,15 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _parser = _interopRequireDefault(__webpack_require__(625));
+var _parser = _interopRequireDefault(__webpack_require__(204));
 
-var _results = _interopRequireDefault(__webpack_require__(457));
+var _results = _interopRequireDefault(__webpack_require__(819));
 
-var _defaultVariableStorage = _interopRequireDefault(__webpack_require__(826));
+var _defaultVariableStorage = _interopRequireDefault(__webpack_require__(313));
 
-var _convertYarn = _interopRequireDefault(__webpack_require__(722));
+var _convertYarnToJs = _interopRequireDefault(__webpack_require__(309));
 
-var _nodes = _interopRequireDefault(__webpack_require__(987));
+var _nodes = _interopRequireDefault(__webpack_require__(451));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3065,16 +3069,7 @@ class Runner {
     let nodes;
 
     if (typeof dialogue === 'string') {
-      // To make template string dialogues more convenient, we will allow and strip
-      // uniform leading whitespace. The header delimiter will set the baseline.
-      const lines = dialogue.split('\n');
-      const baselineWhitespace = lines.find(line => {
-        return line.trim() === '---';
-      }).match(/\s*/)[0];
-      const trimmedDialogue = lines.map(line => {
-        return line.replace(baselineWhitespace, '');
-      }).join('\n');
-      nodes = (0, _convertYarn.default)(trimmedDialogue);
+      nodes = (0, _convertYarnToJs.default)(dialogue);
     } else {
       nodes = dialogue;
     }
@@ -3482,6 +3477,387 @@ var _default = {
   OptionsResult: _results.default.OptionsResult
 };
 exports["default"] = _default;
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ 352:
+/***/ ((module, exports, __webpack_require__) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _runner = _interopRequireDefault(__webpack_require__(359));
+
+var _results = __webpack_require__(819);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_runner.default.OptionsResult = _results.OptionsResult;
+_runner.default.TextResult = _results.TextResult;
+_runner.default.CommandResult = _results.CommandResult;
+var _default = _runner.default;
+exports["default"] = _default;
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ 279:
+/***/ ((module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = parseLine;
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+// mutates node, processing [markup /] and `character:`
+function parseLine(node, locale) {
+  node.markup = [];
+  parseCharacterLabel(node);
+  parseMarkup(node, locale); // remove escaping backslashes
+
+  node.text = node.text.replace(/(?:\\(.))/g, '$1');
+}
+
+function parseCharacterLabel(node) {
+  const match = node.text.match(/^(\S+):\s+/);
+
+  if (match) {
+    node.text = node.text.replace(match[0], '');
+    node.markup.push({
+      name: 'character',
+      properties: {
+        name: match[1]
+      }
+    });
+  }
+}
+
+function parseMarkup(node, locale) {
+  const attributes = [];
+  let noMarkup = false;
+  const attributeRegex = /(^|[^\\])\[(.*?[^\\])\](.|$)/;
+  let textRemaining = node.text;
+  let resultText = '';
+  let match = textRemaining.match(attributeRegex);
+
+  while (match) {
+    const {
+      index
+    } = match;
+    const [wholeMatch, charBefore, contents, charAfter] = match;
+    const hasLeadingSpace = /\s/.test(charBefore);
+    const hasTrailingSpace = /\s/.test(charAfter);
+
+    const attribute = _objectSpread(_objectSpread({}, parseAttributeContents(contents, locale)), {}, {
+      position: resultText.length + index + charBefore.length
+    });
+
+    if (!noMarkup || attribute.name === 'nomarkup') {
+      const isReplacementTag = attribute.name === 'select' || attribute.name === 'plural' || attribute.name === 'ordinal';
+      const shouldTrim = !isReplacementTag && attribute.isSelfClosing && attribute.properties && attribute.properties.trimwhitespace !== false && (index === 0 && hasTrailingSpace || hasLeadingSpace && hasTrailingSpace);
+
+      if (attribute.properties) {
+        delete attribute.properties.trimwhitespace;
+      }
+
+      const replacement = charBefore + (attribute.replacement || '') + (shouldTrim ? charAfter.slice(1) : charAfter);
+      textRemaining = textRemaining.replace(attributeRegex, replacement); // inner slices are because charAfter could be an opening square bracket
+
+      resultText += textRemaining.slice(0, index + replacement.slice(1).length);
+      textRemaining = textRemaining.slice(index + replacement.slice(1).length);
+
+      if (!isReplacementTag && attribute.name !== 'nomarkup') {
+        attributes.push(attribute);
+      }
+    } else {
+      // -1s are because charAfter could be an opening square bracket
+      resultText += textRemaining.slice(0, index + wholeMatch.length - 1);
+      textRemaining = textRemaining.slice(index + wholeMatch.length - 1);
+    }
+
+    if (attribute.name === 'nomarkup') {
+      noMarkup = !attribute.isClosing;
+    }
+
+    match = textRemaining.match(attributeRegex);
+  }
+
+  node.text = resultText + textRemaining; // Escaped bracket support might need some TLC.
+
+  const escapedCharacterRegex = /\\(\[|\])/;
+  match = node.text.match(escapedCharacterRegex);
+  textRemaining = node.text;
+  resultText = '';
+
+  while (match) {
+    const char = match[1];
+    attributes.forEach(attr => {
+      if (attr.position > resultText.length + match.index) {
+        attr.position -= 1;
+      }
+    });
+    textRemaining = textRemaining.replace(escapedCharacterRegex, char);
+    resultText += textRemaining.slice(0, match.index + 1);
+    textRemaining = textRemaining.slice(match.index + 1);
+    match = textRemaining.match(escapedCharacterRegex);
+  }
+
+  node.text = resultText + textRemaining;
+  const openTagStacks = {};
+  attributes.forEach(attr => {
+    if (!openTagStacks[attr.name]) {
+      openTagStacks[attr.name] = [];
+    }
+
+    if (attr.isClosing && !openTagStacks[attr.name].length) {
+      throw new Error("Encountered closing ".concat(attr.name, " tag before opening tag"));
+    } else if (attr.isClosing) {
+      const openTag = openTagStacks[attr.name].pop();
+      node.markup.push({
+        name: openTag.name,
+        position: openTag.position,
+        properties: openTag.properties,
+        length: attr.position - openTag.position
+      });
+    } else if (attr.isSelfClosing) {
+      node.markup.push({
+        name: attr.name,
+        position: attr.position,
+        properties: attr.properties,
+        length: 0
+      });
+    } else if (attr.isCloseAll) {
+      const openTags = Object.values(openTagStacks).flat();
+
+      while (openTags.length) {
+        const openTag = openTags.pop();
+        node.markup.push({
+          name: openTag.name,
+          position: openTag.position,
+          properties: openTag.properties,
+          length: attr.position - openTag.position
+        });
+      }
+    } else {
+      openTagStacks[attr.name].push({
+        name: attr.name,
+        position: attr.position,
+        properties: attr.properties
+      });
+    }
+  });
+}
+
+function parseAttributeContents(contents, locale) {
+  const nameMatch = contents.match(/^\/?([^\s=/]+)(\/|\s|$)/);
+  const isClosing = contents[0] === '/';
+  const isSelfClosing = contents[contents.length - 1] === '/';
+  const isCloseAll = contents === '/';
+
+  if (isCloseAll) {
+    return {
+      name: 'closeall',
+      isCloseAll: true
+    };
+  } else if (isClosing) {
+    return {
+      name: nameMatch[1],
+      isClosing: true
+    };
+  } else {
+    const propertyAssignmentsText = nameMatch ? contents.replace(nameMatch[0], '') : contents;
+    const propertyAssignments = propertyAssignmentsText.match(/(\S+?".*?"|[^\s/]+)/g);
+    let properties = {};
+
+    if (propertyAssignments) {
+      properties = propertyAssignments.reduce((acc, propAss) => {
+        return _objectSpread(_objectSpread({}, acc), parsePropertyAssignment(propAss));
+      }, {});
+    }
+
+    const name = nameMatch && nameMatch[1] || Object.keys(properties)[0];
+    let replacement;
+
+    if (name === 'select') {
+      replacement = processSelectAttribute(properties);
+    } else if (name === 'plural') {
+      replacement = processPluralAttribute(properties, locale);
+    } else if (name === 'ordinal') {
+      replacement = processOrdinalAttribute(properties, locale);
+    }
+
+    return {
+      name,
+      properties,
+      isSelfClosing,
+      replacement
+    };
+  }
+}
+
+function parsePropertyAssignment(propAss) {
+  const [propName, ...rest] = propAss.split('=');
+  const stringValue = rest.join('='); // just in case string value had a = in it
+
+  if (!propName || !stringValue) {
+    throw new Error("Invalid markup property assignment: ".concat(propAss));
+  }
+
+  let value;
+
+  if (stringValue === 'true' || stringValue === 'false') {
+    value = stringValue === 'true';
+  } else if (/^-?\d*\.?\d+$/.test(stringValue)) {
+    value = +stringValue;
+  } else if (stringValue[0] === '"' && stringValue[stringValue.length - 1] === '"') {
+    value = stringValue.slice(1, -1);
+  } else {
+    value = stringValue;
+  }
+
+  return {
+    [propName]: value
+  };
+}
+
+function processSelectAttribute(properties) {
+  return properties[properties.value];
+}
+
+function processPluralAttribute(properties, locale) {
+  return properties[new Intl.PluralRules(locale).select(properties.value)].replaceAll('%', properties.value);
+}
+
+function processOrdinalAttribute(properties, locale) {
+  return properties[new Intl.PluralRules(locale, {
+    type: 'ordinal'
+  }).select(properties.value)].replaceAll('%', properties.value);
+}
+
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ 359:
+/***/ ((module, exports, __webpack_require__) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _index = _interopRequireDefault(__webpack_require__(565));
+
+var _lineParser = _interopRequireDefault(__webpack_require__(279));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class Runner {
+  constructor(_ref) {
+    let {
+      dialogue,
+      variableStorage,
+      functions,
+      handleCommand,
+      combineTextAndOptionsResults,
+      locale,
+      startAt = 'Start'
+    } = _ref;
+    this.handleCommand = handleCommand;
+    this.combineTextAndOptionsResults = combineTextAndOptionsResults;
+    this.core = _index.default;
+    this.bufferedNode = null;
+    this.currentResult = null;
+    this.history = [];
+    this.locale = locale;
+    const runner = new _index.default.Runner();
+    runner.noEscape = true;
+    runner.load(dialogue);
+
+    if (variableStorage) {
+      runner.setVariableStorage(variableStorage);
+    }
+
+    if (functions) {
+      Object.entries(functions).forEach(entry => {
+        runner.registerFunction(...entry);
+      });
+    }
+
+    this.generator = runner.run(startAt);
+    this.advance();
+  }
+
+  advance(optionIndex) {
+    if (typeof optionIndex !== 'undefined' && this.currentResult && this.currentResult.select) {
+      this.currentResult.select(optionIndex);
+    }
+
+    let next = this.bufferedNode || this.generator.next().value;
+    let buffered = null; // We either return the command as normal or, if a handler
+    // is supplied, use that and don't bother the consuming app
+
+    if (this.handleCommand) {
+      while (next instanceof _index.default.CommandResult) {
+        this.handleCommand(next);
+        next = this.generator.next().value;
+      }
+    } // Lookahead for combining text + options, and for end of dialogue.
+    // Can't look ahead of option nodes (what would you look ahead at?)
+
+
+    if (!(next instanceof _index.default.OptionsResult)) {
+      const upcoming = this.generator.next();
+      buffered = upcoming.value;
+
+      if (next instanceof _index.default.TextResult && this.combineTextAndOptionsResults && buffered instanceof _index.default.OptionsResult) {
+        next = Object.assign(buffered, next);
+        buffered = null;
+      } else if (next && upcoming.done) {
+        next = Object.assign(next, {
+          isDialogueEnd: true
+        });
+      }
+    }
+
+    if (this.currentResult) {
+      this.history.push(this.currentResult);
+    }
+
+    if (next instanceof _index.default.TextResult) {
+      (0, _lineParser.default)(next, this.locale);
+    } else if (next instanceof _index.default.OptionsResult) {
+      if (next.text) {
+        (0, _lineParser.default)(next, this.locale);
+      }
+
+      next.options.forEach(option => {
+        (0, _lineParser.default)(option, this.locale);
+      });
+    }
+
+    this.currentResult = next;
+    this.bufferedNode = buffered;
+  }
+
+}
+
+exports["default"] = Runner;
 module.exports = exports.default;
 
 /***/ })

@@ -1,7 +1,7 @@
 import parser from './parser/parser';
 import results from './results';
 import DefaultVariableStorage from './default-variable-storage';
-import convertYarn from './convert-yarn';
+import convertYarn from './convert-yarn-to-js';
 import types from './parser/nodes';
 
 const nodeTypes = types.types;

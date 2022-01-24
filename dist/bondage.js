@@ -3053,19 +3053,30 @@ class Runner {
   }
   /**
    * Loads the yarn node data into this.nodes
-   * @param {any[]} yarn dialogue as string or array
+   * @param dialogue {any[]} yarn dialogue as string or array
    */
 
 
-  load(data) {
-    if (!data) {
+  load(dialogue) {
+    if (!dialogue) {
       throw new Error('No dialogue supplied');
     }
 
-    let nodes = data;
+    let nodes;
 
-    if (typeof data === 'string') {
-      nodes = (0, _convertYarn.default)(data);
+    if (typeof dialogue === 'string') {
+      // To make template string dialogues more convenient, we will allow and strip
+      // uniform leading whitespace. The header delimiter will set the baseline.
+      const lines = dialogue.split('\n');
+      const baselineWhitespace = lines.find(line => {
+        return line.trim() === '---';
+      }).match(/\s*/)[0];
+      const trimmedDialogue = lines.map(line => {
+        return line.replace(baselineWhitespace, '');
+      }).join('\n');
+      nodes = (0, _convertYarn.default)(trimmedDialogue);
+    } else {
+      nodes = dialogue;
     }
 
     nodes.forEach(node => {

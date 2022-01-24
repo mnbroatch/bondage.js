@@ -2,8 +2,6 @@
 
 This project is a runner for [Yarn](https://yarnspinner.dev/) dialogues, attempting compliance with the 2.0 language specification.
 
-A live demo of a component that uses this is [on the author's web site](https://matthewbroatch.com/)
-
 
 # Known Deviations from Yarn 2.0 spec
 

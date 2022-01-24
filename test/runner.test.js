@@ -1379,34 +1379,36 @@ describe('Dialogue', () => {
 
   it('Throws an error if a node has a duplicate tag', () => {
     const dialogue = `
-title: Start
-title: Start
----
-This is a test line.
-===`;
+      title: Start
+      title: Start
+      ---
+      This is a test line.
+      ===
+    `;
     expect(() => { runner.load(dialogue); }).toThrow();
   });
 
   it('handles a string yarn dialogue', () => {
     const dialogue = `
-#someFiletag
+      #someFiletag
 
-#someOtherFiletag
+      #someOtherFiletag
 
-title: Start
-otherkey: someValue
-body: should be ignored
----
-This is a test line.
-<<jump End>>
-===
+      title: Start
+      otherkey: someValue
+      body: should be ignored
+      ---
+      This is a test line.
+      <<jump End>>
+      ===
 
-title: End
+      title: End
 
----
+      ---
 
-This is another test line.
-===`;
+      This is another test line.
+      ===
+    `;
     runner.load(dialogue);
     const run = runner.run('Start');
     let value = run.next().value;
@@ -1433,11 +1435,12 @@ This is another test line.
 
   it('handles a string yarn with no tags', () => {
     const dialogue = `
-title: Start
-ignoreme
----
-This is a test line.
-===`;
+      title: Start
+      ignoreme
+      ---
+      This is a test line.
+      ===
+    `;
     runner.load(dialogue);
     const run = runner.run('Start');
     const value = run.next().value;
@@ -1451,16 +1454,17 @@ This is a test line.
 
   it('handles declaration', () => {
     const dialogue = `
-title: Start
----
-<<declare $testvar1 = 1>>
-<<set $testvar2 to 2>>
-<<declare $testvar2 = 023984029384>>
-{ $testvar1 }
-{ $testvar2 }
-{ $testvar3 }
-<<declare $testvar3 = 3>>
-===`;
+      title: Start
+      ---
+      <<declare $testvar1 = 1>>
+      <<set $testvar2 to 2>>
+      <<declare $testvar2 = 023984029384>>
+      { $testvar1 }
+      { $testvar2 }
+      { $testvar3 }
+      <<declare $testvar3 = 3>>
+      ===
+    `;
     runner.load(dialogue);
     const run = runner.run('Start');
     let value = run.next().value;
@@ -1474,11 +1478,12 @@ title: Start
 
   it('does not overwrite existing value with declaration', () => {
     const dialogue = `
-title: Start
----
-<<declare $testvar1 = 1>>
-{ $testvar1 }
-===`;
+      title: Start
+      ---
+      <<declare $testvar1 = 1>>
+      { $testvar1 }
+      ===
+    `;
     runner.variables.set('testvar1', 99);
     runner.load(dialogue);
     const run = runner.run('Start');
@@ -1489,30 +1494,33 @@ title: Start
 
   it('throws an error on duplicate declaration', () => {
     const dialogue = `
-title: Start
----
-<<declare $testvar1 = 1>>
-<<declare $testvar1 = 2>>
-===`;
+      title: Start
+      ---
+      <<declare $testvar1 = 1>>
+      <<declare $testvar1 = 2>>
+      ===
+    `;
     expect(() => { runner.load(dialogue); }).toThrow();
   });
 
   it('throws an error if declaration value and explicit type do not match', () => {
     const dialogue = `
-title: Start
----
-<<declare $testvar1 = 1 as Bool>>
-===`;
+      title: Start
+      ---
+      <<declare $testvar1 = 1 as Bool>>
+      ===
+    `;
     expect(() => { runner.load(dialogue); }).toThrow();
   });
 
   it('throws an error if a variable value overwrites a different type', () => {
     const dialogue = `
-title: Start
----
-<<set $testvar1 = 1>>
-<<set $testvar1 = "bad">>
-===`;
+      title: Start
+      ---
+      <<set $testvar1 = 1>>
+      <<set $testvar1 = "bad">>
+      ===
+    `;
     runner.load(dialogue);
     const run = runner.run('Start');
     expect(() => { run.next(); }).toThrow();

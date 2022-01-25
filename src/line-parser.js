@@ -53,10 +53,10 @@ function parseAttributeContents(contents, locale) {
     return { name: nameMatch[1], isClosing: true };
   }
   const propertyAssignmentsText = nameMatch
-      ? contents.replace(nameMatch[0], '')
-      : contents;
+    ? contents.replace(nameMatch[0], '')
+    : contents;
   const propertyAssignments = propertyAssignmentsText
-      .match(/(\S+?".*?"|[^\s/]+)/g);
+    .match(/(\S+?".*?"|[^\s/]+)/g);
   let properties = {};
   if (propertyAssignments) {
     properties = propertyAssignments.reduce((acc, propAss) => {

@@ -8,7 +8,7 @@
 /* eslint-disable key-spacing */
 const Tokens = {
   // Special tokens
-  Whitespace:           null,                      // (not used currently)
+  Whitespace:           null, // (not used currently)
   Indent:               null,
   Dedent:               null,
   EndOfLine:            /\n/,
@@ -29,15 +29,15 @@ const Tokens = {
   ShortcutOption:       /->/,
 
   // Hashtag ("#something")
-  Hashtag:              /#([^(\s|#|//)]+)/,      // seems a little hacky to explicitly consider comments here
+  Hashtag:              /#([^(\s|#|//)]+)/, // seems a little hacky to explicitly consider comments here
 
   // Comment ("// some stuff")
   Comment:              /\/\/.*/,
 
   // Option syntax ("[[Let's go here|Destination]]")
-  OptionStart:          /\[\[/,                    // [[
-  OptionDelimit:        /\|/,                      // |
-  OptionEnd:            /\]\]/,                    // ]]
+  OptionStart:          /\[\[/, // [[
+  OptionDelimit:        /\|/, // |
+  OptionEnd:            /\]\]/, // ]]
 
   // Command types (specially recognized command word)
   If:                   /if(?!\w)/,
@@ -68,44 +68,44 @@ const Tokens = {
   // Operators
   UnaryMinus:           /-(?!\s)/,
 
-  EqualTo:              /(==|is(?!\w)|eq(?!\w))/,  // ==, eq, is
-  GreaterThan:          /(>|gt(?!\w))/,            // >, gt
-  GreaterThanOrEqualTo: /(>=|gte(?!\w))/,          // >=, gte
-  LessThan:             /(<|lt(?!\w))/,            // <, lt
-  LessThanOrEqualTo:    /(<=|lte(?!\w))/,          // <=, lte
-  NotEqualTo:           /(!=|neq(?!\w))/,          // !=, neq
+  EqualTo:              /(==|is(?!\w)|eq(?!\w))/, // ==, eq, is
+  GreaterThan:          /(>|gt(?!\w))/, // >, gt
+  GreaterThanOrEqualTo: /(>=|gte(?!\w))/, // >=, gte
+  LessThan:             /(<|lt(?!\w))/, // <, lt
+  LessThanOrEqualTo:    /(<=|lte(?!\w))/, // <=, lte
+  NotEqualTo:           /(!=|neq(?!\w))/, // !=, neq
 
   // Logical operators
-  Or:                   /(\|\||or(?!\w))/,         // ||, or
-  And:                  /(&&|and(?!\w))/,          // &&, and
-  Xor:                  /(\^|xor(?!\w))/,          // ^, xor
-  Not:                  /(!|not(?!\w))/,           // !, not
+  Or:                   /(\|\||or(?!\w))/, // ||, or
+  And:                  /(&&|and(?!\w))/, // &&, and
+  Xor:                  /(\^|xor(?!\w))/, // ^, xor
+  Not:                  /(!|not(?!\w))/, // !, not
 
   // this guy's special because '=' can mean either 'equal to'
   // or 'becomes' depending on context
-  EqualToOrAssign:      /(=|to(?!\w))/,            // =, to
+  EqualToOrAssign:      /(=|to(?!\w))/, // =, to
 
-  Add:                  /\+/,                      // +
-  Minus:                /-/,                       // -
-  Exponent:             /\*\*/,                    // **
-  Multiply:             /\*/,                      // *
-  Divide:               /\//,                      // /
-  Modulo:               /%/,                      // /
+  Add:                  /\+/, // +
+  Minus:                /-/, // -
+  Exponent:             /\*\*/, // **
+  Multiply:             /\*/, // *
+  Divide:               /\//, // /
+  Modulo:               /%/, // /
 
-  AddAssign:            /\+=/,                     // +=
-  MinusAssign:          /-=/,                      // -=
-  MultiplyAssign:       /\*=/,                     // *=
-  DivideAssign:         /\/=/,                     // /=
+  AddAssign:            /\+=/, // +=
+  MinusAssign:          /-=/, // -=
+  MultiplyAssign:       /\*=/, // *=
+  DivideAssign:         /\/=/, // /=
 
-  Identifier:           /[a-zA-Z0-9_:.]+/,         // a single word (used for functions)
+  Identifier:           /[a-zA-Z0-9_:.]+/, // a single word (used for functions)
 
-  EscapedCharacter:     /\\./,                     // for escaping \# special characters
-  Text:                 /[^\\]/,                   // generic until we hit other syntax
+  EscapedCharacter:     /\\./, // for escaping \# special characters
+  Text:                 /[^\\]/, // generic until we hit other syntax
 
   // Braces are used for inline expressions. Ignore escaped braces
   // TODO: doesn't work ios
-  BeginInlineExp:       /{/,                       // {
-  EndInlineExp:         /}/,                       // }
+  BeginInlineExp:       /{/, // {
+  EndInlineExp:         /}/, // }
 };
 /* eslint-enable key-spacing */
 

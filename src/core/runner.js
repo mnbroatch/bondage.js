@@ -360,11 +360,11 @@ class Runner {
 
     return handler(
       node instanceof nodeTypes.Expression
-      ? this.evaluateExpressionOrLiteral(node.expression || node.expression1)
-      : node,
+        ? this.evaluateExpressionOrLiteral(node.expression || node.expression1)
+        : node,
       node.expression2
-      ? this.evaluateExpressionOrLiteral(node.expression2)
-      : node,
+        ? this.evaluateExpressionOrLiteral(node.expression2)
+        : node,
     );
   }
 }

@@ -1190,11 +1190,11 @@ var parser = {
         break;
 
       case 70:
-        this.$ = new yy.FunctionResultNode($$[$0 - 2], []);
+        this.$ = new yy.FunctionCallNode($$[$0 - 2], [], this._$);
         break;
 
       case 71:
-        this.$ = new yy.FunctionResultNode($$[$0 - 3], $$[$0 - 1]);
+        this.$ = new yy.FunctionCallNode($$[$0 - 3], $$[$0 - 1], this._$);
         break;
 
       case 72:
@@ -2596,7 +2596,7 @@ var _default = {
       this.type = 'GenericCommandNode';
       this.command = command;
       this.hashtags = hashtags;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
     }
 
   },
@@ -2622,7 +2622,7 @@ var _default = {
       super();
       this.type = 'TextNode';
       this.text = text;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
       this.hashtags = hashtags;
     }
 
@@ -2633,7 +2633,7 @@ var _default = {
       super();
       this.type = 'EscapedCharacterNode';
       this.text = text;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
       this.hashtags = hashtags;
     }
 
@@ -2835,14 +2835,14 @@ var _default = {
 
   },
   // /////////////// Function Nodes
-  FunctionResultNode: class extends FunctionCall {
+  FunctionCallNode: class extends FunctionCall {
     constructor(functionName, args, lineNo) {
       let hashtags = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
       super();
-      this.type = 'FunctionResultNode';
+      this.type = 'FunctionCallNode';
       this.functionName = functionName;
       this.args = args;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
       this.hashtags = hashtags;
     }
 
@@ -3049,11 +3049,6 @@ class Runner {
     this.yarnNodes = {};
     this.variables = new _defaultVariableStorage.default();
     this.functions = {};
-    this.visited = {}; // Which nodes have been visited
-
-    this.registerFunction('visited', nodeTitle => {
-      return !!this.visited[nodeTitle];
-    });
   }
   /**
    * Loads the yarn node data into this.nodes
@@ -3174,9 +3169,8 @@ class Runner {
 
       if (yarnNode === undefined) {
         throw new Error("Node \"".concat(startNode, "\" does not exist"));
-      }
+      } // Parse the entire node
 
-      this.visited[startNode] = true; // Parse the entire node
 
       const parserNodes = Array.from(_parser.default.parse(yarnNode.body));
 
@@ -3452,7 +3446,7 @@ class Runner {
       VariableNode: a => {
         return this.variables.get(a.variableName);
       },
-      FunctionResultNode: a => {
+      FunctionCallNode: a => {
         return this.evaluateFunctionCall(a);
       },
       InlineExpressionNode: a => {
@@ -3493,13 +3487,13 @@ exports["default"] = void 0;
 
 var _runner = _interopRequireDefault(__webpack_require__(359));
 
-var _results = __webpack_require__(819);
+var _results = _interopRequireDefault(__webpack_require__(819));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_runner.default.OptionsResult = _results.OptionsResult;
-_runner.default.TextResult = _results.TextResult;
-_runner.default.CommandResult = _results.CommandResult;
+_runner.default.OptionsResult = _results.default.OptionsResult;
+_runner.default.TextResult = _results.default.TextResult;
+_runner.default.CommandResult = _results.default.CommandResult;
 var _default = _runner.default;
 exports["default"] = _default;
 module.exports = exports.default;

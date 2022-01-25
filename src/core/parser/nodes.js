@@ -81,7 +81,7 @@ export default {
       this.type = 'GenericCommandNode';
       this.command = command;
       this.hashtags = hashtags;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
     }
   },
 
@@ -107,7 +107,7 @@ export default {
       super();
       this.type = 'TextNode';
       this.text = text;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
       this.hashtags = hashtags;
     }
   },
@@ -117,7 +117,7 @@ export default {
       super();
       this.type = 'EscapedCharacterNode';
       this.text = text;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
       this.hashtags = hashtags;
     }
   },
@@ -321,13 +321,13 @@ export default {
 
   // /////////////// Function Nodes
 
-  FunctionResultNode: class extends FunctionCall {
+  FunctionCallNode: class extends FunctionCall {
     constructor(functionName, args, lineNo, hashtags = []) {
       super();
-      this.type = 'FunctionResultNode';
+      this.type = 'FunctionCallNode';
       this.functionName = functionName;
       this.args = args;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
       this.hashtags = hashtags;
     }
   },

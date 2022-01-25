@@ -72,7 +72,7 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.SetVariableEqualToNode('testvar',
-        new nodes.FunctionResultNode('visited', [new nodes.NumericLiteralNode('1')])),
+        new nodes.FunctionCallNode('visited', [new nodes.NumericLiteralNode('1')], { first_line: 1 })),
     ];
 
     expect(results).toEqual(expected);
@@ -83,9 +83,9 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.SetVariableEqualToNode('testvar',
-        new nodes.FunctionResultNode('visited', [new nodes.ArithmeticExpressionAddNode(
+        new nodes.FunctionCallNode('visited', [new nodes.ArithmeticExpressionAddNode(
           new nodes.NumericLiteralNode('1'),
-          new nodes.NumericLiteralNode('2'))])),
+          new nodes.NumericLiteralNode('2'))], { first_line: 1 })),
     ];
 
     expect(results).toEqual(expected);
@@ -96,12 +96,12 @@ describe('Parser', () => {
 
     const expected = [
       new nodes.SetVariableEqualToNode('testvar',
-        new nodes.FunctionResultNode('visited', [
+        new nodes.FunctionCallNode('visited', [
           new nodes.ArithmeticExpressionAddNode(
             new nodes.NumericLiteralNode('1'),
             new nodes.NumericLiteralNode('2'),
           ),
-        ])),
+        ], { first_line: 1 })),
     ];
 
     expect(results).toEqual(expected);
@@ -341,10 +341,10 @@ describe('Parser', () => {
     // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.TextNode('Hello there ', { first_line: results[0].lineNum }),
-      new nodes.InlineExpressionNode(new nodes.FunctionResultNode('testfunc', [
+      new nodes.InlineExpressionNode(new nodes.FunctionCallNode('testfunc', [
         new nodes.NumericLiteralNode('1'),
         new nodes.NumericLiteralNode('2'),
-      ]), { first_line: results[0].lineNum }),
+      ], { first_line: results[0].lineNum }), { first_line: results[0].lineNum }),
       new nodes.TextNode('.', { first_line: results[0].lineNum }),
     ];
 
@@ -498,9 +498,9 @@ describe('Parser', () => {
     // Runner aggregates text and expression value for same line.
     const expected = [
       new nodes.IfNode(
-        new nodes.FunctionResultNode('visited', [
+        new nodes.FunctionCallNode('visited', [
           new nodes.StringLiteralNode('testnode'),
-        ]),
+        ], { first_line: 1 }),
         [
           new nodes.TextNode('Hi', { first_line: 2 }),
           new nodes.SetVariableEqualToNode('testvar', new nodes.NumericLiteralNode('5')),
@@ -518,9 +518,9 @@ describe('Parser', () => {
     const expected = [
       new nodes.IfNode(
         new nodes.NegatedBooleanExpressionNode(
-          new nodes.FunctionResultNode('visited', [
+          new nodes.FunctionCallNode('visited', [
             new nodes.StringLiteralNode('testnode'),
-          ]),
+          ], { first_line: 1 }),
         ),
         [
           new nodes.TextNode('Hi', { first_line: 2 }),

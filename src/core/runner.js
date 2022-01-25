@@ -12,11 +12,6 @@ class Runner {
     this.yarnNodes = {};
     this.variables = new DefaultVariableStorage();
     this.functions = {};
-    this.visited = {}; // Which nodes have been visited
-
-    this.registerFunction('visited', (nodeTitle) => {
-      return !!this.visited[nodeTitle];
-    });
   }
 
   /**
@@ -128,8 +123,6 @@ class Runner {
       if (yarnNode === undefined) {
         throw new Error(`Node "${startNode}" does not exist`);
       }
-
-      this.visited[startNode] = true;
 
       // Parse the entire node
       const parserNodes = Array.from(parser.parse(yarnNode.body));
@@ -356,7 +349,7 @@ class Runner {
       StringLiteralNode: (a) => { return `${a.stringLiteral}`; },
       BooleanLiteralNode: (a) => { return a.booleanLiteral === 'true'; },
       VariableNode: (a) => { return this.variables.get(a.variableName); },
-      FunctionResultNode: (a) => { return this.evaluateFunctionCall(a); },
+      FunctionCallNode: (a) => { return this.evaluateFunctionCall(a); },
       InlineExpressionNode: (a) => { return a; },
     };
 

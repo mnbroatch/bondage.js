@@ -57,7 +57,7 @@
   {
     "title": "AssignmentWithFunction",
     "tags": "Tag",
-    "body": "Test Line\n<<set $testvar to visited(\"AssignmentWithFunction2\")>>\nTest Line2\n<<set $testvar to visited(\"AssignmentWithFunction\")>>"
+    "body": "Test Line\n<<set $testvar to identity(false)>>\nTest Line2\n<<set $testvar to identity(true)>>"
   },
   {
     "title": "AssignmentWithFunction2",

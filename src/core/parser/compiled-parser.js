@@ -160,10 +160,10 @@ case 69:
 this.$ = new yy.LessThanOrEqualToExpressionNode($$[$0-2], $$[$0]);
 break;
 case 70:
-this.$ = new yy.FunctionResultNode($$[$0-2], []);
+this.$ = new yy.FunctionCallNode($$[$0-2], [], this._$);
 break;
 case 71:
-this.$ = new yy.FunctionResultNode($$[$0-3], $$[$0-1]);
+this.$ = new yy.FunctionCallNode($$[$0-3], $$[$0-1], this._$);
 break;
 case 72:
 this.$ = $$[$0-2].concat([$$[$0]]);

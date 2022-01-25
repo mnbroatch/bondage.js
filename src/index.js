@@ -1,7 +1,7 @@
-import Runner from './runner.js';
-import { OptionsResult, TextResult, CommandResult } from './core/results.js'
+import Runner from './runner';
+import results from '../src/core/results';
 
-Runner.OptionsResult = OptionsResult
-Runner.TextResult = TextResult
-Runner.CommandResult = CommandResult
-export default Runner
+Runner.OptionsResult = results.OptionsResult;
+Runner.TextResult = results.TextResult;
+Runner.CommandResult = results.CommandResult;
+export default Runner;

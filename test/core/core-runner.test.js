@@ -557,6 +557,7 @@ describe('Dialogue', () => {
   it('Can evaluate a function boolean assignment', () => {
     runner.load(assignmentYarnData);
     const run = runner.run('AssignmentWithFunction');
+    runner.registerFunction('identity', (x) => { return x; });
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'AssignmentWithFunction'; }) } };
     delete metadata.body;
 
@@ -821,36 +822,6 @@ describe('Dialogue', () => {
     expect(value).toEqual(new bondage.TextResult('This should show', [], metadata));
     value = run.next().value;
     expect(value).toEqual(new bondage.TextResult('After both', [], metadata));
-
-    expect(run.next().done).toBe(true);
-  });
-
-  it('Correctly defines the built-in visited() function', () => {
-    runner.load(commandAndFunctionYarnData);
-    const run = runner.run('VisitedFunctionStart');
-    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'VisitedFunctionStart'; }) } };
-    delete metadata.body;
-    const metadata2 = { ...commandAndFunctionYarnData.find((n) => { return n.title === 'VisitedFunction'; }) };
-    delete metadata2.body;
-
-    let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Hello', [], metadata));
-    value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('you have visited VisitedFunctionStart!', [], metadata2));
-
-    expect(run.next().done).toBe(true);
-  });
-
-  it('Correctly handles not visited()', () => {
-    runner.load(commandAndFunctionYarnData);
-    const run = runner.run('NotVisitedFunction');
-    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'NotVisitedFunction'; }) } };
-    delete metadata.body;
-
-    let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Hello', [], metadata));
-    value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('you have not visited VisitedFunctionStart!', [], metadata));
 
     expect(run.next().done).toBe(true);
   });
@@ -1377,7 +1348,7 @@ describe('Dialogue', () => {
     expect(() => { runner.setVariableStorage({ get: () => {}, set: () => {} }); }).not.toThrow();
   });
 
-    it('Throws an error if a node has a duplicate tag', () => {
+  it('Throws an error if a node has a duplicate tag', () => {
     const dialogue = `
       title: Start
       title: Start

@@ -124,8 +124,8 @@
       [ "expression LessThanOrEqualTo expression", "$$ = new yy.LessThanOrEqualToExpressionNode($1, $3);" ]
     ],
     "functionCall": [
-      [ "Identifier LeftParen RightParen", "$$ = new yy.FunctionResultNode($1, []);" ],
-      [ "Identifier LeftParen parenExpressionArgs RightParen", "$$ = new yy.FunctionResultNode($1, $3);" ]
+      [ "Identifier LeftParen RightParen", "$$ = new yy.FunctionCallNode($1, [], @$);" ],
+      [ "Identifier LeftParen parenExpressionArgs RightParen", "$$ = new yy.FunctionCallNode($1, $3, @$);" ]
     ],
     "parenExpressionArgs": [
       [ "parenExpressionArgs Comma expression", "$$ = $1.concat([$3]);" ],

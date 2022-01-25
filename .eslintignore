@@ -1,4 +1,4 @@
 node_modules
 target
 dist
-src/parser/compiledParser.js
+src/core/parser/compiled-parser.js

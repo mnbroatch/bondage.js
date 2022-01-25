@@ -3517,12 +3517,45 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 // mutates node, processing [markup /] and `character:`
-function parseLine(node, locale) {
-  node.markup = [];
-  parseCharacterLabel(node);
-  parseMarkup(node, locale); // remove escaping backslashes
 
-  node.text = node.text.replace(/(?:\\(.))/g, '$1');
+/* eslint-disable no-param-reassign */
+function processSelectAttribute(properties) {
+  return properties[properties.value];
+}
+
+function processPluralAttribute(properties, locale) {
+  return properties[new Intl.PluralRules(locale).select(properties.value)].replaceAll('%', properties.value);
+}
+
+function processOrdinalAttribute(properties, locale) {
+  return properties[new Intl.PluralRules(locale, {
+    type: 'ordinal'
+  }).select(properties.value)].replaceAll('%', properties.value);
+}
+
+function parsePropertyAssignment(propAss) {
+  const [propName, ...rest] = propAss.split('=');
+  const stringValue = rest.join('='); // just in case string value had a = in it
+
+  if (!propName || !stringValue) {
+    throw new Error("Invalid markup property assignment: ".concat(propAss));
+  }
+
+  let value;
+
+  if (stringValue === 'true' || stringValue === 'false') {
+    value = stringValue === 'true';
+  } else if (/^-?\d*\.?\d+$/.test(stringValue)) {
+    value = +stringValue;
+  } else if (stringValue[0] === '"' && stringValue[stringValue.length - 1] === '"') {
+    value = stringValue.slice(1, -1);
+  } else {
+    value = stringValue;
+  }
+
+  return {
+    [propName]: value
+  };
 }
 
 function parseCharacterLabel(node) {
@@ -3537,6 +3570,53 @@ function parseCharacterLabel(node) {
       }
     });
   }
+}
+
+function parseAttributeContents(contents, locale) {
+  const nameMatch = contents.match(/^\/?([^\s=/]+)(\/|\s|$)/);
+  const isClosing = contents[0] === '/';
+  const isSelfClosing = contents[contents.length - 1] === '/';
+  const isCloseAll = contents === '/';
+
+  if (isCloseAll) {
+    return {
+      name: 'closeall',
+      isCloseAll: true
+    };
+  } else if (isClosing) {
+    return {
+      name: nameMatch[1],
+      isClosing: true
+    };
+  }
+
+  const propertyAssignmentsText = nameMatch ? contents.replace(nameMatch[0], '') : contents;
+  const propertyAssignments = propertyAssignmentsText.match(/(\S+?".*?"|[^\s/]+)/g);
+  let properties = {};
+
+  if (propertyAssignments) {
+    properties = propertyAssignments.reduce((acc, propAss) => {
+      return _objectSpread(_objectSpread({}, acc), parsePropertyAssignment(propAss));
+    }, {});
+  }
+
+  const name = nameMatch && nameMatch[1] || Object.keys(properties)[0];
+  let replacement;
+
+  if (name === 'select') {
+    replacement = processSelectAttribute(properties);
+  } else if (name === 'plural') {
+    replacement = processPluralAttribute(properties, locale);
+  } else if (name === 'ordinal') {
+    replacement = processOrdinalAttribute(properties, locale);
+  }
+
+  return {
+    name,
+    properties,
+    isSelfClosing,
+    replacement
+  };
 }
 
 function parseMarkup(node, locale) {
@@ -3598,11 +3678,15 @@ function parseMarkup(node, locale) {
 
   while (match) {
     const char = match[1];
-    attributes.forEach(attr => {
+
+    for (let i = 0, len = attributes.length; i < len; i += 1) {
+      const attr = attributes[i];
+
       if (attr.position > resultText.length + match.index) {
         attr.position -= 1;
       }
-    });
+    }
+
     textRemaining = textRemaining.replace(escapedCharacterRegex, char);
     resultText += textRemaining.slice(0, match.index + 1);
     textRemaining = textRemaining.slice(match.index + 1);
@@ -3655,90 +3739,12 @@ function parseMarkup(node, locale) {
   });
 }
 
-function parseAttributeContents(contents, locale) {
-  const nameMatch = contents.match(/^\/?([^\s=/]+)(\/|\s|$)/);
-  const isClosing = contents[0] === '/';
-  const isSelfClosing = contents[contents.length - 1] === '/';
-  const isCloseAll = contents === '/';
+function parseLine(node, locale) {
+  node.markup = [];
+  parseCharacterLabel(node);
+  parseMarkup(node, locale); // remove escaping backslashes
 
-  if (isCloseAll) {
-    return {
-      name: 'closeall',
-      isCloseAll: true
-    };
-  } else if (isClosing) {
-    return {
-      name: nameMatch[1],
-      isClosing: true
-    };
-  } else {
-    const propertyAssignmentsText = nameMatch ? contents.replace(nameMatch[0], '') : contents;
-    const propertyAssignments = propertyAssignmentsText.match(/(\S+?".*?"|[^\s/]+)/g);
-    let properties = {};
-
-    if (propertyAssignments) {
-      properties = propertyAssignments.reduce((acc, propAss) => {
-        return _objectSpread(_objectSpread({}, acc), parsePropertyAssignment(propAss));
-      }, {});
-    }
-
-    const name = nameMatch && nameMatch[1] || Object.keys(properties)[0];
-    let replacement;
-
-    if (name === 'select') {
-      replacement = processSelectAttribute(properties);
-    } else if (name === 'plural') {
-      replacement = processPluralAttribute(properties, locale);
-    } else if (name === 'ordinal') {
-      replacement = processOrdinalAttribute(properties, locale);
-    }
-
-    return {
-      name,
-      properties,
-      isSelfClosing,
-      replacement
-    };
-  }
-}
-
-function parsePropertyAssignment(propAss) {
-  const [propName, ...rest] = propAss.split('=');
-  const stringValue = rest.join('='); // just in case string value had a = in it
-
-  if (!propName || !stringValue) {
-    throw new Error("Invalid markup property assignment: ".concat(propAss));
-  }
-
-  let value;
-
-  if (stringValue === 'true' || stringValue === 'false') {
-    value = stringValue === 'true';
-  } else if (/^-?\d*\.?\d+$/.test(stringValue)) {
-    value = +stringValue;
-  } else if (stringValue[0] === '"' && stringValue[stringValue.length - 1] === '"') {
-    value = stringValue.slice(1, -1);
-  } else {
-    value = stringValue;
-  }
-
-  return {
-    [propName]: value
-  };
-}
-
-function processSelectAttribute(properties) {
-  return properties[properties.value];
-}
-
-function processPluralAttribute(properties, locale) {
-  return properties[new Intl.PluralRules(locale).select(properties.value)].replaceAll('%', properties.value);
-}
-
-function processOrdinalAttribute(properties, locale) {
-  return properties[new Intl.PluralRules(locale, {
-    type: 'ordinal'
-  }).select(properties.value)].replaceAll('%', properties.value);
+  node.text = node.text.replace(/(?:\\(.))/g, '$1');
 }
 
 module.exports = exports.default;

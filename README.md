@@ -1,43 +1,34 @@
-# What is YarnBound?
+# What is Bondage.js?
 
 [Yarn](https://yarnspinner.dev/) is a language for writing dialogue trees.
 
-YarnBound attempts to be the simplest way to use the Yarn language in the context of a javascript application. It is a wrapper around a specific [forked version of bondage.js](https://github.com/mnbroatch/bondage.js), where effort has been made to comply with the [Yarn 2.0 spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md).
+Bondage.js attempts to be the simplest way to use the Yarn language in the context of a javascript application. Effort has been made to comply with the [Yarn 2.0 spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md) and include all additional features found in the "Writing in Yarn" (non-unity-specific, that is) section of the [official documentation](https://docs.yarnspinner.dev/).
 
-Quality-of-life features on top of bondage.js:
-  - A simpler API 
+Additional quality-of-life features on top of that include:
   - History of previous Results
   - Option to return text and a subsequent options block together as one result
   - Option to run a custom command handler function instead of returning a CommandResult
   - include an `isDialogueEnd` property with the last Result in a dialogue
 
-A live demo is [on the author's web site](https://matthewbroatch.com/)
-
-Bondage.js also does not support
-  - `Character: some text` annotation
-  - `[b]Markup[/b]`
-
-because these are not language features (it's confusing). YarnBound adds these things.
-
-The only thing I know to be missing from the spec and non-unity-specific docs is the built-in `wait` command, because I can't tell what I would want it to do.
+The only thing I know to be missing from the spec and non-unity-specific docs is the built-in `wait` command (because what would it do?)
 
 
 # Usage
 
-Install with `npm i -S yarn-bound` or grab `yarn-bound.js` from the `/dist/` folder.
+Install with `npm i -S @mnbroatch/bondage` or grab `bondage.js` from the `/dist/` folder.
 
-For information on how to write Yarn, visit the [official documentation](https://docs.yarnspinner.dev/). Start there! YarnBound is useful after you have a yarn dialogue written and in string format. It's worth skimming the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md) as well.
+For information on how to write Yarn, visit the [official documentation](https://docs.yarnspinner.dev/). Start there! Bondage is useful after you have a yarn dialogue written and in string format. It's worth skimming the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md) as well.
 
-To get started with YarnBound, import and create a new instance.
+To get started with Bondage, import and create a new instance.
 
 ```javascript
-import YarnBound from 'yarn-bound'
+import Bondage from '@mnbroatch/bondage'
 // or node:
-// const bondage = require('yarn-bound')
+// const bondage = require('@mnbroatch/bondage')
 // or in a script tag:
-// <script src="path-to-file/yarn-bound.min.js"></script>
+// <script src="path-to-file/bondage.min.js"></script>
 
-const runner = new YarnBound(options)
+const runner = new Bondage(options)
 ```
 
 You can then access the first Result with:
@@ -77,7 +68,7 @@ That's all there is to the basic operation!
   - Unless you have a specific need you can omit this and use the built-in default.
   - One use is supplying variables with initial values, though you could also do that in the dialogue.
 
-**handleCommand**: *function* - If you provide this, YarnBound will `advance()` right past Command Results, instead calling `handleCommand()` with the Command Result as the single argument (see below for the data structure).
+**handleCommand**: *function* - If you provide this, Bondage will `advance()` right past Command Results, instead calling `handleCommand()` with the Command Result as the single argument (see below for the data structure).
 
 **combineTextAndOptionsResults**: *boolean* - If this is true, a Text Result followed by an Options Result will be combined into one Options Result with a `text` property.
   - This is convenient if you want to show prompts and responses at the same time.
@@ -94,11 +85,11 @@ Results, found on `runner.currentResult`, come in three flavors:
 
 You can tell which kind it is by using instanceof
 
-`runner.currentResult instanceof YarnBound.TextResult`
+`runner.currentResult instanceof Bondage.TextResult`
 
-`runner.currentResult instanceof YarnBound.OptionsResult`
+`runner.currentResult instanceof Bondage.OptionsResult`
 
-`runner.currentResult instanceof YarnBound.CommandResult`
+`runner.currentResult instanceof Bondage.CommandResult`
 
 A TextResult looks like this:
 
@@ -164,7 +155,7 @@ Every Result contains `metadata` which includes node header tags including `titl
 Let's start with this code:
 
 ```javascript
-import YarnBound from 'yarn-bound';
+import Bondage from '@mnbroatch/bondage';
  
 // empty lines and uniform leading whitespace is trimmed
 // so you can write your nodes in template strings neatly.
@@ -182,7 +173,7 @@ const dialogue = `
   ===
 `
 
-const runner = new YarnBound({
+const runner = new Bondage({
   dialogue,
   startAt: 'WhereAreYou'
 })
@@ -220,7 +211,7 @@ If a `handleCommand` function was supplied, it would be called and we would skip
 If you are supplying a `functions` object, it would look like this:
 
 ```javascript
-const runner = new YarnBound({
+const runner = new Bondage({
   dialogue,
   functions: {
     someFunction: (arg) => {/* do stuff */},
@@ -250,14 +241,12 @@ The `isDialogueEnd` feature assumes your dialogue will terminate on a TextResult
 
 # Other included versions
 
-A minified version exists at `yarn-bound/dist/yarn-bound.min.js`.
+A minified version exists at `@mnbroatch/bondage/dist/bondage.min.js`.
 
-If you want to transpile for yourself, use `import YarnBound from 'yarn-bound/src/index'` and make sure your transpiler isn't ignoring it. You will also need to transpile `@mnbroatch/bondage`, and include both in your bundle, if necessary.
+If you want to transpile for yourself, use `import Bondage from '@mnbroatch/bondage/src/index'` and make sure your transpiler isn't ignoring it. You will also need to transpile `@mnbroatch/bondage`, and include both in your bundle, if necessary.
 
-A version compatibile with internet explorer is at `yarn-bound/dist/yarn-bound.ie.js`.
+A version compatibile with internet explorer is at `@mnbroatch/bondage/dist/bondage.ie.js`.
+
 
 # Development
-
-The parser is compiled ahead of time, so after making changes to the grammar you will need to run `node src/core/parser/make-parser`. This is done automatically during `npm run build`.
-
 

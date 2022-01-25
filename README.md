@@ -250,3 +250,7 @@ A version compatibile with internet explorer is at `@mnbroatch/bondage/dist/bond
 
 # Development
 
+The code in `src/core/` aims for 100% compliance with the Yarn 2.0 spec, and nothing else. This is intended to provide an extra-stable layer for other non-language yarn features (like markup) to build upon.
+
+The core parser is compiled ahead of time, so after making changes to the grammar you will need to run `node src/core/parser/make-parser`. This is done automatically during `npm run build`.
+

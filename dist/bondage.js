@@ -146,8 +146,13 @@ exports["default"] = void 0;
 
 var _runner = _interopRequireDefault(__webpack_require__(432));
 
+var _results = _interopRequireDefault(__webpack_require__(819));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+_runner.default.OptionsResult = _results.default.OptionsResult;
+_runner.default.TextResult = _results.default.TextResult;
+_runner.default.CommandResult = _results.default.CommandResult;
 var _default = _runner.default;
 exports["default"] = _default;
 module.exports = exports.default;
@@ -3487,13 +3492,13 @@ exports["default"] = void 0;
 
 var _runner = _interopRequireDefault(__webpack_require__(359));
 
-var _results = _interopRequireDefault(__webpack_require__(819));
+var _index = _interopRequireDefault(__webpack_require__(565));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_runner.default.OptionsResult = _results.default.OptionsResult;
-_runner.default.TextResult = _results.default.TextResult;
-_runner.default.CommandResult = _results.default.CommandResult;
+_runner.default.OptionsResult = _index.default.OptionsResult;
+_runner.default.TextResult = _index.default.TextResult;
+_runner.default.CommandResult = _index.default.CommandResult;
 var _default = _runner.default;
 exports["default"] = _default;
 module.exports = exports.default;

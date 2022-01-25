@@ -189,11 +189,6 @@ class LexerState {
      */
 
     this.isTrackingNextIndentation = false;
-    /**
-     * Whether or not this state emits EndOfLine tokens
-     */
-
-    this.isEmittingEndOfLineTokens = false;
   }
   /**
    * addTransition - Define a new transition for this state.
@@ -423,9 +418,8 @@ class Lexer {
         this.yytext = this.getCurrentLine().substr(this.yylloc.last_column - 1, matchedText.length);
 
         if (rule.token === 'String') {
-          // If that's a String, we're removing the quotes and
-          // un-escaping double-escaped characters.
-          this.yytext = this.yytext.substring(1, this.yytext.length - 1).replace(/\\/g, '');
+          // If that's a String, remove the quotes
+          this.yytext = this.yytext.substring(1, this.yytext.length - 1);
         } // Update our line and column info
 
 

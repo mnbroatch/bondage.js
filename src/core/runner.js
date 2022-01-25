@@ -141,7 +141,6 @@ class Runner {
    */
   * evalNodes(nodes, metadata) {
     let shortcutNodes = [];
-    let prevnode = null;
     let textRun = '';
 
     const filteredNodes = nodes.filter(Boolean);
@@ -153,15 +152,6 @@ class Runner {
       const node = filteredNodes[nodeIdx];
       const nextNode = filteredNodes[nodeIdx + 1];
 
-      if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
-        // Last shortcut in the series, so yield the shortcuts.
-        const result = yield* this.handleShortcuts(shortcutNodes, metadata);
-        if (result && (result.stop || result.jump)) {
-          return result;
-        }
-        shortcutNodes = [];
-      }
-
       // Text and the output of Inline Expressions
       // are combined to deliver a TextNode.
       if (
@@ -169,7 +159,6 @@ class Runner {
         || node instanceof nodeTypes.Expression
       ) {
         textRun += this.evaluateExpressionOrLiteral(node).toString();
-
         if (
           nextNode
           && node.lineNum === nextNode.lineNum
@@ -184,10 +173,16 @@ class Runner {
           yield new results.TextResult(textRun, node.hashtags, metadata);
           textRun = '';
         }
-
-        // Other nodes are more straightforward:
       } else if (node instanceof nodeTypes.Shortcut) {
         shortcutNodes.push(node);
+        if (!(nextNode instanceof nodeTypes.Shortcut)) {
+          // Last shortcut in the series, so yield the shortcuts.
+          const result = yield* this.handleShortcuts(shortcutNodes, metadata);
+          if (result && (result.stop || result.jump)) {
+            return result;
+          }
+          shortcutNodes = [];
+        }
       } else if (node instanceof nodeTypes.Assignment) {
         this.evaluateAssignment(node);
       } else if (node instanceof nodeTypes.Conditional) {
@@ -200,31 +195,19 @@ class Runner {
             return result;
           }
         }
+      } else if (node instanceof types.JumpCommandNode) {
+        // ignore the rest of this outer loop and
+        // tell parent loops to ignore following nodes.
+        // Recursive call here would cause stack overflow
+        return { jump: node.destination };
+      } else if (node instanceof types.StopCommandNode) {
+        // ignore the rest of this outer loop and
+        // tell parent loops to ignore following nodes
+        return { stop: true };
       } else {
-        // Command
-        if (node.type === 'JumpCommandNode') {
-          // ignore the rest of this outer loop and
-          // tell parent loops to ignore following nodes.
-          // Recursive call here would cause stack overflow
-          return {
-            jump: node.destination,
-          };
-        }
-        if (node.type === 'StopCommandNode') {
-          // ignore the rest of this outer loop and
-          // tell parent loops to ignore following nodes
-          return { stop: true };
-        }
         const command = this.evaluateExpressionOrLiteral(node.command);
         yield new results.CommandResult(command, node.hashtags, metadata);
       }
-
-      prevnode = node;
-    }
-
-    // The last node might be a shortcut
-    if (shortcutNodes.length > 0) {
-      return yield* this.handleShortcuts(shortcutNodes, metadata);
     }
 
     return undefined;

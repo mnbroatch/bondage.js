@@ -166,7 +166,7 @@ class Lexer {
         }
 
         const nextState = this.states[rule.state];
-        const nextStateHasText = !nextState || nextState.transitions
+        const nextStateHasText = !rule.state || nextState.transitions
           .find((transition) => { return transition.token === 'Text'; });
         // inline expressions and escaped characters interrupt text
         // but should still preserve surrounding whitespace.

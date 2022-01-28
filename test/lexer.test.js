@@ -2,8 +2,8 @@
 
 'use strict';
 
-import Lexer from '../../src/core/lexer/lexer';
-import LexerState from '../../src/core/lexer/lexer-state';
+import Lexer from '../src/lexer/lexer';
+import LexerState from '../src/lexer/lexer-state';
 
 describe('Lexer', () => {
   it('can tokenize some text', () => {

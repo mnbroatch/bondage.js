@@ -1,7 +1,8 @@
-import Runner from './runner';
-import core from '../src/core/index';
+import runner from './runner';
+import results from './results';
 
-Runner.OptionsResult = core.OptionsResult;
-Runner.TextResult = core.TextResult;
-Runner.CommandResult = core.CommandResult;
-export default Runner;
+runner.OptionsResult = results.OptionsResult;
+runner.TextResult = results.TextResult;
+runner.CommandResult = results.CommandResult;
+
+export default runner;

@@ -12,7 +12,7 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 309:
+/***/ 833:
 /***/ ((module, exports) => {
 
 
@@ -102,7 +102,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 313:
+/***/ 826:
 /***/ ((module, exports) => {
 
 
@@ -134,7 +134,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 565:
+/***/ 352:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -144,9 +144,9 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _runner = _interopRequireDefault(__webpack_require__(432));
+var _runner = _interopRequireDefault(__webpack_require__(359));
 
-var _results = _interopRequireDefault(__webpack_require__(819));
+var _results = _interopRequireDefault(__webpack_require__(457));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -159,7 +159,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 271:
+/***/ 269:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -169,7 +169,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _tokens = _interopRequireDefault(__webpack_require__(692));
+var _tokens = _interopRequireDefault(__webpack_require__(902));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -265,7 +265,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 506:
+/***/ 271:
 /***/ ((module, exports, __webpack_require__) => {
 
  // Syncs with YarnSpinner@e0f6807,
@@ -276,7 +276,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _states = _interopRequireDefault(__webpack_require__(993));
+var _states = _interopRequireDefault(__webpack_require__(304));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -437,12 +437,12 @@ class Lexer {
         }
 
         const nextState = this.states[rule.state];
-        const hasText = !nextState || nextState.transitions.find(transition => {
+        const nextStateHasText = !rule.state || nextState.transitions.find(transition => {
           return transition.token === 'Text';
         }); // inline expressions and escaped characters interrupt text
         // but should still preserve surrounding whitespace.
 
-        if (rule.token !== 'EndInlineExp' && rule.token !== 'EscapedCharacter' || !hasText // we never want leading whitespace if not in text-supporting state
+        if (rule.token !== 'EndInlineExp' && rule.token !== 'EscapedCharacter' || !nextStateHasText // we never want leading whitespace if not in text-supporting state
         ) {
           // Remove leading whitespace characters
           const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
@@ -545,7 +545,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 993:
+/***/ 304:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -555,7 +555,7 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _lexerState = _interopRequireDefault(__webpack_require__(271));
+var _lexerState = _interopRequireDefault(__webpack_require__(269));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -593,7 +593,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 692:
+/***/ 902:
 /***/ ((module, exports) => {
 
 
@@ -728,7 +728,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 759:
+/***/ 596:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -2497,7 +2497,7 @@ parser.Parser = Parser;
 
 /***/ }),
 
-/***/ 451:
+/***/ 987:
 /***/ ((module, exports) => {
 
 
@@ -2864,7 +2864,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 204:
+/***/ 625:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -2874,11 +2874,11 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _nodes = _interopRequireDefault(__webpack_require__(451));
+var _nodes = _interopRequireDefault(__webpack_require__(987));
 
-var _lexer = _interopRequireDefault(__webpack_require__(506));
+var _lexer = _interopRequireDefault(__webpack_require__(271));
 
-var _compiledParser = __webpack_require__(759);
+var _compiledParser = __webpack_require__(596);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2910,7 +2910,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 819:
+/***/ 457:
 /***/ ((module, exports) => {
 
 
@@ -3012,7 +3012,7 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ 432:
+/***/ 359:
 /***/ ((module, exports, __webpack_require__) => {
 
 
@@ -3022,15 +3022,15 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports["default"] = void 0;
 
-var _parser = _interopRequireDefault(__webpack_require__(204));
+var _parser = _interopRequireDefault(__webpack_require__(625));
 
-var _results = _interopRequireDefault(__webpack_require__(819));
+var _results = _interopRequireDefault(__webpack_require__(457));
 
-var _defaultVariableStorage = _interopRequireDefault(__webpack_require__(313));
+var _defaultVariableStorage = _interopRequireDefault(__webpack_require__(826));
 
-var _convertYarnToJs = _interopRequireDefault(__webpack_require__(309));
+var _convertYarnToJs = _interopRequireDefault(__webpack_require__(833));
 
-var _nodes = _interopRequireDefault(__webpack_require__(451));
+var _nodes = _interopRequireDefault(__webpack_require__(987));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3190,7 +3190,6 @@ class Runner {
 
   *evalNodes(nodes, metadata) {
     let shortcutNodes = [];
-    let prevnode = null;
     let textRun = '';
     const filteredNodes = nodes.filter(Boolean); // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables
@@ -3198,20 +3197,8 @@ class Runner {
 
     for (let nodeIdx = 0; nodeIdx < filteredNodes.length; nodeIdx += 1) {
       const node = filteredNodes[nodeIdx];
-      const nextNode = filteredNodes[nodeIdx + 1];
-
-      if (prevnode instanceof nodeTypes.Shortcut && !(node instanceof nodeTypes.Shortcut)) {
-        // Last shortcut in the series, so yield the shortcuts.
-        const result = yield* this.handleShortcuts(shortcutNodes, metadata);
-
-        if (result && (result.stop || result.jump)) {
-          return result;
-        }
-
-        shortcutNodes = [];
-      } // Text and the output of Inline Expressions
+      const nextNode = filteredNodes[nodeIdx + 1]; // Text and the output of Inline Expressions
       // are combined to deliver a TextNode.
-
 
       if (node instanceof nodeTypes.Text || node instanceof nodeTypes.Expression) {
         textRun += this.evaluateExpressionOrLiteral(node).toString();
@@ -3221,10 +3208,20 @@ class Runner {
         } else {
           yield new _results.default.TextResult(textRun, node.hashtags, metadata);
           textRun = '';
-        } // Other nodes are more straightforward:
-
+        }
       } else if (node instanceof nodeTypes.Shortcut) {
         shortcutNodes.push(node);
+
+        if (!(nextNode instanceof nodeTypes.Shortcut)) {
+          // Last shortcut in the series, so yield the shortcuts.
+          const result = yield* this.handleShortcuts(shortcutNodes, metadata);
+
+          if (result && (result.stop || result.jump)) {
+            return result;
+          }
+
+          shortcutNodes = [];
+        }
       } else if (node instanceof nodeTypes.Assignment) {
         this.evaluateAssignment(node);
       } else if (node instanceof nodeTypes.Conditional) {
@@ -3239,35 +3236,23 @@ class Runner {
             return result;
           }
         }
+      } else if (node instanceof _nodes.default.JumpCommandNode) {
+        // ignore the rest of this outer loop and
+        // tell parent loops to ignore following nodes.
+        // Recursive call here would cause stack overflow
+        return {
+          jump: node.destination
+        };
+      } else if (node instanceof _nodes.default.StopCommandNode) {
+        // ignore the rest of this outer loop and
+        // tell parent loops to ignore following nodes
+        return {
+          stop: true
+        };
       } else {
-        // Command
-        if (node.type === 'JumpCommandNode') {
-          // ignore the rest of this outer loop and
-          // tell parent loops to ignore following nodes.
-          // Recursive call here would cause stack overflow
-          return {
-            jump: node.destination
-          };
-        }
-
-        if (node.type === 'StopCommandNode') {
-          // ignore the rest of this outer loop and
-          // tell parent loops to ignore following nodes
-          return {
-            stop: true
-          };
-        }
-
         const command = this.evaluateExpressionOrLiteral(node.command);
         yield new _results.default.CommandResult(command, node.hashtags, metadata);
       }
-
-      prevnode = node;
-    } // The last node might be a shortcut
-
-
-    if (shortcutNodes.length > 0) {
-      return yield* this.handleShortcuts(shortcutNodes, metadata);
     }
 
     return undefined;
@@ -3470,393 +3455,6 @@ var _default = {
   OptionsResult: _results.default.OptionsResult
 };
 exports["default"] = _default;
-module.exports = exports.default;
-
-/***/ }),
-
-/***/ 352:
-/***/ ((module, exports, __webpack_require__) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _runner = _interopRequireDefault(__webpack_require__(359));
-
-var _index = _interopRequireDefault(__webpack_require__(565));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-_runner.default.OptionsResult = _index.default.OptionsResult;
-_runner.default.TextResult = _index.default.TextResult;
-_runner.default.CommandResult = _index.default.CommandResult;
-var _default = _runner.default;
-exports["default"] = _default;
-module.exports = exports.default;
-
-/***/ }),
-
-/***/ 279:
-/***/ ((module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = parseLine;
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-// mutates node, processing [markup /] and `character:`
-
-/* eslint-disable no-param-reassign */
-function processSelectAttribute(properties) {
-  return properties[properties.value];
-}
-
-function processPluralAttribute(properties, locale) {
-  return properties[new Intl.PluralRules(locale).select(properties.value)].replaceAll('%', properties.value);
-}
-
-function processOrdinalAttribute(properties, locale) {
-  return properties[new Intl.PluralRules(locale, {
-    type: 'ordinal'
-  }).select(properties.value)].replaceAll('%', properties.value);
-}
-
-function parsePropertyAssignment(propAss) {
-  const [propName, ...rest] = propAss.split('=');
-  const stringValue = rest.join('='); // just in case string value had a = in it
-
-  if (!propName || !stringValue) {
-    throw new Error("Invalid markup property assignment: ".concat(propAss));
-  }
-
-  let value;
-
-  if (stringValue === 'true' || stringValue === 'false') {
-    value = stringValue === 'true';
-  } else if (/^-?\d*\.?\d+$/.test(stringValue)) {
-    value = +stringValue;
-  } else if (stringValue[0] === '"' && stringValue[stringValue.length - 1] === '"') {
-    value = stringValue.slice(1, -1);
-  } else {
-    value = stringValue;
-  }
-
-  return {
-    [propName]: value
-  };
-}
-
-function parseCharacterLabel(node) {
-  const match = node.text.match(/^(\S+):\s+/);
-
-  if (match) {
-    node.text = node.text.replace(match[0], '');
-    node.markup.push({
-      name: 'character',
-      properties: {
-        name: match[1]
-      }
-    });
-  }
-}
-
-function parseAttributeContents(contents, locale) {
-  const nameMatch = contents.match(/^\/?([^\s=/]+)(\/|\s|$)/);
-  const isClosing = contents[0] === '/';
-  const isSelfClosing = contents[contents.length - 1] === '/';
-  const isCloseAll = contents === '/';
-
-  if (isCloseAll) {
-    return {
-      name: 'closeall',
-      isCloseAll: true
-    };
-  } else if (isClosing) {
-    return {
-      name: nameMatch[1],
-      isClosing: true
-    };
-  }
-
-  const propertyAssignmentsText = nameMatch ? contents.replace(nameMatch[0], '') : contents;
-  const propertyAssignments = propertyAssignmentsText.match(/(\S+?".*?"|[^\s/]+)/g);
-  let properties = {};
-
-  if (propertyAssignments) {
-    properties = propertyAssignments.reduce((acc, propAss) => {
-      return _objectSpread(_objectSpread({}, acc), parsePropertyAssignment(propAss));
-    }, {});
-  }
-
-  const name = nameMatch && nameMatch[1] || Object.keys(properties)[0];
-  let replacement;
-
-  if (name === 'select') {
-    replacement = processSelectAttribute(properties);
-  } else if (name === 'plural') {
-    replacement = processPluralAttribute(properties, locale);
-  } else if (name === 'ordinal') {
-    replacement = processOrdinalAttribute(properties, locale);
-  }
-
-  return {
-    name,
-    properties,
-    isSelfClosing,
-    replacement
-  };
-}
-
-function parseMarkup(node, locale) {
-  const attributes = [];
-  let noMarkup = false;
-  const attributeRegex = /(^|[^\\])\[(.*?[^\\])\](.|$)/;
-  let textRemaining = node.text;
-  let resultText = '';
-  let match = textRemaining.match(attributeRegex);
-
-  while (match) {
-    const {
-      index
-    } = match;
-    const [wholeMatch, charBefore, contents, charAfter] = match;
-    const hasLeadingSpace = /\s/.test(charBefore);
-    const hasTrailingSpace = /\s/.test(charAfter);
-
-    const attribute = _objectSpread(_objectSpread({}, parseAttributeContents(contents, locale)), {}, {
-      position: resultText.length + index + charBefore.length
-    });
-
-    if (!noMarkup || attribute.name === 'nomarkup') {
-      const isReplacementTag = attribute.name === 'select' || attribute.name === 'plural' || attribute.name === 'ordinal';
-      const shouldTrim = !isReplacementTag && attribute.isSelfClosing && attribute.properties && attribute.properties.trimwhitespace !== false && (index === 0 && hasTrailingSpace || hasLeadingSpace && hasTrailingSpace);
-
-      if (attribute.properties) {
-        delete attribute.properties.trimwhitespace;
-      }
-
-      const replacement = charBefore + (attribute.replacement || '') + (shouldTrim ? charAfter.slice(1) : charAfter);
-      textRemaining = textRemaining.replace(attributeRegex, replacement); // inner slices are because charAfter could be an opening square bracket
-
-      resultText += textRemaining.slice(0, index + replacement.slice(1).length);
-      textRemaining = textRemaining.slice(index + replacement.slice(1).length);
-
-      if (!isReplacementTag && attribute.name !== 'nomarkup') {
-        attributes.push(attribute);
-      }
-    } else {
-      // -1s are because charAfter could be an opening square bracket
-      resultText += textRemaining.slice(0, index + wholeMatch.length - 1);
-      textRemaining = textRemaining.slice(index + wholeMatch.length - 1);
-    }
-
-    if (attribute.name === 'nomarkup') {
-      noMarkup = !attribute.isClosing;
-    }
-
-    match = textRemaining.match(attributeRegex);
-  }
-
-  node.text = resultText + textRemaining; // Escaped bracket support might need some TLC.
-
-  const escapedCharacterRegex = /\\(\[|\])/;
-  match = node.text.match(escapedCharacterRegex);
-  textRemaining = node.text;
-  resultText = '';
-
-  while (match) {
-    const char = match[1];
-
-    for (let i = 0, len = attributes.length; i < len; i += 1) {
-      const attr = attributes[i];
-
-      if (attr.position > resultText.length + match.index) {
-        attr.position -= 1;
-      }
-    }
-
-    textRemaining = textRemaining.replace(escapedCharacterRegex, char);
-    resultText += textRemaining.slice(0, match.index + 1);
-    textRemaining = textRemaining.slice(match.index + 1);
-    match = textRemaining.match(escapedCharacterRegex);
-  }
-
-  node.text = resultText + textRemaining;
-  const openTagStacks = {};
-  attributes.forEach(attr => {
-    if (!openTagStacks[attr.name]) {
-      openTagStacks[attr.name] = [];
-    }
-
-    if (attr.isClosing && !openTagStacks[attr.name].length) {
-      throw new Error("Encountered closing ".concat(attr.name, " tag before opening tag"));
-    } else if (attr.isClosing) {
-      const openTag = openTagStacks[attr.name].pop();
-      node.markup.push({
-        name: openTag.name,
-        position: openTag.position,
-        properties: openTag.properties,
-        length: attr.position - openTag.position
-      });
-    } else if (attr.isSelfClosing) {
-      node.markup.push({
-        name: attr.name,
-        position: attr.position,
-        properties: attr.properties,
-        length: 0
-      });
-    } else if (attr.isCloseAll) {
-      const openTags = Object.values(openTagStacks).flat();
-
-      while (openTags.length) {
-        const openTag = openTags.pop();
-        node.markup.push({
-          name: openTag.name,
-          position: openTag.position,
-          properties: openTag.properties,
-          length: attr.position - openTag.position
-        });
-      }
-    } else {
-      openTagStacks[attr.name].push({
-        name: attr.name,
-        position: attr.position,
-        properties: attr.properties
-      });
-    }
-  });
-}
-
-function parseLine(node, locale) {
-  node.markup = [];
-  parseCharacterLabel(node);
-  parseMarkup(node, locale); // remove escaping backslashes
-
-  node.text = node.text.replace(/(?:\\(.))/g, '$1');
-}
-
-module.exports = exports.default;
-
-/***/ }),
-
-/***/ 359:
-/***/ ((module, exports, __webpack_require__) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _index = _interopRequireDefault(__webpack_require__(565));
-
-var _lineParser = _interopRequireDefault(__webpack_require__(279));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-class Runner {
-  constructor(_ref) {
-    let {
-      dialogue,
-      variableStorage,
-      functions,
-      handleCommand,
-      combineTextAndOptionsResults,
-      locale,
-      startAt = 'Start'
-    } = _ref;
-    this.handleCommand = handleCommand;
-    this.combineTextAndOptionsResults = combineTextAndOptionsResults;
-    this.core = _index.default;
-    this.bufferedNode = null;
-    this.currentResult = null;
-    this.history = [];
-    this.locale = locale;
-    const runner = new _index.default.Runner();
-    runner.noEscape = true;
-    runner.load(dialogue);
-
-    if (variableStorage) {
-      runner.setVariableStorage(variableStorage);
-    }
-
-    if (functions) {
-      Object.entries(functions).forEach(entry => {
-        runner.registerFunction(...entry);
-      });
-    }
-
-    this.generator = runner.run(startAt);
-    this.advance();
-  }
-
-  advance(optionIndex) {
-    if (typeof optionIndex !== 'undefined' && this.currentResult && this.currentResult.select) {
-      this.currentResult.select(optionIndex);
-    }
-
-    let next = this.bufferedNode || this.generator.next().value;
-    let buffered = null; // We either return the command as normal or, if a handler
-    // is supplied, use that and don't bother the consuming app
-
-    if (this.handleCommand) {
-      while (next instanceof _index.default.CommandResult) {
-        this.handleCommand(next);
-        next = this.generator.next().value;
-      }
-    } // Lookahead for combining text + options, and for end of dialogue.
-    // Can't look ahead of option nodes (what would you look ahead at?)
-
-
-    if (!(next instanceof _index.default.OptionsResult)) {
-      const upcoming = this.generator.next();
-      buffered = upcoming.value;
-
-      if (next instanceof _index.default.TextResult && this.combineTextAndOptionsResults && buffered instanceof _index.default.OptionsResult) {
-        next = Object.assign(buffered, next);
-        buffered = null;
-      } else if (next && upcoming.done) {
-        next = Object.assign(next, {
-          isDialogueEnd: true
-        });
-      }
-    }
-
-    if (this.currentResult) {
-      this.history.push(this.currentResult);
-    }
-
-    if (next instanceof _index.default.TextResult) {
-      (0, _lineParser.default)(next, this.locale);
-    } else if (next instanceof _index.default.OptionsResult) {
-      if (next.text) {
-        (0, _lineParser.default)(next, this.locale);
-      }
-
-      next.options.forEach(option => {
-        (0, _lineParser.default)(option, this.locale);
-      });
-    }
-
-    this.currentResult = next;
-    this.bufferedNode = buffered;
-  }
-
-}
-
-exports["default"] = Runner;
 module.exports = exports.default;
 
 /***/ })

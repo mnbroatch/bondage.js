@@ -1,109 +1,126 @@
-# What is Bondage.js?
+This project is a runner for [Yarn](https://yarnspinner.dev/) dialogues, attempting compliance with the 2.0 language specification.
 
-[Yarn](https://yarnspinner.dev/) is a language for writing dialogue trees.
+API improvements and additional features are present in [YarnBound](https://github.com/mnbroatch/yarn-bound), which uses this package under the hood.
 
-Bondage.js attempts to be the simplest way to use the Yarn language in the context of a javascript application. Effort has been made to comply with the [Yarn 2.0 spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md) and include all additional features found in the "Writing in Yarn" (non-unity-specific, that is) section of the [official documentation](https://docs.yarnspinner.dev/).
+# Known Deviations from Yarn 2.0 spec
 
-Additional quality-of-life features on top of that include:
-  - History of previous Results
-  - Option to return text and a subsequent options block together as one result
-  - Option to run a custom command handler function instead of returning a CommandResult
-  - include an `isDialogueEnd` property with the last Result in a dialogue
+- Reading from a .yarn file is left to the user; dialogues should be supplied to bondage.js as a text string or array of node objects.
+- Some minutia about what unicode characters define a string has not been considered.
 
-The only thing I know to be missing from the spec and non-unity-specific docs is the built-in `wait` command (because what would it do?)
+There are features in the Yarn docs that are not present in the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md). Known examples are:
+  - `Character: some text` annotation
+  - `[b]Markup[/b]`
+
+These exist in [YarnBound](https://github.com/mnbroatch/yarn-bound) but not here.
 
 
 # Usage
 
-Install with `npm i -S @mnbroatch/bondage` or grab `bondage.js` from the `/dist/` folder.
+Install with `npm i -S bondage` or grab `bondage.js` from the `/dist/` folder.
 
-For information on how to write Yarn, visit the [official documentation](https://docs.yarnspinner.dev/). Start there! Bondage is useful after you have a yarn dialogue written and in string format. It's worth skimming the [Yarn language spec](https://github.com/YarnSpinnerTool/YarnSpinner/blob/9275277f50a6acbe8438b29596acc8527cf5581a/Documentation/Yarn-Spec.md) as well.
+For information on how to write Yarn, visit the [official documentation](https://docs.yarnspinner.dev/).
 
-To get started with Bondage, import and create a new instance.
+The examples below illustrate how `bondage.js` in particular works:
+
+
+### Basic Dialogue
 
 ```javascript
-import Bondage from '@mnbroatch/bondage'
-// or node:
-// const bondage = require('@mnbroatch/bondage')
+import bondage from 'bondage';
+// or node: 
+// const bondage = require('bondage')
 // or in a script tag:
 // <script src="path-to-file/bondage.min.js"></script>
+ 
+// bondage.js strips empty lines, but make sure lines have
+// no leading whitespace (besides indentation)!
+const dialogue = ` 
+# someFiletag
+title: StartingNode
+someTag: someTag
+---
+This is a line of text.#someHashtag
+This is another line of text.
+===
+`
 
-const runner = new Bondage(options)
+const runner = new bondage.Runner()
+runner.load(dialogue)
+const generator = runner.run('StartingNode')
+let node = generator.next().value
+console.log('node', node)
 ```
 
-You can then access the first Result with:
-
-```javascript
-runner.currentResult
-```
-
-To continue the dialogue, call `advance()`.
-
-```javascript
-runner.advance()
-runner.currentResult // is now the next Result
-```
-
-If you were on an Options Result, you would call `advance()` with the index of the desired option.
-
-```javascript
-runner.advance(2)
-runner.currentResult // is now the Result after the selected option
-```
-
-That's all there is to the basic operation!
-
-
-### Available Options
-
-**dialogue (required)**: *string* - The Yarn dialogue to run. A .yarn file in string form.
-
-**startAt**: *string*: - The title of the node to start the dialogue on.
-  - default: "Start"
-
-**functions**: *object* - An object containing custom functions to run when they are called in a yarn expression.
-  - As the Yarn docs mention, these should not have side effects. They may execute at unexpected times.
-
-**variableStorage**: *object* - A custom storage object with `get()` and `set()` functions (a `new Map()`, for instance.)
-  - Unless you have a specific need you can omit this and use the built-in default.
-  - One use is supplying variables with initial values, though you could also do that in the dialogue.
-
-**handleCommand**: *function* - If you provide this, Bondage will `advance()` right past Command Results, instead calling `handleCommand()` with the Command Result as the single argument (see below for the data structure).
-
-**combineTextAndOptionsResults**: *boolean* - If this is true, a Text Result followed by an Options Result will be combined into one Options Result with a `text` property.
-  - This is convenient if you want to show prompts and responses at the same time.
-
-**locale**: *string* - Used for pluralization markdown attributes.
-
-
-# Results Data
-
-Results, found on `runner.currentResult`, come in three flavors:
-  - TextResult
-  - OptionsResult
-  - CommandResult
-
-You can tell which kind it is by using instanceof
-
-`runner.currentResult instanceof Bondage.TextResult`
-
-`runner.currentResult instanceof Bondage.OptionsResult`
-
-`runner.currentResult instanceof Bondage.CommandResult`
-
-A TextResult looks like this:
+When we log out `node` above, we will see this object structure:
 
 ```javascript
 {
   "text": "This is a line of text.",
   "hashtags": ['someHashtag'],
-  "metadata": {/* see below */}
+  "metadata": {
+    "title": "StartingNode",
+    "someTag": "someTag",
+    "filetags": [
+      "someFiletag"
+    ]
+  }
 }
 ```
 
-If it is the last Result in the dialogue, there will also be a `isDialogueEnd` property with the value of `true`.
+Notice that hashtags at the end of a line go in a `hashtags` array.
 
-An Options Result looks like this:
+to continue, we call
+
+```javascript
+node = generator.next().value
+```
+
+again, and if we log the new node, we see:
+
+```javascript
+{
+  "text": "This is another line of text.",
+  "hashtags": [],
+  "metadata": {
+    "title": "StartingNode",
+    "someTag": "someTag",
+    "filetags": [
+      "someFiletag"
+    ]
+  }
+}
+```
+
+If we had jumped, we would see the new node's title and header tags under the `metadata` property (along with the same fileTags).
+
+
+### Options
+
+Given this dialogue:
+
+```
+# someFiletag
+title: StartingNode
+someTag: someTag
+---
+What color do you like?
+-> Red
+  You picked Red!
+-> Blue
+  You picked Blue!
+===
+```
+
+We can start the dialogue runner like above.
+
+```javascript
+const runner = new bondage.Runner()
+runner.load(dialogue)
+const generator = runner.run('StartingNode')
+let node = generator.next().value
+```
+
+which will give us a text result like the last example. However, the next node we get from calling `generator.next().value` will be:
 
 ```javascript
 {
@@ -119,138 +136,158 @@ An Options Result looks like this:
       "hashtags": []
     }
   ],
-  "metadata": {/* see below */}
-}
-```
-
-If `combineTextAndOptionsResults` is enabled, there could be a `text` property on the Options Result. `advance()` from it with an option's index as usual.
-
-A Command Result looks like this:
-
-```javascript
-{
-  "command": "someCommand",
-  "hashtags": [],
-  "metadata": {/* see below */}
-}
-```
-
-It could also have a `isDialogueEnd` property on it (though that may not be useful if you're using a command handler!)
-
-Every Result contains `metadata` which includes node header tags including `title`, and also any file tags.
-
-```javascript
-  {
+  "metadata": {
     "title": "StartingNode",
     "someTag": "someTag",
     "filetags": [
       "someFiletag"
     ]
   }
+}
 ```
 
-
-### Full example
-
-Let's start with this code:
+In order to continue the dialogue, you will need to call
 
 ```javascript
-import Bondage from '@mnbroatch/bondage';
- 
-// empty lines and uniform leading whitespace is trimmed
-// so you can write your nodes in template strings neatly.
-const dialogue = ` 
-  title: WhereAreYou
-  ---
-  Where are you?
-    -> Home
-      Nice.
-      <<doSomething home>>
-    -> Work
-      Rough.
-      <<doSomething work>>
-  That's it!
-  ===
-`
-
-const runner = new Bondage({
-  dialogue,
-  startAt: 'WhereAreYou'
-})
+node.select(0);
+node = generator.next().value
 ```
 
-When we log out `runner.currentResult` above, we will get a TextResult with the `text` "Where are you?"
+in order to move to the line with text, "You picked Red!"
 
-to continue, we call
+But how will your view layer know whether you're looking at a text result or an options result? Use `instanceof`:
 
-```javascript
-runner.advance()
+`node instanceof bondage.TextResult`
+
+`node instanceof bondage.OptionsResult`
+
+`node instanceof bondage.CommandResult`
+
+Speaking of CommandResult...
+
+
+# Commands
+
+The third and last result type you need to know about is CommandResult. Given this dialogue:
+
+```
+# someFiletag
+title: StartingNode
+someTag: someTag
+---
+Sending a command...
+<<someCommand with spaces>>
+===
 ```
 
-and `runner.currentResult` will be an OptionsResult with an options array with two objects in it. One object's `text` property is "Nice" and one's is "Rough". We will choose "Nice" by calling:
+You will see a "Sending a command..." TextResult, but the next node will look like this:
+
 
 ```javascript
-runner.advance(0)
-```
-
-Now, `runner.currentNode` is a CommandResult where `command` is "doSomething home".
-
-```javascript
-runner.advance()
-```
-
-One final TextResult, but this time `isDialogueEnd` is `true`.
-
-If `combineTextAndOptionsResults` was true, the first value for `runner.currentResult` would be the same OptionsResult as above, but with a `text` property that says "Where are you?".
-
-If a `handleCommand` function was supplied, it would be called and we would skip straight from the OptionsResult to the last TextResult.
-
-
-# Functions
-
-If you are supplying a `functions` object, it would look like this:
-
-```javascript
-const runner = new Bondage({
-  dialogue,
-  functions: {
-    someFunction: (arg) => {/* do stuff */},
-    someOtherFunction: (arg1, arg2) => {/* do other stuff */},
+{
+  "name": "someCommand with spaces",
+  "hashtags": [],
+  "metadata": {
+    "title": "StartingNode",
+    "someTag": "someTag",
+    "filetags": [
+      "someFiletag"
+    ]
   }
-})
+}
 ```
 
-
-# History
-
-An array containing Results already visited is located at `runner.history`.
+Your program can do what it wants with that, then call `generator.next().value` to get the next node, as usual.
 
 
-# React Component
+### Custom Variable Storage
 
-A simple react component can be found at: [react-dialogue-tree](https://github.com/mnbroatch/react-dialogue-tree)
+Bondage keeps track of variables internally. Optionally, you can supply your own variableStorage. variableStorage is an object with get() and set() methods defined.
+
+```javascript
+const customStorage = new Map()
+customStorage.set('hello', 1)
+
+const runner = new bondage.Runner()
+runner.setVariableStorage(customStorage)
+runner.load(dialogue)
+```
+
+**Call setVariableStorage BEFORE loading a dialogue with `runner.load`. This is because `declare` commands will resolve when the dialogue loads (as opposed to when `runner.run()` is called)** 
+
+Above, we set an initial value for the `hello` variable, so if a line of dialogue contains `{$hello}`, it will show the number `1`, no need to call `<<set $hello = 1>>`.
+
+Simple dialogues can probably just use the built-in storage.
 
 
-# Caveats
+### Functions
 
-The `isDialogueEnd` feature assumes your dialogue will terminate on a TextResult, rather than a CommandResult or OptionsResult. The property will be absent if:
-  - The dialogue terminates on an OptionsResult, or
-  - The dialogue terminates on a CommandResult and a `handleCommand` callback is supplied.
-    - Terminating on the `<<stop>>` command is fine
+You can also register functions to be used in your dialogue.
+
+```javascript
+runner.registerFunction('sayHello', () => 'hello')
+```
+
+If a line of dialogue contains `{sayHello()}`, it will show `hello`.
+
+
+### Object Input Format
+
+In addition to the regular yarn format as a string, bondage also accepts a javascript object. This is an intermediary format exported by some utilities. The text format is nicer to work with, so it should be preferred. For reference,
+
+```
+#someFiletag
+#someOtherFiletag
+title: SomeNode
+tags: hello
+arbitraryKey: arbitraryValue
+---
+This is a line of text
+<<jump SomeOtherNode>>
+===
+
+title: SomeOtherNode
+---
+This is another line of text.
+===
+```
+
+is equivalent to:
+
+```javascript
+[
+  {
+    "title": "SomeNode",
+    "tags": "hello",
+    "arbitraryKey": "arbitraryValue",
+    "body": "This is a line of text\n<<jump SomeOtherNode>>\n",
+    "filetags": [
+      "someFiletag",
+      "someOtherFiletag"
+    ]
+  },
+  {
+    "title": "SomeOtherNode",
+    "body": "This is another line of text.\n",
+    "filetags": [
+      "someFiletag",
+      "someOtherFiletag"
+    ]
+  }
+]
+```
 
 
 # Other included versions
 
-A minified version exists at `@mnbroatch/bondage/dist/bondage.min.js`.
+A minified version exists at `bondage/dist/bondage.min.js`.
 
-If you want to transpile for yourself, use `import Bondage from '@mnbroatch/bondage/src/index'` and make sure your transpiler isn't ignoring it. You will also need to transpile `@mnbroatch/bondage`, and include both in your bundle, if necessary.
+If you want to transpile for yourself, use `import bondage from 'bondage/src/index'` and make sure it's being included by your build system.
 
-A version compatibile with internet explorer is at `@mnbroatch/bondage/dist/bondage.ie.js`.
+If you need compatibility with internet explorer, you can transpile for yourself or use `bondage/dist/bondage.ie.js`.
 
 
 # Development
 
-The code in `src/core/` aims for 100% compliance with the Yarn 2.0 spec, and nothing else. This is intended to provide an extra-stable layer for other non-language yarn features (like markup) to build upon.
-
-The core parser is compiled ahead of time, so after making changes to the grammar you will need to run `node src/core/parser/make-parser`. This is done automatically during `npm run build`.
+The parser is compiled ahead of time, so after making changes to the grammar you will need to run `node src/parser/make-parser`. This is done automatically during `npm run build`.
 

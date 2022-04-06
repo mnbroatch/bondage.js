@@ -1,21 +1,18 @@
 'use strict';
 
-/* eslint-disable key-spacing */
 /**
  * Token identifier -> regular expression to match the lexeme. That's a list of all the token
  * which can be emitted by the lexer. For now, we're slightly bending the style guide,
  * to make sure the debug output of the javascript lexer will (kinda) match the original C# one.
  */
+/* eslint-disable key-spacing */
 const Tokens = {
   // Special tokens
-  Whitespace:           null,                      // (not used currently)
+  Whitespace:           null, // (not used currently)
   Indent:               null,
   Dedent:               null,
-  EndOfLine:            null,                      // (not used currently)
+  EndOfLine:            /\n/,
   EndOfInput:           null,
-
-  UnaryMinus:           null,                      // -; this is differentiated from Minus
-                                                   // when parsing expressions (Not used currently)
 
   // Literals in ("<<commands>>")
   Number:               /-?[0-9]+(\.[0-9+])?/,
@@ -31,17 +28,28 @@ const Tokens = {
   // Shortcut syntax ("->")
   ShortcutOption:       /->/,
 
-  // Option syntax ("[[Let's go here|Destination]]")
-  OptionStart:          /\[\[/,                    // [[
-  OptionDelimit:        /\|/,                      // |
-  OptionEnd:            /\]\]/,                    // ]]
+  // Hashtag ("#something")
+  Hashtag:              /#([^(\s|#|//)]+)/, // seems a little hacky to explicitly consider comments here
 
-  // Command types (specially recognised command word)
+  // Comment ("// some stuff")
+  Comment:              /\/\/.*/,
+
+  // Option syntax ("[[Let's go here|Destination]]")
+  OptionStart:          /\[\[/, // [[
+  OptionDelimit:        /\|/, // |
+  OptionEnd:            /\]\]/, // ]]
+
+  // Command types (specially recognized command word)
   If:                   /if(?!\w)/,
   ElseIf:               /elseif(?!\w)/,
   Else:                 /else(?!\w)/,
   EndIf:                /endif(?!\w)/,
+  Jump:                 /jump(?!\w)/,
+  Stop:                 /stop(?!\w)/,
   Set:                  /set(?!\w)/,
+  Declare:              /declare(?!\w)/,
+  As:                   /as(?!\w)/,
+  ExplicitType:         /(String|Number|Bool)(?=>>)/,
 
   // Boolean values
   True:                 /true(?!\w)/,
@@ -58,41 +66,47 @@ const Tokens = {
   Comma:                /,/,
 
   // Operators
-  EqualTo:              /(==|is(?!\w)|eq(?!\w))/,  // ==, eq, is
-  GreaterThan:          /(>|gt(?!\w))/,            // >, gt
-  GreaterThanOrEqualTo: /(>=|gte(?!\w))/,          // >=, gte
-  LessThan:             /(<|lt(?!\w))/,            // <, lt
-  LessThanOrEqualTo:    /(<=|lte(?!\w))/,          // <=, lte
-  NotEqualTo:           /(!=|neq(?!\w))/,          // !=, neq
+  UnaryMinus:           /-(?!\s)/,
+
+  EqualTo:              /(==|is(?!\w)|eq(?!\w))/, // ==, eq, is
+  GreaterThan:          /(>|gt(?!\w))/, // >, gt
+  GreaterThanOrEqualTo: /(>=|gte(?!\w))/, // >=, gte
+  LessThan:             /(<|lt(?!\w))/, // <, lt
+  LessThanOrEqualTo:    /(<=|lte(?!\w))/, // <=, lte
+  NotEqualTo:           /(!=|neq(?!\w))/, // !=, neq
 
   // Logical operators
-  Or:                   /(\|\||or(?!\w))/,         // ||, or
-  And:                  /(&&|and(?!\w))/,          // &&, and
-  Xor:                  /(\^|xor(?!\w))/,          // ^, xor
-  Not:                  /(!|not(?!\w))/,           // !, not
+  Or:                   /(\|\||or(?!\w))/, // ||, or
+  And:                  /(&&|and(?!\w))/, // &&, and
+  Xor:                  /(\^|xor(?!\w))/, // ^, xor
+  Not:                  /(!|not(?!\w))/, // !, not
 
   // this guy's special because '=' can mean either 'equal to'
   // or 'becomes' depending on context
-  EqualToOrAssign:      /(=|to(?!\w))/,            // =, to
+  EqualToOrAssign:      /(=|to(?!\w))/, // =, to
 
-  Add:                  /\+/,                      // +
-  Minus:                /-/,                       // -
-  Multiply:             /\*/,                      // *
-  Divide:               /\//,                      // /
+  Add:                  /\+/, // +
+  Minus:                /-/, // -
+  Exponent:             /\*\*/, // **
+  Multiply:             /\*/, // *
+  Divide:               /\//, // /
+  Modulo:               /%/, // /
 
-  AddAssign:            /\+=/,                     // +=
-  MinusAssign:          /-=/,                      // -=
-  MultiplyAssign:       /\*=/,                     // *=
-  DivideAssign:         /\/=/,                     // /=
+  AddAssign:            /\+=/, // +=
+  MinusAssign:          /-=/, // -=
+  MultiplyAssign:       /\*=/, // *=
+  DivideAssign:         /\/=/, // /=
 
-  Comment:              '//',                      // a run of text that we ignore
+  Identifier:           /[a-zA-Z0-9_:.]+/, // a single word (used for functions)
 
-  Identifier:           /[a-zA-Z0-9_:.]+/,         // a single word (used for functions)
+  EscapedCharacter:     /\\./, // for escaping \# special characters
+  Text:                 /[^\\]/, // generic until we hit other syntax
 
-  CommandCall:          /([^>]|(?!>)[^>]+>)+(?=>>)/,// Command call
-
-  Text:                 /.*/,                      // a run of text until we hit other syntax.
+  // Braces are used for inline expressions. Ignore escaped braces
+  // TODO: doesn't work ios
+  BeginInlineExp:       /{/, // {
+  EndInlineExp:         /}/, // }
 };
 /* eslint-enable key-spacing */
 
-module.exports = Tokens;
+export default Tokens;

@@ -2,62 +2,36 @@
 
 class Text { }
 class Shortcut { }
-class Jump { }
-class Link { }
 class Conditional { }
 class Assignment { }
 class Literal { }
 class Expression { }
+class FunctionCall { }
 class Command { }
 
-module.exports = {
+export default {
   types: {
     Text,
     Shortcut,
-		Jump,
-    Link,
     Conditional,
     Assignment,
     Literal,
     Expression,
+    FunctionCall,
     Command,
-  },
-
-  RootNode: class {
-    constructor(dialogNodes) {
-      this.name = 'RootNode';
-      this.dialogNodes = dialogNodes || [];
-    }
   },
 
   // /////////////// Dialog Nodes
 
-  DialogNode: class {
-    constructor(content, name) {
-      this.type = 'DialogNode';
-      this.name = name || null;
-      this.content = content;
-    }
-  },
-
-  DialogOptionNode: class extends Shortcut {
-    constructor(text, content, lineNo) {
+  DialogShortcutNode: class extends Shortcut {
+    constructor(text, content, lineNo, hashtags = [], conditionalExpression) {
       super();
-      this.type = 'DialogOptionNode';
+      this.type = 'DialogShortcutNode';
       this.text = text;
       this.content = content;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
-    }
-  },
-
-  ConditionalDialogOptionNode: class extends Shortcut {
-    constructor(text, content, conditionalExpression, lineNo) {
-      super();
-      this.type = 'ConditionalDialogOptionNode';
-      this.text = text;
-      this.content = content;
+      this.lineNum = lineNo.first_line;
+      this.hashtags = hashtags;
       this.conditionalExpression = conditionalExpression;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
     }
   },
 
@@ -99,36 +73,52 @@ module.exports = {
     }
   },
 
+
+  // /////////////// Command Nodes
+  GenericCommandNode: class extends Command {
+    constructor(command, lineNo, hashtags = []) {
+      super();
+      this.type = 'GenericCommandNode';
+      this.command = command;
+      this.hashtags = hashtags;
+      this.lineNum = lineNo.first_line;
+    }
+  },
+
+  JumpCommandNode: class extends Command {
+    constructor(destination) {
+      super();
+      this.type = 'JumpCommandNode';
+      this.destination = destination;
+    }
+  },
+
+  StopCommandNode: class extends Command {
+    constructor() {
+      super();
+      this.type = 'StopCommandNode';
+    }
+  },
+
+
   // /////////////// Contents Nodes
   TextNode: class extends Text {
-    constructor(text, lineNo) {
+    constructor(text, lineNo, hashtags = []) {
       super();
       this.type = 'TextNode';
       this.text = text;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.lineNum = lineNo.first_line;
+      this.hashtags = hashtags;
     }
   },
 
-  JumpNode: class extends Jump {
-    constructor(identifier, lineNo) {
+  EscapedCharacterNode: class extends Text {
+    constructor(text, lineNo, hashtags = []) {
       super();
-      this.type = 'JumpNode';
-      this.identifier = identifier;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
-
-      this.selectable = true;
-    }
-  },
-
-  LinkNode: class extends Link {
-    constructor(text, identifier, lineNo) {
-      super();
-      this.type = 'LinkNode';
-      this.text = text || null;
-      this.identifier = identifier || this.text; // [[Destination Text]]
-      this.lineNum = lineNo ? lineNo.first_line : -1;
-
-      this.selectable = true;
+      this.type = 'EscapedCharacterNode';
+      this.text = text;
+      this.lineNum = lineNo.first_line;
+      this.hashtags = hashtags;
     }
   },
 
@@ -157,14 +147,6 @@ module.exports = {
     }
   },
 
-  NullLiteralNode: class extends Literal {
-    constructor(nullLiteral) {
-      super();
-      this.type = 'NullLiteralNode';
-      this.nullLiteral = nullLiteral;
-    }
-  },
-
   VariableNode: class extends Literal {
     constructor(variableName) {
       super();
@@ -178,14 +160,6 @@ module.exports = {
     constructor(expression) {
       super();
       this.type = 'UnaryMinusExpressionNode';
-      this.expression = expression;
-    }
-  },
-
-  ArithmeticExpressionNode: class extends Expression {
-    constructor(expression) {
-      super();
-      this.type = 'ArithmeticExpressionNode';
       this.expression = expression;
     }
   },
@@ -217,29 +191,39 @@ module.exports = {
     }
   },
 
-  ArithmeticExpressionDivideNode: class {
+  ArithmeticExpressionExponentNode: class extends Expression {
     constructor(expression1, expression2) {
+      super();
+      this.type = 'ArithmeticExpressionExponentNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
+    }
+  },
+
+  ArithmeticExpressionDivideNode: class extends Expression {
+    constructor(expression1, expression2) {
+      super();
       this.type = 'ArithmeticExpressionDivideNode';
       this.expression1 = expression1;
       this.expression2 = expression2;
     }
   },
 
-  // /////////////// Boolean Expression Nodes
-
-  BooleanExpressionNode: class extends Expression {
-    constructor(booleanExpression) {
+  ArithmeticExpressionModuloNode: class extends Expression {
+    constructor(expression1, expression2) {
       super();
-      this.type = 'BooleanExpressionNode';
-      this.booleanExpression = booleanExpression;
+      this.type = 'ArithmeticExpressionModuloNode';
+      this.expression1 = expression1;
+      this.expression2 = expression2;
     }
   },
+  // /////////////// Boolean Expression Nodes
 
   NegatedBooleanExpressionNode: class extends Expression {
-    constructor(booleanExpression) {
+    constructor(expression) {
       super();
       this.type = 'NegatedBooleanExpressionNode';
-      this.booleanExpression = booleanExpression;
+      this.expression = expression;
     }
   },
 
@@ -282,7 +266,7 @@ module.exports = {
   NotEqualToExpressionNode: class extends Expression {
     constructor(expression1, expression2) {
       super();
-      this.type = 'EqualToExpressionNode';
+      this.type = 'NotEqualToExpressionNode';
       this.expression1 = expression1;
       this.expression2 = expression2;
     }
@@ -335,59 +319,27 @@ module.exports = {
     }
   },
 
-  SetVariableAddNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableAddNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-  },
-
-  SetVariableMinusNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableMinusNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-  },
-
-  SetVariableMultipyNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableMultipyNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-  },
-
-  SetVariableDivideNode: class extends Assignment {
-    constructor(variableName, expression) {
-      super();
-      this.type = 'SetVariableDivideNode';
-      this.variableName = variableName;
-      this.expression = expression;
-    }
-  },
-
   // /////////////// Function Nodes
 
-  FunctionResultNode: class extends Literal {
-    constructor(functionName, args) {
+  FunctionCallNode: class extends FunctionCall {
+    constructor(functionName, args, lineNo, hashtags = []) {
       super();
-      this.type = 'FunctionResultNode';
+      this.type = 'FunctionCallNode';
       this.functionName = functionName;
       this.args = args;
+      this.lineNum = lineNo.first_line;
+      this.hashtags = hashtags;
     }
   },
 
-  CommandNode: class extends Command {
-    constructor(command, lineNo) {
+  // /////////////// Inline Expression
+  InlineExpressionNode: class extends Expression {
+    constructor(expression, lineNo, hashtags = []) {
       super();
-      this.type = 'CommandNode';
-      this.command = command;
-      this.lineNum = lineNo ? lineNo.first_line : -1;
+      this.type = 'InlineExpressionNode';
+      this.expression = expression;
+      this.lineNum = lineNo.first_line;
+      this.hashtags = hashtags;
     }
   },
 };

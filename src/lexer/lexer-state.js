@@ -1,6 +1,6 @@
 'use strict';
 
-const Tokens = require('./tokens.js');
+import Tokens from './tokens';
 
 /**
  * A LexState object represents one of the states in which the lexer can be.
@@ -64,7 +64,7 @@ class LexerState {
     });
 
     // Join the rules that we got above on a |, then put them all into a negative lookahead.
-    const textPattern = `((?!${rules.join('|')}).)*`;
+    const textPattern = `((?!${rules.join('|')}).)+`;
     this.addTransition(type, state);
 
     // Update the regex in the transition we just added to our new one.
@@ -75,7 +75,7 @@ class LexerState {
   }
 
   /**
-   * setTrackNextIndentation - tell this state wether to track indentation.
+   * setTrackNextIndentation - tell this state whether to track indentation.
    *
    * @param  {boolean} track - `true` to track, `false` otherwise.
    * @return {Object} - returns the LexState itself for chaining.
@@ -86,4 +86,4 @@ class LexerState {
   }
 }
 
-module.exports = LexerState;
+export default LexerState;

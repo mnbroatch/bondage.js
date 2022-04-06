@@ -9,9 +9,10 @@ class DefaultVariableStorage {
     this.data[name] = value;
   }
 
+  // Called when a variable is being evaluated.
   get(name) {
     return this.data[name];
   }
 }
 
-module.exports = DefaultVariableStorage;
+export default DefaultVariableStorage;

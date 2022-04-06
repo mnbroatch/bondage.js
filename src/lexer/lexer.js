@@ -3,7 +3,7 @@
 // Syncs with YarnSpinner@e0f6807,
 // see https://github.com/thesecretlab/YarnSpinner/blob/master/YarnSpinner/Lexer.cs
 
-const StateMaker = require('./states.js');
+import StateMaker from './states';
 
 // As opposed to the original C# implemntation which, tokenize the entire input, before emiting
 // a list of tokens, this parser will emit a token each time `lex()` is called. This change
@@ -78,23 +78,34 @@ class Lexer {
       return 'EndOfInput';
     }
 
-    if (!this.isAtTheEndOfLine()) {
+    if (this.isAtTheEndOfLine()) {
       // Get the next token on the current line
-      return this.lexNextTokenOnCurrentLine();
-    } else if (!this.isAtTheEndOfText()) {
-      // Get the next line, and lex again.
-      return this.lexNextLine();
+      this.advanceLine();
+      return 'EndOfLine';
     }
 
-    // Something went wrong. TODO: Throw exception?
-    return 'Invalid';
+    return this.lexNextTokenOnCurrentLine();
+  }
+
+  advanceLine() {
+    this.yylineno += 1;
+    const currentLine = this.getCurrentLine().replace(/\t/, '    ');
+    this.lines[this.yylineno - 1] = currentLine;
+    this.previousLevelOfIndentation = this.getLastRecordedIndentation()[0];
+    this.yytext = '';
+    this.yylloc = {
+      first_column: 1,
+      first_line: this.yylineno,
+      last_column: 1,
+      last_line: this.yylineno,
+    };
   }
 
   lexNextTokenOnCurrentLine() {
     const thisIndentation = this.getCurrentLineIndentation();
 
     if (this.shouldTrackNextIndentation &&
-        thisIndentation > this.previousLevelOfIndentation) {
+      thisIndentation > this.previousLevelOfIndentation) {
       this.indentation.push([thisIndentation, true]);
       this.shouldTrackNextIndentation = false;
 
@@ -119,85 +130,62 @@ class Lexer {
       this.yylloc.last_column += thisIndentation;
     }
 
-    if (this.getCurrentLine().substring(this.yylloc.last_column - 1).startsWith('//')) {
-      return this.lexNextLine();
-    }
-
-    for (const rule of this.getState().transitions) {
+    const rules = this.getState().transitions;
+    for (let i = 0, len = rules.length; i < len; i += 1) {
+      const rule = rules[i];
       const match = this.getCurrentLine()
-                        .substring(this.yylloc.last_column - 1)
-                        .match(rule.regex);
+        .substring(this.yylloc.last_column - 1)
+        .match(rule.regex);
 
       // Only accept valid matches that are at the beginning of the text
-      if (match === null || match.index !== 0) {
-        continue;
-      }
+      if (match !== null && match.index === 0) {
+        // Take the matched text off the front of this.text
+        const matchedText = match[0];
 
-      // Take the matched text off the front of this.text
-      const matchedText = match[0];
+        // Tell the parser what the text for this token is
+        this.yytext = this.getCurrentLine().substr(this.yylloc.last_column - 1, matchedText.length);
 
-      // Tell the parser what the text for this token is
-      this.yytext = this.getCurrentLine().substr(this.yylloc.last_column - 1, matchedText.length);
+        if (rule.token === 'String') {
+          // If that's a String, remove the quotes
+          this.yytext = this.yytext.substring(1, this.yytext.length - 1);
+        }
 
-      if (rule.token === 'String') {
-        // If that's a String, we're removing the quotes and
-        // un-escaping double-escaped characters.
-        this.yytext = this.yytext.substring(1, this.yytext.length - 1)
-                                 .replace(/\\/g, '');
-      }
+        // Update our line and column info
+        this.yylloc.first_column = this.yylloc.last_column;
+        this.yylloc.last_column += matchedText.length;
 
-      // Update our line and column info
-      this.yylloc.first_column = this.yylloc.last_column;
-      this.yylloc.last_column += matchedText.length;
+        // If the rule points to a new state, change it now
+        if (rule.state) {
+          this.setState(rule.state);
 
-      // If the rule points to a new state, change it now
-      if (rule.state) {
-        this.setState(rule.state);
-
-        if (this.shouldTrackNextIndentation) {
-          if (this.getLastRecordedIndentation()[0] < thisIndentation) {
-            this.indentation.push([thisIndentation, false]);
+          if (this.shouldTrackNextIndentation) {
+            if (this.getLastRecordedIndentation()[0] < thisIndentation) {
+              this.indentation.push([thisIndentation, false]);
+            }
           }
         }
+
+        const nextState = this.states[rule.state];
+        const nextStateHasText = !rule.state || nextState.transitions
+          .find((transition) => { return transition.token === 'Text'; });
+        // inline expressions and escaped characters interrupt text
+        // but should still preserve surrounding whitespace.
+        if (
+          (rule.token !== 'EndInlineExp' && rule.token !== 'EscapedCharacter')
+          || !nextStateHasText // we never want leading whitespace if not in text-supporting state
+        ) {
+          // Remove leading whitespace characters
+          const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1).match(/^\s*/);
+          if (spaceMatch[0]) {
+            this.yylloc.last_column += spaceMatch[0].length;
+          }
+        }
+
+        return rule.token;
       }
-
-      const spaceMatch = this.getCurrentLine().substring(this.yylloc.last_column - 1)
-                                              .match(/^\s*/);
-
-      if (spaceMatch.length !== 0) {
-        this.yylloc.last_column += spaceMatch[0].length;
-      }
-
-      return rule.token;
     }
 
-    // Something went wrong. TODO: Throw exception?
-    return 'Invalid';
-  }
-
-
-  /**
-   * lexNextLine - Start lexing the next line.
-   *
-   * @return {string}  the first token found on the next line.
-   */
-  lexNextLine() {
-    this.yylineno += 1;
-    const currentLine = this.getCurrentLine().replace(/\t/, '    ');
-
-    this.lines[this.yylineno - 1] = currentLine;
-    this.previousLevelOfIndentation = this.getLastRecordedIndentation()[0];
-
-    this.yytext = '';
-
-    this.yylloc = {
-      first_column: 1,
-      first_line: this.yylineno,
-      last_column: 1,
-      last_line: this.yylineno,
-    };
-
-    return this.lex();
+    throw new Error(`Invalid syntax in: ${this.getCurrentLine()}`);
   }
 
   // /////////////// Getters & Setters
@@ -245,17 +233,8 @@ class Lexer {
     return this.lines[this.yylineno - 1];
   }
 
-  setCurrentLine(line) {
-    this.lines[this.yylineno - 1] = line;
-  }
-
   getCurrentLineIndentation() {
     const match = this.getCurrentLine().match(/^(\s*)/g);
-
-    if (match === null && match[0] === null) {
-      return 0;
-    }
-
     return match[0].length;
   }
 
@@ -273,15 +252,15 @@ class Lexer {
    */
   isAtTheEndOfText() {
     return this.isAtTheEndOfLine() &&
-           this.yylloc.first_line >= this.lines.length;
+      this.yylloc.first_line >= this.lines.length;
   }
 
   /**
    * @return {boolean}  `true` when yylloc indicates that the end of the line was reached.
    */
   isAtTheEndOfLine() {
-    return this.yylloc.last_column >= this.getCurrentLine().length;
+    return this.yylloc.last_column > this.getCurrentLine().length;
   }
 }
 
-module.exports = Lexer;
+export default Lexer;

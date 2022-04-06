@@ -1,34 +1,53 @@
-'use strict';
+import parser from './parser/parser';
+import results from './results';
+import DefaultVariableStorage from './default-variable-storage';
+import convertYarn from './convert-yarn-to-js';
+import types from './parser/nodes';
 
-const parser = require('./parser/parser.js');
-const results = require('./results.js');
-const DefaultVariableStorage = require('./default-variable-storage.js');
-const nodeTypes = require('./parser/nodes.js').types;
+const nodeTypes = types.types;
 
 class Runner {
   constructor() {
+    this.noEscape = false;
     this.yarnNodes = {};
     this.variables = new DefaultVariableStorage();
     this.functions = {};
-    this.visited = {}; // Which nodes have been visited
-
-    this.registerFunction('visited', (args) => {
-      return !!this.visited[args[0]];
-    });
   }
 
   /**
-  * Loads the yarn node data into this.nodes and strips out unneeded information
-  * @param {any[]} data Object of exported yarn JSON data
-  */
-  load(data) {
-    for (const node of data) {
-      this.yarnNodes[node.title] = {
-        title: node.title,
-        tags: node.tags,
-        body: node.body,
-      };
+   * Loads the yarn node data into this.nodes
+   * @param dialogue {any[]} yarn dialogue as string or array
+   */
+  load(dialogue) {
+    if (!dialogue) {
+      throw new Error('No dialogue supplied');
     }
+    let nodes;
+    if (typeof dialogue === 'string') {
+      nodes = convertYarn(dialogue);
+    } else {
+      nodes = dialogue;
+    }
+
+    nodes.forEach((node) => {
+      if (!node.title) {
+        throw new Error(`Node needs a title: ${JSON.stringify(node)}`);
+      } else if (node.title.split('.').length > 1) {
+        throw new Error(`Node title cannot contain a dot: ${node.title}`);
+      }
+      if (!node.body) {
+        throw new Error(`Node needs a body: ${JSON.stringify(node)}`);
+      }
+      if (this.yarnNodes[node.title]) {
+        throw new Error(`Duplicate node title: ${node.title}`);
+      }
+      this.yarnNodes[node.title] = node;
+    });
+
+    parser.yy.areDeclarationsHandled = false;
+    parser.yy.declarations = {};
+    this.handleDeclarations(nodes);
+    parser.yy.areDeclarationsHandled = true;
   }
 
   /**
@@ -45,6 +64,46 @@ class Runner {
     this.variables = storage;
   }
 
+  /**
+   * Scans for <<declare>> commands and sets initial variable values
+   * @param {any[]} yarn dialogue as string or array
+   */
+  handleDeclarations(nodes) {
+    const exampleValues = {
+      Number: 0,
+      String: '',
+      Boolean: false,
+    };
+
+    const allLines = nodes.reduce((acc, node) => {
+      const nodeLines = node.body.split(/\r?\n+/);
+      return [...acc, ...nodeLines];
+    }, []);
+
+    const declareLines = allLines.reduce((acc, line) => {
+      const match = line.match(/^<<declare .+>>/);
+      return match
+        ? [...acc, line]
+        : acc;
+    }, []);
+    if (declareLines.length) {
+      parser.parse(declareLines.join('\n'));
+    }
+
+    Object.entries(parser.yy.declarations)
+      .forEach(([variableName, { expression, explicitType }]) => {
+        const value = this.evaluateExpressionOrLiteral(expression);
+
+        if (explicitType && typeof value !== typeof exampleValues[explicitType]) {
+          throw new Error(`Cannot declare value ${value} as type ${explicitType} for variable ${variableName}`);
+        }
+
+        if (!this.variables.get(variableName)) {
+          this.variables.set(variableName, value);
+        }
+      });
+  }
+
   registerFunction(name, func) {
     if (typeof func !== 'function') {
       throw new Error('Registered function must be...well...a function');
@@ -54,167 +113,152 @@ class Runner {
   }
 
   /**
-  * Generator to return each sequential dialogue result starting from the given node
-  * @param {string} [startNode] - The name of the yarn node to begin at
-  */
+   * Generator to return each sequential dialog result starting from the given node
+   * @param {string} [startNode] - The name of the yarn node to begin at
+   */
   * run(startNode) {
-    const yarnNode = this.yarnNodes[startNode];
+    let jumpTo = startNode;
+    while (jumpTo) {
+      const yarnNode = this.yarnNodes[jumpTo];
+      if (yarnNode === undefined) {
+        throw new Error(`Node "${startNode}" does not exist`);
+      }
 
-    if (yarnNode === undefined) {
-      throw new Error(`Node "${startNode}" does not exist`);
+      // Parse the entire node
+      const parserNodes = Array.from(parser.parse(yarnNode.body));
+      const metadata = { ...yarnNode };
+      delete metadata.body;
+      const result = yield* this.evalNodes(parserNodes, metadata);
+      jumpTo = result && result.jump;
     }
-
-    this.visited[startNode] = true;
-
-    // Parse the entire node
-    const parserNodes = Array.from(parser.parse(yarnNode.body));
-    const yarnNodeData = {
-      title:yarnNode.title,
-      tags:yarnNode.tags.split(" "),
-      body:yarnNode.body,
-    }
-    yield* this.evalNodes(parserNodes, yarnNodeData);
   }
 
   /**
    * Evaluate a list of parser nodes, yielding the ones that need to be seen by
    * the user. Calls itself recursively if that is required by nested nodes
-   * @param {any[]} nodes
+   * @param {Node[]} nodes
+   * @param {YarnNode[]} metadata
    */
-  * evalNodes(nodes, yarnNodeData) {
-    if (!nodes) return;
+  * evalNodes(nodes, metadata) {
+    let shortcutNodes = [];
+    let textRun = '';
 
-    let selectableNodes = null;
-		let jumpNode = null;
-
-    // Either nodeTypes.Link or nodeTypes.Shortcut depending on which we're accumulating
-    // (Since we don't want to accidentally lump shortcuts in with links)
-    let selectionType = null;
+    const filteredNodes = nodes.filter(Boolean);
 
     // Yield the individual user-visible results
-    // Need to accumulate all adjacent selectables into one list (hence some of
-    //  the weirdness here)
-    for (const node of nodes) {
+    // Need to accumulate all adjacent selectables
+    // into one list (hence some of the weirdness here)
+    for (let nodeIdx = 0; nodeIdx < filteredNodes.length; nodeIdx += 1) {
+      const node = filteredNodes[nodeIdx];
+      const nextNode = filteredNodes[nodeIdx + 1];
 
-			if (node instanceof nodeTypes.Jump){
-				jumpNode = node;
-			}
-      else if (selectableNodes !== null && node instanceof selectionType) {
-        // We're accumulating selection nodes, so add this one to the list
-        // TODO: handle conditional option nodes
-        selectableNodes.push(node);
-        // This is not a selectable node, so yield the options first
-      } else {
-        if (selectableNodes !== null) {
-          // We're accumulating selections, but this isn't one, so we're done
-          // Need to yield the accumulated selections first
-          yield* this.handleSelections(selectableNodes);
-          selectableNodes = null;
-          selectionType = null;
+      // Text and the output of Inline Expressions
+      // are combined to deliver a TextNode.
+      if (
+        node instanceof nodeTypes.Text
+        || node instanceof nodeTypes.Expression
+      ) {
+        textRun += this.evaluateExpressionOrLiteral(node).toString();
+        if (
+          nextNode
+          && node.lineNum === nextNode.lineNum
+          && (
+            nextNode instanceof nodeTypes.Text
+            || nextNode instanceof nodeTypes.Expression
+          )
+        ) {
+          // Same line, with another text equivalent to add to the
+          // text run further on in the loop, so don't yield.
+        } else {
+          yield new results.TextResult(textRun, node.hashtags, metadata);
+          textRun = '';
         }
-
-        if (node instanceof nodeTypes.Text) {
-          // Just text to be returned
-          yield new results.TextResult(node.text, yarnNodeData, node.lineNum);
-        } else if (node instanceof nodeTypes.Link) {
-          // Start accumulating link nodes
-          selectionType = nodeTypes.Link;
-          selectableNodes = [node];
-        } else if (node instanceof nodeTypes.Shortcut) {
-          // Start accumulating shortcut nodes
-          selectionType = nodeTypes.Shortcut;
-          selectableNodes = [node];
-        } else if (node instanceof nodeTypes.Assignment) {
-          this.evaluateAssignment(node);
-        } else if (node instanceof nodeTypes.Conditional) {
-          // Run the results of the conditional
-          yield* this.evalNodes(this.evaluateConditional(node), yarnNodeData);
-        } else if (node instanceof nodeTypes.Command) {
-          if (node.command === 'stop') {
-            // Special command, halt execution
-            return;
+      } else if (node instanceof nodeTypes.Shortcut) {
+        shortcutNodes.push(node);
+        if (!(nextNode instanceof nodeTypes.Shortcut)) {
+          // Last shortcut in the series, so yield the shortcuts.
+          const result = yield* this.handleShortcuts(shortcutNodes, metadata);
+          if (result && (result.stop || result.jump)) {
+            return result;
           }
-          yield new results.CommandResult(node.command, yarnNodeData, node.lineNum);
+          shortcutNodes = [];
         }
+      } else if (node instanceof nodeTypes.Assignment) {
+        this.evaluateAssignment(node);
+      } else if (node instanceof nodeTypes.Conditional) {
+        // Get the results of the conditional
+        const evalResult = this.evaluateConditional(node);
+        if (evalResult) {
+          // Run the remaining results
+          const result = yield* this.evalNodes(evalResult, metadata);
+          if (result && (result.stop || result.jump)) {
+            return result;
+          }
+        }
+      } else if (node instanceof types.JumpCommandNode) {
+        // ignore the rest of this outer loop and
+        // tell parent loops to ignore following nodes.
+        // Recursive call here would cause stack overflow
+        return { jump: node.destination };
+      } else if (node instanceof types.StopCommandNode) {
+        // ignore the rest of this outer loop and
+        // tell parent loops to ignore following nodes
+        return { stop: true };
+      } else {
+        const command = this.evaluateExpressionOrLiteral(node.command);
+        yield new results.CommandResult(command, node.hashtags, metadata);
       }
     }
 
-		if (jumpNode !== null) {
-			yield* this.run(jumpNode.identifier);
-		}
-    else if (selectableNodes !== null) {
-      // At the end of the node, but we still need to handle any final options
-      yield* this.handleSelections(selectableNodes);
-    }
+    return undefined;
   }
 
   /**
-   * yield an options result then handle the subequent selection
+   * yield a shortcut result then handle the subsequent selection
    * @param {any[]} selections
    */
-  * handleSelections(selections) {
-    if (selections.length > 0 || selections[0] instanceof nodeTypes.Shortcut) {
-      // Multiple options to choose from (or just a single shortcut)
-      // Filter out any conditional dialog options that result to false
-      const filteredSelections = selections.filter((s) => {
-        if (s.type === 'ConditionalDialogOptionNode') {
-          return this.evaluateExpressionOrLiteral(s.conditionalExpression);
-        }
+  * handleShortcuts(selections, metadata) {
+    // Multiple options to choose from (or just a single shortcut)
+    // Tag any conditional dialog options that result to false,
+    // the consuming app does the actual filtering or whatever
+    const transformedSelections = selections.map((s) => {
+      let isAvailable = true;
 
-        return true;
-      });
-
-      if (filteredSelections.length === 0) {
-        // No options to choose anymore
-        return;
+      if (
+        s.conditionalExpression
+        && !this.evaluateExpressionOrLiteral(s.conditionalExpression)
+      ) {
+        isAvailable = false;
       }
 
-      const optionResults = new results.OptionsResult(filteredSelections.map((s) => {
-        return s.text;
-      }), filteredSelections.map((s) => {
-        return s.lineNum || -1;
-      }));
+      const text = this.evaluateExpressionOrLiteral(s.text);
+      return Object.assign(s, { isAvailable, text });
+    });
 
-      yield optionResults;
-
-      if (optionResults.selected !== -1) {
-        // Something was selected
-        const selectedOption = filteredSelections[optionResults.selected];
-        if (selectedOption.content) {
-          // Recursively go through the nodes nested within
-          yield* this.evalNodes(selectedOption.content);
-        } else if (selectedOption.identifier) {
-          // Run the new node
-          yield* this.run(selectedOption.identifier);
-        }
+    const optionsResult = new results.OptionsResult(transformedSelections, metadata);
+    yield optionsResult;
+    if (typeof optionsResult.selected === 'number') {
+      const selectedOption = transformedSelections[optionsResult.selected];
+      if (selectedOption.content) {
+        // Recursively go through the nodes nested within
+        return yield* this.evalNodes(selectedOption.content, metadata);
       }
     } else {
-      // If there's only one link option, automatically go to it
-      yield* this.run(selections[0].identifier);
+      throw new Error('No option selected before resuming dialogue');
     }
+
+    return undefined;
   }
 
   /**
    * Evaluates the given assignment node
    */
   evaluateAssignment(node) {
-    let result = this.evaluateExpressionOrLiteral(node.expression);
-    const currentVal = this.variables.get(node.variableName);
-
-    if (node.type === 'SetVariableAddNode') {
-      result += currentVal;
-    } else if (node.type === 'SetVariableMinusNode') {
-      result -= currentVal;
-    } else if (node.type === 'SetVariableMultiplyNode') {
-      result *= currentVal;
-    } else if (node.type === 'SetVariableDivideNode') {
-      result /= currentVal;
-    } else if (node.type === 'SetVariableEqualToNode') {
-      // Nothing to be done
-    } else {
-      throw new Error(`I don't recognize assignment type ${node.type}`);
+    const result = this.evaluateExpressionOrLiteral(node.expression);
+    const oldValue = this.variables.get(node.variableName);
+    if (oldValue && typeof oldValue !== typeof result) {
+      throw new Error(`Variable ${node.variableName} is already type ${typeof oldValue}; cannot set equal to ${result} of type ${typeof result}`);
     }
-
     this.variables.set(node.variableName, result);
   }
 
@@ -235,95 +279,80 @@ class Runner {
       if (node.elseStatement) {
         return this.evaluateConditional(node.elseStatement);
       }
-    } else if (node.type === 'ElseNode') {
+    } else {
+      // ElseNode
       return node.statement;
     }
 
     return null;
   }
 
+  evaluateFunctionCall(node) {
+    if (this.functions[node.functionName]) {
+      return this.functions[node.functionName](
+        ...node.args.map(this.evaluateExpressionOrLiteral, this),
+      );
+    }
+    throw new Error(`Function "${node.functionName}" not found`);
+  }
+
   /**
    * Evaluates an expression or literal down to its final value
    */
   evaluateExpressionOrLiteral(node) {
-    if (node instanceof nodeTypes.Expression) {
-      if (node.type === 'UnaryMinusExpressionNode') {
-        return -1 * this.evaluateExpressionOrLiteral(node.expression);
-      } else if (node.type === 'ArithmeticExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression);
-      } else if (node.type === 'ArithmeticExpressionAddNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) +
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'ArithmeticExpressionMinusNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) -
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'ArithmeticExpressionMultiplyNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) *
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'ArithmeticExpressionDivideNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) /
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'BooleanExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.booleanExpression);
-      } else if (node.type === 'NegatedBooleanExpressionNode') {
-        return !this.evaluateExpressionOrLiteral(node.booleanExpression);
-      } else if (node.type === 'BooleanOrExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) ||
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'BooleanAndExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) &&
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'BooleanXorExpressionNode') {
-        return !this.evaluateExpressionOrLiteral(node.expression1) !== // Cheating
-               !this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'EqualToExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) ===
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'NotEqualToExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) !==
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'GreaterThanExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) >
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'GreaterThanOrEqualToExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) >=
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'LessThanExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) <
-               this.evaluateExpressionOrLiteral(node.expression2);
-      } else if (node.type === 'LessThenOrEqualToExpressionNode') {
-        return this.evaluateExpressionOrLiteral(node.expression1) <=
-               this.evaluateExpressionOrLiteral(node.expression2);
-      }
-
-      throw new Error(`I don't recognize expression type ${node.type}`);
-    } else if (node instanceof nodeTypes.Literal) {
-      if (node.type === 'NumericLiteralNode') {
-        return parseFloat(node.numericLiteral);
-      } else if (node.type === 'StringLiteralNode') {
-        return node.stringLiteral;
-      } else if (node.type === 'BooleanLiteralNode') {
-        return node.booleanLiteral === 'true';
-      } else if (node.type === 'NullLiteralNode') {
-        return null;
-      } else if (node.type === 'VariableNode') {
-        return this.variables.get(node.variableName);
-      } else if (node.type === 'FunctionResultNode') {
-        if (this.functions[node.functionName]) {
-          return this.functions[node.functionName](node.args.map(this.evaluateExpressionOrLiteral));
-        }
-
-        throw new Error(`Function "${node.functionName}" not found`);
-      }
-
-      throw new Error(`I don't recognize literal type ${node.type}`);
-    } else {
-      throw new Error(`I don't recognize expression/literal type ${node.type}`);
+    // A combined array of text and inline expressions to be treated as one.
+    // Could probably be cleaned up by introducing a new node type.
+    if (Array.isArray(node)) {
+      return node.reduce((acc, n) => {
+        return acc + this.evaluateExpressionOrLiteral(n).toString();
+      }, '');
     }
+
+    const nodeHandlers = {
+      UnaryMinusExpressionNode: (a) => { return -a; },
+      ArithmeticExpressionAddNode: (a, b) => { return a + b; },
+      ArithmeticExpressionMinusNode: (a, b) => { return a - b; },
+      ArithmeticExpressionExponentNode: (a, b) => { return a ** b; },
+      ArithmeticExpressionMultiplyNode: (a, b) => { return a * b; },
+      ArithmeticExpressionDivideNode: (a, b) => { return a / b; },
+      ArithmeticExpressionModuloNode: (a, b) => { return a % b; },
+      NegatedBooleanExpressionNode: (a) => { return !a; },
+      BooleanOrExpressionNode: (a, b) => { return a || b; },
+      BooleanAndExpressionNode: (a, b) => { return a && b; },
+      BooleanXorExpressionNode: (a, b) => { return !!(a ^ b); }, // eslint-disable-line no-bitwise
+      EqualToExpressionNode: (a, b) => { return a === b; },
+      NotEqualToExpressionNode: (a, b) => { return a !== b; },
+      GreaterThanExpressionNode: (a, b) => { return a > b; },
+      GreaterThanOrEqualToExpressionNode: (a, b) => { return a >= b; },
+      LessThanExpressionNode: (a, b) => { return a < b; },
+      LessThanOrEqualToExpressionNode: (a, b) => { return a <= b; },
+      TextNode: (a) => { return a.text; },
+      EscapedCharacterNode: (a) => { return this.noEscape ? a.text : a.text.slice(1); },
+      NumericLiteralNode: (a) => { return parseFloat(a.numericLiteral); },
+      StringLiteralNode: (a) => { return `${a.stringLiteral}`; },
+      BooleanLiteralNode: (a) => { return a.booleanLiteral === 'true'; },
+      VariableNode: (a) => { return this.variables.get(a.variableName); },
+      FunctionCallNode: (a) => { return this.evaluateFunctionCall(a); },
+      InlineExpressionNode: (a) => { return a; },
+    };
+
+    const handler = nodeHandlers[node.type];
+    if (!handler) {
+      throw new Error(`node type not recognized: ${node.type}`);
+    }
+
+    return handler(
+      node instanceof nodeTypes.Expression
+        ? this.evaluateExpressionOrLiteral(node.expression || node.expression1)
+        : node,
+      node.expression2
+        ? this.evaluateExpressionOrLiteral(node.expression2)
+        : node,
+    );
   }
 }
 
-module.exports = {
+export default {
   Runner,
   TextResult: results.TextResult,
   CommandResult: results.CommandResult,

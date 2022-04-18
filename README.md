@@ -1,3 +1,5 @@
+**The changes in this fork have been merged into a [branch of the original bondage.js project](https://github.com/hylyh/bondage.js/tree/2.0).**
+
 This project is a runner for [Yarn](https://yarnspinner.dev/) dialogues, attempting compliance with the 2.0 language specification.
 
 API improvements and additional features are present in [YarnBound](https://github.com/mnbroatch/yarn-bound), which uses this package under the hood.

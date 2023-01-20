@@ -1,17 +1,17 @@
 const common = {
   entry: './src/index.js',
   output: {
-    filename: 'yarn-bound.min.js',
+    filename: 'bondage.min.js',
     library: {
-      name: 'YarnBound',
-      type: 'umd'
+      name: 'bondage',
+      type: 'umd',
     },
-    globalObject: 'this'
+    globalObject: 'this',
   },
   module: {
     rules: [{
       test: /\.js/,
-      exclude: /node_modules\/(?!@mnbroatch).+/,
+      exclude: /node_modules/,
       use: {
         loader: 'babel-loader',
         options: {
@@ -19,16 +19,16 @@ const common = {
             ['@babel/preset-env',
               {
                 modules: 'cjs',
-                targets: 'last 4 years'
-              }
-            ]
+                targets: 'last 4 years',
+              },
+            ],
           ],
-          plugins: ['add-module-exports']
-        }
-      }
-    }]
-  }
-}
+          plugins: ['add-module-exports'],
+        },
+      },
+    }],
+  },
+};
 
 module.exports = [
   common,
@@ -36,23 +36,24 @@ module.exports = [
     ...common,
     output: {
       ...common.output,
-      filename: 'yarn-bound.js'
+      filename: 'bondage.js',
     },
     optimization: {
       ...common.optimization,
-      minimize: false
-    }
+      minimize: false,
+    },
   },
   {
     ...common,
     target: ['web', 'es5'],
     output: {
       ...common.output,
-      filename: 'yarn-bound.ie.js'
+      filename: 'bondage.ie.js',
     },
     module: {
       rules: [{
-        exclude: /node_modules\/(?!@mnbroatch).+/,
+        test: /\.js/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -62,14 +63,14 @@ module.exports = [
                   modules: 'cjs',
                   useBuiltIns: 'usage',
                   corejs: 3,
-                  targets: 'ie 11'
-                }
-              ]
+                  targets: 'ie 11',
+                },
+              ],
             ],
-            plugins: ['add-module-exports']
-          }
-        }
-      }]
-    }
-  }
-]
+            plugins: ['add-module-exports'],
+          },
+        },
+      }],
+    },
+  },
+];

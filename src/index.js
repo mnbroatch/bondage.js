@@ -1,8 +1,8 @@
-import runner from './runner';
-import results from './results';
+import YarnBound from './yarn-bound.js'
+import yarnParser from './yarn-parser/src/index'
+const { OptionsResult, TextResult, CommandResult } = yarnParser
 
-runner.OptionsResult = results.OptionsResult;
-runner.TextResult = results.TextResult;
-runner.CommandResult = results.CommandResult;
-
-export default runner;
+YarnBound.OptionsResult = OptionsResult
+YarnBound.TextResult = TextResult
+YarnBound.CommandResult = CommandResult
+export default YarnBound

@@ -1,29 +1,16 @@
 {
-  "name": "@mnbroatch/bondage",
-  "version": "4.0.3",
+  "name": "bondage",
+  "version": "5.0.0",
   "description": "Yarn parser for Javascript",
   "main": "dist/bondage.js",
   "scripts": {
     "test": "jest --verbose false",
     "test:coverage": "jest --coverage --verbose false",
     "lint": "eslint .",
-    "build": "jison-es src/parser/grammar.json -o src/parser/compiled-parser.js && webpack",
+    "build": "jison-es src/yarn-parser/src/parser/grammar.json -o src/yarn-parser/src/parser/compiled-parser.js && webpack",
     "prepublish": "npm run build"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mnbroatch/bondage.js.git"
-  },
-  "contributors": [
-    "j hayley",
-    "alforno",
-    "Matthew Broatch"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/mnbroatch/bondage.js/issues"
-  },
-  "homepage": "https://github.com/mnbroatch/bondage.js#readme",
+  "license": "ISC",
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
     "@babel/preset-env": "^7.16.7",
@@ -31,13 +18,27 @@
     "babel-loader": "",
     "babel-plugin-add-module-exports": "^1.0.4",
     "core-js": "^3.20.2",
-    "eslint": "^8.7.0",
-    "eslint-config-airbnb": "^15.0.1",
+    "eslint": "^8.32.0",
+    "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.3.0",
     "jest": "^27.4.3",
     "jison-es": "^0.4.18",
     "regenerator-runtime": "^0.13.9",
+    "standard": "^16.0.4",
     "webpack": "^5.65.0",
     "webpack-cli": "^4.9.1"
-  }
+  },
+  "contributors": [
+    "j hayley",
+    "alforno",
+    "Matthew Broatch"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhayley/bondage.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hylyh/bondage.js/issues"
+  },
+  "homepage": "https://github.com/hylyh/bondage.js#readme"
 }

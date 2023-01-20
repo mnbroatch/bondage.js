@@ -5,27 +5,16 @@
 
 // TODO: Make less painful to look at
 
-import fs from 'fs';
 import bondage from '../src/index';
+import linksYarnData from './yarn_files/links.json';
+import shortcutsYarnData from './yarn_files/shortcuts.json';
+import assignmentYarnData from './yarn_files/assignment.json';
+import conditionalYarnData from './yarn_files/conditions.json';
+import commandAndFunctionYarnData from './yarn_files/commandsandfunctions.json';
+import inlineExpressionYarnData from './yarn_files/inlineexpression.json';
 
 describe('Dialogue', () => {
-  let linksYarnData;
-  let shortcutsYarnData;
-  let assignmentYarnData;
-  let conditionalYarnData;
-  let commandAndFunctionYarnData;
-  let inlineExpressionYarnData;
-
   let runner;
-
-  beforeAll(() => {
-    linksYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/links.json'));
-    shortcutsYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/shortcuts.json'));
-    assignmentYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/assignment.json'));
-    conditionalYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/conditions.json'));
-    commandAndFunctionYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/commandsandfunctions.json'));
-    inlineExpressionYarnData = JSON.parse(fs.readFileSync('./test/yarn_files/inlineexpression.json'));
-  });
 
   beforeEach(() => {
     runner = new bondage.Runner();

@@ -41,7 +41,7 @@
     "text": [
       [ "textNode", "$$ = [$1];" ],
       [ "inlineExpression", "$$ = [$1];" ],
-      [ "text text", "$$ = $1.concat($2); " ]
+      [ "text text", "$$ = $1.concat($2);" ]
     ],
     "hashtags": [
       [ "Hashtag", "$$ = [$1.substring(1)];" ],

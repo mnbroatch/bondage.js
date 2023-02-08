@@ -15,7 +15,7 @@ break;
 case 2: case 4: case 7: case 8: case 9: case 10: case 11: case 17: case 18: case 73:
 this.$ = [$$[$0]];
 break;
-case 3:
+case 3: case 19:
 this.$ = $$[$0-1].concat($$[$0]);
 break;
 case 5:
@@ -35,9 +35,6 @@ this.$ = new yy.TextNode($$[$0], this._$);
 break;
 case 16:
 this.$ = new yy.EscapedCharacterNode($$[$0], this._$);
-break;
-case 19:
-this.$ = $$[$0-1].concat($$[$0]); 
 break;
 case 20:
 this.$ = [$$[$0].substring(1)];

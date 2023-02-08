@@ -7,7 +7,7 @@
 	{
 		"title": "BasicIf",
 		"tags": "Tag",
-		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 321>>\nInside if\nInside if2<<endif>>Text after"
+		"body": "<<set $testvar = 321>>\nText before\n<<if $testvar == 321>>\n  Inside if\n  Inside if2<<endif>>Text after"
 	},
 	{
 		"title": "BasicIfElse",

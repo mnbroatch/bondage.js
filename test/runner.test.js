@@ -1496,5 +1496,31 @@ describe('Dialogue', () => {
     const run = runner.run('Start');
     expect(() => { run.next(); }).toThrow();
   });
+
+  it('handles an indented command in a conditional block', () => {
+    const dialogue = `
+      title: Start
+      ---
+      <<declare $testvar1 = 1>>
+      <<if $testvar1 == 1>>
+        { $testvar1 }
+        <<jump Two>>
+      <<endif>>
+      ===
+
+      title: Two
+      ---
+      Hello
+      ===
+    `;
+    runner.load(dialogue);
+    const run = runner.run('Start');
+    let value = run.next().value;
+    expect(value.text).toEqual('1');
+    value = run.next().value;
+    expect(value.text).toEqual('Hello');
+    value = run.next().value;
+    expect(run.next().done).toBe(true);
+  });
 });
 

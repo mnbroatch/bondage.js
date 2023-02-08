@@ -13,6 +13,12 @@ describe('Lexer', () => {
     expect(lexer.lex()).toBe('Text');
   });
 
+  it('can tokenize some indented text', () => {
+    const lexer = new Lexer();
+    lexer.setInput('  This is some text');
+    lexer.lex()
+  });
+
   it('can tokenize a comment', () => {
     const lexer = new Lexer();
     lexer.setInput('This is some text // and i am a comment');
@@ -32,6 +38,16 @@ describe('Lexer', () => {
   it('can tokenize a command', () => {
     const lexer = new Lexer();
     lexer.setInput('<<somecommand>>');
+
+    expect(lexer.lex()).toBe('BeginCommand');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndCommand');
+    expect(lexer.lex()).toBe('EndOfInput');
+  });
+
+  it('can tokenize an indented command', () => {
+    const lexer = new Lexer();
+    lexer.setInput('\t<<somecommand>>');
 
     expect(lexer.lex()).toBe('BeginCommand');
     expect(lexer.lex()).toBe('Text');

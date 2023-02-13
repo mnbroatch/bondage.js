@@ -50,6 +50,7 @@ describe('Lexer', () => {
     lexer.setInput('\t<<somecommand>>');
 
     expect(lexer.lex()).toBe('BeginCommand');
+
     expect(lexer.lex()).toBe('Text');
     expect(lexer.lex()).toBe('EndCommand');
     expect(lexer.lex()).toBe('EndOfInput');
@@ -109,7 +110,18 @@ describe('Lexer', () => {
 
   it('can tokenize nested shortcut options', () => {
     const lexer = new Lexer();
-    lexer.setInput('text\n-> shortcut1\n\tText1\n\t-> nestedshortcut1\n\t\tNestedText1\n\t-> nestedshortcut2\n\t\tNestedText2\n-> shortcut2\n\tText2\nmore text');
+    lexer.setInput(
+`text
+-> shortcut1
+  Text1
+  -> nestedshortcut1
+    NestedText1
+  -> nestedshortcut2
+    NestedText2
+-> shortcut2
+  Text2
+more text
+`);
 
     expect(lexer.lex()).toBe('Text');
     expect(lexer.lex()).toBe('EndOfLine');
@@ -149,6 +161,70 @@ describe('Lexer', () => {
 
     expect(lexer.lex()).toBe('Text');
     expect(lexer.lex()).toBe('EndOfInput');
+  });
+
+  it('can tokenize nested shortcut options inside a conditional', () => {
+    const lexer = new Lexer();
+    lexer.setInput(
+`text
+<<if true == true>>
+  -> shortcut1
+    Text1
+    -> nestedshortcut1
+      NestedText1
+    -> nestedshortcut2
+      NestedText2
+  -> shortcut2
+    Text2
+  more text
+<<endif>>
+`);
+
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+
+    expect(lexer.lex()).toBe('BeginCommand');
+    expect(lexer.lex()).toBe('If');
+    expect(lexer.lex()).toBe('True');
+    expect(lexer.lex()).toBe('EqualTo');
+    expect(lexer.lex()).toBe('True');
+    expect(lexer.lex()).toBe('EndCommand');
+    expect(lexer.lex()).toBe('EndOfLine');
+
+    expect(lexer.lex()).toBe('ShortcutOption');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+    expect(lexer.lex()).toBe('Indent');
+
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+    expect(lexer.lex()).toBe('ShortcutOption');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+    expect(lexer.lex()).toBe('Indent');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+    expect(lexer.lex()).toBe('Dedent');
+
+    expect(lexer.lex()).toBe('ShortcutOption');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+    expect(lexer.lex()).toBe('Indent');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+    expect(lexer.lex()).toBe('Dedent');
+    expect(lexer.lex()).toBe('Dedent');
+
+    expect(lexer.lex()).toBe('ShortcutOption');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+
+    expect(lexer.lex()).toBe('Indent');
+    expect(lexer.lex()).toBe('Text');
+    expect(lexer.lex()).toBe('EndOfLine');
+    expect(lexer.lex()).toBe('Dedent');
+
+    expect(lexer.lex()).toBe('Text');
   });
 
   it('can tokenize a simple assignment', () => {

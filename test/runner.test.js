@@ -1522,5 +1522,28 @@ describe('Dialogue', () => {
     value = run.next().value;
     expect(run.next().done).toBe(true);
   });
+
+  it('handles an option inside a conditional block', () => {
+    const dialogue = `
+      title: Start
+      ---
+      <<declare $testvar1 = 1>>
+      { $testvar1 }
+      <<if $testvar1 == 1>>
+        -> option
+          hello
+      <<endif>>
+      ===
+    `;
+    runner.load(dialogue);
+    const run = runner.run('Start');
+    let value = run.next().value;
+    expect(value.text).toEqual('1');
+    value = run.next().value;
+    value.select(0)
+    value = run.next().value;
+    expect(value.text).toEqual('hello');
+    expect(run.next().done).toBe(true);
+  });
 });
 

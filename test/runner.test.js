@@ -1545,5 +1545,27 @@ describe('Dialogue', () => {
     expect(value.text).toEqual('hello');
     expect(run.next().done).toBe(true);
   });
+
+  it('handles a jump to the result of an inline expression', () => {
+    const dialogue = `
+      title: Start
+      ---
+      hello
+      <<jump {"Two"}>>
+      ===
+
+      title: Two
+      ---
+      world
+      ===
+    `;
+    runner.load(dialogue);
+    const run = runner.run('Start');
+    let value = run.next().value;
+    expect(value.text).toEqual('hello');
+    value = run.next().value;
+    expect(value.text).toEqual('world');
+    expect(run.next().done).toBe(true);
+  });
 });
 

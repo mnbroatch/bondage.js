@@ -1567,5 +1567,21 @@ describe('Dialogue', () => {
     expect(value.text).toEqual('world');
     expect(run.next().done).toBe(true);
   });
+
+  it('handles a recursive jump', () => {
+    const dialogue = `
+      title: Start
+      ---
+      hello
+      <<jump Start>>
+      ===
+    `;
+    runner.load(dialogue);
+    const run = runner.run('Start');
+    let value = run.next().value;
+    expect(value.text).toEqual('hello');
+    value = run.next().value;
+    expect(value.text).toEqual('hello');
+  });
 });
 

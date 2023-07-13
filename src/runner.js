@@ -186,7 +186,8 @@ class Runner {
           shortcutNodes = [];
         }
       } else if (node instanceof nodeTypes.Assignment) {
-        const cb = () => { this.evaluateAssignment(node) };
+        const _node = node
+        const cb = () => { this.evaluateAssignment(_node) };
         if (this.shouldQueueAssignments) {
           // Undocumented because it's not user friendly; for supporting lookahead
           this.queuedOperations.push(cb)

@@ -9,9 +9,11 @@ const nodeTypes = types.types;
 class Runner {
   constructor() {
     this.noEscape = false;
+    this.shouldQueueAssignments = false;
     this.yarnNodes = {};
     this.variables = new DefaultVariableStorage();
     this.functions = {};
+    this.queuedOperations = [];
   }
 
   /**
@@ -184,7 +186,13 @@ class Runner {
           shortcutNodes = [];
         }
       } else if (node instanceof nodeTypes.Assignment) {
-        this.evaluateAssignment(node);
+        const cb = () => { this.evaluateAssignment(node) };
+        if (this.shouldQueueAssignments) {
+          // Undocumented because it's not user friendly; for supporting lookahead
+          this.queuedOperations.push(cb)
+        } else {
+          cb()
+        }
       } else if (node instanceof nodeTypes.Conditional) {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);

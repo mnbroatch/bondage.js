@@ -73,7 +73,7 @@ function convertYarnToJS(content) {
       objects.push(obj);
       obj = null;
     } else if (readingBody) {
-      obj.body += "".concat(lines[i].replace(leadingSpace, ''), "\n");
+      obj.body += `${lines[i].replace(leadingSpace, '')}\n`;
     } else if (lines[i].trim() === '---') {
       readingBody = true;
       obj.body = '';
@@ -87,7 +87,7 @@ function convertYarnToJS(content) {
         if (obj == null) obj = {};
 
         if (obj[trimmedKey]) {
-          throw new Error("Duplicate tag on node: ".concat(trimmedKey));
+          throw new Error(`Duplicate tag on node: ${trimmedKey}`);
         }
 
         obj[trimmedKey] = trimmedValue;
@@ -233,11 +233,11 @@ class LexerState {
     this.transitions.forEach(transition => {
       if (transition.delimitsText) {
         // Surround the rule in parens
-        rules.push("(".concat(transition.regex.source, ")"));
+        rules.push(`(${transition.regex.source})`);
       }
     }); // Join the rules that we got above on a |, then put them all into a negative lookahead.
 
-    const textPattern = "((?!".concat(rules.join('|'), ").)+");
+    const textPattern = `((?!${rules.join('|')}).)+`;
     this.addTransition(type, state); // Update the regex in the transition we just added to our new one.
 
     this.textRule = this.transitions[this.transitions.length - 1];
@@ -462,7 +462,7 @@ class Lexer {
     }
 
     return rule.token;
-    throw new Error("Invalid syntax in: ".concat(this.getCurrentLine()));
+    throw new Error(`Invalid syntax in: ${this.getCurrentLine()}`);
   } // /////////////// Getters & Setters
 
   /**
@@ -474,7 +474,7 @@ class Lexer {
 
   setState(state) {
     if (this.states[state] === undefined) {
-      throw new Error("Cannot set the unknown state [".concat(state, "]"));
+      throw new Error(`Cannot set the unknown state [${state}]`);
     }
 
     this.state = state;
@@ -2890,7 +2890,7 @@ _compiledParser.parser.yy.parseError = function parseError(e) {
 _compiledParser.parser.yy.registerDeclaration = function registerDeclaration(variableName, expression, explicitType) {
   if (!this.areDeclarationsHandled) {
     if (this.declarations[variableName]) {
-      throw new Error("Duplicate declaration found for variable: ".concat(variableName));
+      throw new Error(`Duplicate declaration found for variable: ${variableName}`);
     }
 
     this.declarations[variableName] = {
@@ -2990,7 +2990,7 @@ class OptionsResult extends Result {
     let index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : -1;
 
     if (index < 0 || index >= this.options.length) {
-      throw new Error("Cannot select option #".concat(index, ", there are ").concat(this.options.length, " options"));
+      throw new Error(`Cannot select option #${index}, there are ${this.options.length} options`);
     }
 
     this.selected = index;
@@ -3036,9 +3036,11 @@ const nodeTypes = _nodes.default.types;
 class Runner {
   constructor() {
     this.noEscape = false;
+    this.shouldQueueAssignments = false;
     this.yarnNodes = {};
     this.variables = new _defaultVariableStorage.default();
     this.functions = {};
+    this.queuedOperations = [];
   }
   /**
    * Loads the yarn node data into this.nodes
@@ -3061,17 +3063,17 @@ class Runner {
 
     nodes.forEach(node => {
       if (!node.title) {
-        throw new Error("Node needs a title: ".concat(JSON.stringify(node)));
+        throw new Error(`Node needs a title: ${JSON.stringify(node)}`);
       } else if (node.title.split('.').length > 1) {
-        throw new Error("Node title cannot contain a dot: ".concat(node.title));
+        throw new Error(`Node title cannot contain a dot: ${node.title}`);
       }
 
       if (!node.body) {
-        throw new Error("Node needs a body: ".concat(JSON.stringify(node)));
+        throw new Error(`Node needs a body: ${JSON.stringify(node)}`);
       }
 
       if (this.yarnNodes[node.title]) {
-        throw new Error("Duplicate node title: ".concat(node.title));
+        throw new Error(`Duplicate node title: ${node.title}`);
       }
 
       this.yarnNodes[node.title] = node;
@@ -3129,7 +3131,7 @@ class Runner {
       const value = this.evaluateExpressionOrLiteral(expression);
 
       if (explicitType && typeof value !== typeof exampleValues[explicitType]) {
-        throw new Error("Cannot declare value ".concat(value, " as type ").concat(explicitType, " for variable ").concat(variableName));
+        throw new Error(`Cannot declare value ${value} as type ${explicitType} for variable ${variableName}`);
       }
 
       if (!this.variables.get(variableName)) {
@@ -3158,7 +3160,7 @@ class Runner {
       const yarnNode = this.yarnNodes[jumpTo];
 
       if (yarnNode === undefined) {
-        throw new Error("Node \"".concat(startNode, "\" does not exist"));
+        throw new Error(`Node "${startNode}" does not exist`);
       } // Parse the entire node
 
 
@@ -3213,7 +3215,16 @@ class Runner {
           shortcutNodes = [];
         }
       } else if (node instanceof nodeTypes.Assignment) {
-        this.evaluateAssignment(node);
+        const cb = () => {
+          this.evaluateAssignment(node);
+        };
+
+        if (this.shouldQueueAssignments) {
+          // Undocumented because it's not user friendly; for supporting lookahead
+          this.queuedOperations.push(cb);
+        } else {
+          cb();
+        }
       } else if (node instanceof nodeTypes.Conditional) {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);
@@ -3297,7 +3308,7 @@ class Runner {
     const oldValue = this.variables.get(node.variableName);
 
     if (oldValue && typeof oldValue !== typeof result) {
-      throw new Error("Variable ".concat(node.variableName, " is already type ").concat(typeof oldValue, "; cannot set equal to ").concat(result, " of type ").concat(typeof result));
+      throw new Error(`Variable ${node.variableName} is already type ${typeof oldValue}; cannot set equal to ${result} of type ${typeof result}`);
     }
 
     this.variables.set(node.variableName, result);
@@ -3334,7 +3345,7 @@ class Runner {
       return this.functions[node.functionName](...node.args.map(this.evaluateExpressionOrLiteral, this));
     }
 
-    throw new Error("Function \"".concat(node.functionName, "\" not found"));
+    throw new Error(`Function "${node.functionName}" not found`);
   }
   /**
    * Evaluates an expression or literal down to its final value
@@ -3413,7 +3424,7 @@ class Runner {
         return parseFloat(a.numericLiteral);
       },
       StringLiteralNode: a => {
-        return "".concat(a.stringLiteral);
+        return `${a.stringLiteral}`;
       },
       BooleanLiteralNode: a => {
         return a.booleanLiteral === 'true';
@@ -3431,7 +3442,7 @@ class Runner {
     const handler = nodeHandlers[node.type];
 
     if (!handler) {
-      throw new Error("node type not recognized: ".concat(node.type));
+      throw new Error(`node type not recognized: ${node.type}`);
     }
 
     return handler(node instanceof nodeTypes.Expression ? this.evaluateExpressionOrLiteral(node.expression || node.expression1) : node, node.expression2 ? this.evaluateExpressionOrLiteral(node.expression2) : node);

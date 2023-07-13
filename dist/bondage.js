@@ -3215,8 +3215,10 @@ class Runner {
           shortcutNodes = [];
         }
       } else if (node instanceof nodeTypes.Assignment) {
+        const _node = node;
+
         const cb = () => {
-          this.evaluateAssignment(node);
+          this.evaluateAssignment(_node);
         };
 
         if (this.shouldQueueAssignments) {

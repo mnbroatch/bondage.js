@@ -115,24 +115,22 @@ class Runner {
   }
 
   /**
-   * Generator to return each sequential dialog result starting from the given node
-   * @param {string} [startNode] - The name of the yarn node to begin at
+   * Generator to run a dialogue, starting at a specified node.
+   * @param {string} [nodeName] - The name of the yarn node to begin at
    */
-  * run(startNode) {
-    let jumpTo = startNode;
-    while (jumpTo) {
-      const yarnNode = this.yarnNodes[jumpTo];
-      if (yarnNode === undefined) {
-        throw new Error(`Node "${startNode}" does not exist`);
-      }
-
-      // Parse the entire node
-      const parserNodes = Array.from(parser.parse(yarnNode.body));
-      const metadata = { ...yarnNode };
-      delete metadata.body;
-      const result = yield* this.evalNodes(parserNodes, metadata);
-      jumpTo = result && result.jump;
+  * run(nodeName) {
+    const yarnNode = this.yarnNodes[nodeName];
+    if (yarnNode === undefined) {
+      throw new Error(`Node "${nodeName}" does not exist`);
     }
+    // Parse the entire node
+    const parserNodes = Array.from(parser.parse(yarnNode.body));
+    const metadata = { ...yarnNode };
+    delete metadata.body;
+    const result = yield* this.evalNodes(parserNodes, metadata);
+    // if (result && result.jump) {
+    //   yield* this.run(result && result.jump)
+    // }
   }
 
   /**
@@ -141,9 +139,10 @@ class Runner {
    * @param {Node[]} nodes
    * @param {YarnNode[]} metadata
    */
-  * evalNodes(nodes, metadata) {
+  * evalNodes(nodes, metadata, startingFilteredNodeIndex) {
     let shortcutNodes = [];
     let textRun = '';
+    const random = Math.random()
 
     const filteredNodes = nodes.filter(Boolean);
 
@@ -151,6 +150,9 @@ class Runner {
     // Need to accumulate all adjacent selectables
     // into one list (hence some of the weirdness here)
     for (let nodeIdx = 0; nodeIdx < filteredNodes.length; nodeIdx += 1) {
+      // For lookahead systems, which could evaluate nodes
+      // before variables change, for instance.
+      const getGeneratorHere = () => evalNodes(nodes, metadata, nodeIdx)
       const node = filteredNodes[nodeIdx];
       const nextNode = filteredNodes[nodeIdx + 1];
 
@@ -172,7 +174,7 @@ class Runner {
           // Same line, with another text equivalent to add to the
           // text run further on in the loop, so don't yield.
         } else {
-          yield new results.TextResult(textRun, node.hashtags, metadata);
+          yield Object.assign(new results.TextResult(textRun, node.hashtags, metadata), { getGeneratorHere });
           textRun = '';
         }
       } else if (node instanceof nodeTypes.Shortcut) {
@@ -180,10 +182,8 @@ class Runner {
         if (!(nextNode instanceof nodeTypes.Shortcut)) {
           // Last shortcut in the series, so yield the shortcuts.
           const result = yield* this.handleShortcuts(shortcutNodes, metadata);
-          if (result && (result.stop || result.jump)) {
-            return result;
-          }
-          shortcutNodes = [];
+          if (result) return result
+          shortcutNodes = []; // figure out a test to fail when this is removed
         }
       } else if (node instanceof nodeTypes.Assignment) {
         const _node = node
@@ -198,27 +198,23 @@ class Runner {
         // Get the results of the conditional
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
-          // Run the remaining results
+          // Run the results if applicable
           const result = yield* this.evalNodes(evalResult, metadata);
-          if (result && (result.stop || result.jump)) {
-            return result;
-          }
+          if (result) return result
         }
       } else if (node instanceof types.JumpCommandNode) {
-        // ignore the rest of this outer loop and
-        // tell parent loops to ignore following nodes.
-        // Recursive call here would cause stack overflow
         const destination = node.destination instanceof types.InlineExpressionNode
           ? this.evaluateExpressionOrLiteral(node.destination)
           : node.destination
-        return { jump: destination };
+        yield * this.run(destination)
+        // return ignores the rest of this recursive loop and having a 
+        // return value tells outer loops in the recursion to stop as well
+        return { stop: true };
       } else if (node instanceof types.StopCommandNode) {
-        // ignore the rest of this outer loop and
-        // tell parent loops to ignore following nodes
         return { stop: true };
       } else {
         const command = this.evaluateExpressionOrLiteral(node.command);
-        yield new results.CommandResult(command, node.hashtags, metadata);
+        yield Object.assign(new results.CommandResult(command, node.hashtags, metadata), { getGeneratorHere });
       }
     }
 
@@ -229,7 +225,7 @@ class Runner {
    * yield a shortcut result then handle the subsequent selection
    * @param {any[]} selections
    */
-  * handleShortcuts(selections, metadata) {
+  * handleShortcuts(selections, metadata, getGeneratorHere) {
     // Multiple options to choose from (or just a single shortcut)
     // Tag any conditional dialog options that result to false,
     // the consuming app does the actual filtering or whatever
@@ -247,7 +243,7 @@ class Runner {
       return Object.assign(s, { isAvailable, text });
     });
 
-    const optionsResult = new results.OptionsResult(transformedSelections, metadata);
+    const optionsResult = Object.assign(new results.OptionsResult(transformedSelections, metadata), { getGeneratorHere });
     yield optionsResult;
     if (typeof optionsResult.selected === 'number') {
       const selectedOption = transformedSelections[optionsResult.selected];

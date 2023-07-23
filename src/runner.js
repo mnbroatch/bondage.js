@@ -139,20 +139,20 @@ class Runner {
    * @param {Node[]} nodes
    * @param {YarnNode[]} metadata
    */
-  * evalNodes(nodes, metadata, startingFilteredNodeIndex) {
-    let shortcutNodes = [];
-    let textRun = '';
-    const random = Math.random()
-
+  * evalNodes(nodes, metadata, startingFilteredNodeIndex = 0, shortcutNodes = [], textRun = '') {
     const filteredNodes = nodes.filter(Boolean);
 
     // Yield the individual user-visible results
     // Need to accumulate all adjacent selectables
     // into one list (hence some of the weirdness here)
-    for (let nodeIdx = 0; nodeIdx < filteredNodes.length; nodeIdx += 1) {
+    for (let nodeIdx = startingFilteredNodeIndex; nodeIdx < filteredNodes.length; nodeIdx += 1) {
       // For lookahead systems, which could evaluate nodes
       // before variables change, for instance.
-      const getGeneratorHere = () => evalNodes(nodes, metadata, nodeIdx)
+      const _textRun = textRun
+      const _shortcutNodes = [...shortcutNodes]
+      const _nodeIdx = nodeIdx
+      const _nodes = [...nodes]
+      const getGeneratorHere = () => this.evalNodes(nodes, metadata, _nodeIdx, _shortcutNodes, _textRun)
       const node = filteredNodes[nodeIdx];
       const nextNode = filteredNodes[nodeIdx + 1];
 
@@ -181,7 +181,7 @@ class Runner {
         shortcutNodes.push(node);
         if (!(nextNode instanceof nodeTypes.Shortcut)) {
           // Last shortcut in the series, so yield the shortcuts.
-          const result = yield* this.handleShortcuts(shortcutNodes, metadata);
+          const result = yield* this.handleShortcuts(shortcutNodes, metadata, getGeneratorHere);
           if (result) return result
           shortcutNodes = []; // figure out a test to fail when this is removed
         }
@@ -199,15 +199,14 @@ class Runner {
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
           // Run the results if applicable
-          const result = yield* this.evalNodes(evalResult, metadata);
-          if (result) return result
+          return yield* this.evalNodes([ ...evalResult, ...filteredNodes.slice(nodeIdx + 1) ], metadata);
         }
       } else if (node instanceof types.JumpCommandNode) {
         const destination = node.destination instanceof types.InlineExpressionNode
           ? this.evaluateExpressionOrLiteral(node.destination)
           : node.destination
         yield * this.run(destination)
-        // return ignores the rest of this recursive loop and having a 
+        // returning ignores the rest of this recursive loop and having a 
         // return value tells outer loops in the recursion to stop as well
         return { stop: true };
       } else if (node instanceof types.StopCommandNode) {

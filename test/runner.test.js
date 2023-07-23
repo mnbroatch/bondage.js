@@ -8,7 +8,10 @@
 import fs from 'fs';
 import bondage from '../src/index';
 
-describe('Dialogue', () => {
+const getNormalGenerator = (runner, nodeName) => runner.run(nodeName)
+const getGetGeneratorHereGenerator = (runner, nodeName) => runner.run(nodeName).next().value.getGeneratorHere()
+
+describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
   let linksYarnData;
   let shortcutsYarnData;
   let assignmentYarnData;
@@ -33,296 +36,297 @@ describe('Dialogue', () => {
 
   it('Can run through a single line', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNode');
+    let run = runner.run('OneNode').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNode'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can run through two lines', () => {
     runner.load(linksYarnData);
-    const run = runner.run('TwoLines');
+    let run = runner.run('TwoLines').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'TwoLines'; }) } };
     delete metadata.body;
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is another test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is another test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can start at a different node', () => {
     runner.load(linksYarnData);
-    const run = runner.run('Option2');
+    let run = runner.run('Option2').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option2'; }) } };
     delete metadata.body;
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is Option2\'s test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is Option2\'s test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can run through a first option to another node', () => {
     runner.load(linksYarnData);
-    const run = runner.run('ThreeNodes');
+    let run = runner.run('ThreeNodes').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
     delete metadata.body;
     const metadata2 = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option1'; }) } };
     delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is another test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is another test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'First choice' },
       { text: 'Second choice' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is Option1\'s test line', [], metadata2));
+    expect(value).toEqual({ ...new bondage.TextResult('This is Option1\'s test line', [], metadata2), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can run through a second option to another node', () => {
     runner.load(linksYarnData);
-    const run = runner.run('ThreeNodes');
+    let run = runner.run('ThreeNodes').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
     delete metadata.body;
     const metadata2 = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option2'; }) } };
     delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is another test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is another test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'First choice' },
       { text: 'Second choice' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(1);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is Option2\'s test line', [], metadata2));
+    expect(value).toEqual({ ...new bondage.TextResult('This is Option2\'s test line', [], metadata2), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Includes node metadata with result', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNodeMetadata');
+    let run = runner.run('OneNodeMetadata').next().value.getGeneratorHere();
     const value = run.next().value;
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeMetadata'; }) } };
     delete metadata.body;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(value.metadata.someProp).toEqual('Hello');
     expect(run.next().done).toBe(true);
   });
 
   it('Includes hashtags with text results', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNodeHashtag');
+    let run = runner.run('OneNodeHashtag').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeHashtag'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult(
+    expect(value).toEqual({ ...new bondage.TextResult(
       'This is a test line',
       ['someHashtag', 'someOtherHashtag', 'lastHashtag'],
       metadata,
-    ));
+    ), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Ignores comments on option lines', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('NonNestedHashtag');
+    let run = runner.run('NonNestedHashtag').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNestedHashtag'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1', hashtags: ['someHashtag', 'someOtherHashtag', 'lastHashtag'] },
       { text: 'Option 2' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
     value.select(1);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is the second option', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is the second option', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('includes hashtags on conditional option lines', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('ConditionalHashtag');
+    let run = runner.run('ConditionalHashtag').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'ConditionalHashtag'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2', isAvailable: false, hashtags: ['someHashtag', 'someOtherHashtag'] },
       { text: 'Option 3' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(2);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is the third option', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is the third option', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is after both options', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is after both options', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('includes hashtags on command lines', () => {
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('BasicCommandsHashtag');
+    let run = runner.run('BasicCommandsHashtag').next().value.getGeneratorHere();
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsHashtag'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [], metadata));
+    expect(value).toEqual({ ...new bondage.CommandResult('command', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('text in between commands', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('text in between commands', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command with "space"', ['someHashtag'], metadata));
+    expect(value).toEqual({ ...new bondage.CommandResult('command with "space"', ['someHashtag'], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('includes hashtags on lines only containing inline expression', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('SimpleInlineExpHashtag');
+    let run = runner.run('SimpleInlineExpHashtag');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpHashtag'; }) } };
     delete metadata.body;
 
     runner.variables.set('firstvar', 1);
 
+    run = run.next().value.getGeneratorHere();
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('1', ['someHashtag'], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('1', ['someHashtag'], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Ignores comments on text lines', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNodeComment');
+    let run = runner.run('OneNodeComment').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeComment'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Ignores comments on their own line', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNodeWholeLineComment');
+    let run = runner.run('OneNodeWholeLineComment').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeWholeLineComment'; }) } };
     delete metadata.body;
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Hello', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Hello', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Ignores comments on option lines', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('NonNestedComment');
+    let run = runner.run('NonNestedComment').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNestedComment'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
     value.select(1);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is the second option', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is the second option', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('ignores comments on conditional option lines', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('ConditionalComment');
+    let run = runner.run('ConditionalComment').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'ConditionalComment'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2', isAvailable: false },
       { text: 'Option 3' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(2);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is the third option', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is the third option', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is after both options', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is after both options', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('ignores comments on command lines', () => {
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('BasicCommandsComment');
+    let run = runner.run('BasicCommandsComment').next().value.getGeneratorHere();
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsComment'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [], metadata));
+    expect(value).toEqual({ ...new bondage.CommandResult('command', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('text in between commands', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('text in between commands', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command with "space"', [], metadata));
+    expect(value).toEqual({ ...new bondage.CommandResult('command with "space"', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('ignores comments on lines only containing inline expression', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('SimpleInlineExpComment');
+    let run = runner.run('SimpleInlineExpComment').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpComment'; }) } };
     delete metadata.body;
 
     runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('1', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('1', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Automatically goes to the jump node', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneJumpPassthrough');
+    let run = runner.run('OneJumpPassthrough').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneJumpPassthrough'; }) } };
     delete metadata.body;
     const metadata2 = { ...linksYarnData.find((n) => { return n.title === 'Option1'; }) };
     delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('First test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('First test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is Option1\'s test line', [], metadata2));
+    expect(value).toEqual({ ...new bondage.TextResult('This is Option1\'s test line', [], metadata2), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Automatically goes through two jumps', () => {
     runner.load(linksYarnData);
-    const run = runner.run('TwoJumpPassthrough');
+    let run = runner.run('TwoJumpPassthrough').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'TwoJumpPassthrough'; }) } };
     delete metadata.body;
     const metadata2 = { ...linksYarnData.find((n) => { return n.title === 'OneJumpPassthrough'; }) };
@@ -331,109 +335,109 @@ describe('Dialogue', () => {
     delete metadata3.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Real First test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Real First test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('First test line', [], metadata2));
+    expect(value).toEqual({ ...new bondage.TextResult('First test line', [], metadata2), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is Option1\'s test line', [], metadata3));
+    expect(value).toEqual({ ...new bondage.TextResult('This is Option1\'s test line', [], metadata3), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can run through shortcuts', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('NonNested');
+    let run = runner.run('NonNested').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNested'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(1);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is the second option', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is the second option', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is after both options', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is after both options', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can run through nested shortcuts', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('Nested');
+    let run = runner.run('Nested').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'Nested'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('text', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('text', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'shortcut1a' },
       { text: 'shortcut2a' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text1', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text1', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'nestedshortcut1' },
       { text: 'nestedshortcut2' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(1);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('NestedText2', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('NestedText2', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('more text', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('more text', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can exclude a conditional shortcut', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('Conditional');
+    let run = runner.run('Conditional').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'Conditional'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2', isAvailable: false },
       { text: 'Option 3' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(2);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is the third option', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is the third option', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is after both options', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is after both options', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can set a custom variable storage', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('Numeric');
+    let run = runner.run('Numeric').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Numeric'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     runner.setVariableStorage(new Map());
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual(-123.4);
 
@@ -442,17 +446,17 @@ describe('Dialogue', () => {
 
   it('Can evaluate a numeric assignment', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('Numeric');
+    let run = runner.run('Numeric').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Numeric'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual(-123.4);
 
@@ -461,17 +465,17 @@ describe('Dialogue', () => {
 
   it('Can evaluate a numeric assignment with an expression', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('NumericExpression');
+    let run = runner.run('NumericExpression').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'NumericExpression'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual(((1 + 2) * -3) + 4.3);
 
@@ -480,17 +484,17 @@ describe('Dialogue', () => {
 
   it('Can evaluate a numeric assignment with division expression', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('AssignmentWithDivision');
+    let run = runner.run('AssignmentWithDivision').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'AssignmentWithDivision'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line2', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line2', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual(100 / 5);
 
@@ -499,17 +503,17 @@ describe('Dialogue', () => {
 
   it('Can evaluate an string assignment', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('String');
+    let run = runner.run('String').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'String'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual('Variable String');
 
@@ -518,17 +522,17 @@ describe('Dialogue', () => {
 
   it('Can evaluate a string assignment with an expression', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('StringExpression');
+    let run = runner.run('StringExpression').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'StringExpression'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual('Variable String Appended');
 
@@ -537,17 +541,17 @@ describe('Dialogue', () => {
 
   it('Can evaluate a boolean assignment', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('Boolean');
+    let run = runner.run('Boolean').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Boolean'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual(true);
 
@@ -556,17 +560,17 @@ describe('Dialogue', () => {
 
   it('Can evaluate a function boolean assignment', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('AssignmentWithFunction');
+    let run = runner.run('AssignmentWithFunction').next().value.getGeneratorHere();
     runner.registerFunction('identity', (x) => { return x; });
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'AssignmentWithFunction'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line2', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line2', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(runner.variables.get('testvar')).toEqual(false);
 
     value = run.next().value;
@@ -577,17 +581,17 @@ describe('Dialogue', () => {
 
   it('Can evaluate a boolean assignment with expression', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('BooleanExpression');
+    let run = runner.run('BooleanExpression').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'BooleanExpression'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual(true);
 
@@ -596,18 +600,18 @@ describe('Dialogue', () => {
 
   it('Can evaluate an assignment from one variable to another', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('Variable');
+    let run = runner.run('Variable').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Variable'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('firstvar')).toBe(undefined);
     expect(runner.variables.get('secondvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('secondvar')).toEqual('First variable string');
 
@@ -616,18 +620,18 @@ describe('Dialogue', () => {
 
   it('Can evaluate an assignment from one variable to another via an expression', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('VariableExpression');
+    let run = runner.run('VariableExpression').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'VariableExpression'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('firstvar')).toBe(undefined);
     expect(runner.variables.get('secondvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('secondvar')).toEqual(-4.3 + 100);
 
@@ -636,18 +640,18 @@ describe('Dialogue', () => {
 
   it('Can evaluate an assignment from one variable to another via an expression with self reference', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('VariableExpression2');
+    let run = runner.run('VariableExpression2').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'VariableExpression2'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('firstvar')).toBe(undefined);
     expect(runner.variables.get('secondvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('firstvar')).toEqual(300);
 
@@ -656,84 +660,84 @@ describe('Dialogue', () => {
 
   it('Can handle an if conditional', () => {
     runner.load(conditionalYarnData);
-    const run = runner.run('BasicIf');
+    let run = runner.run('BasicIf').next().value.getGeneratorHere();
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIf'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text before', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text before', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside if', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside if', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside if2', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside if2', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text after', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text after', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle an if else conditional', () => {
     runner.load(conditionalYarnData);
-    const run = runner.run('BasicIfElse');
+    let run = runner.run('BasicIfElse').next().value.getGeneratorHere();
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElse'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text before', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text before', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside else', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside else', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text after', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text after', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle an if elseif conditional', () => {
     runner.load(conditionalYarnData);
-    const run = runner.run('BasicIfElseIf');
+    let run = runner.run('BasicIfElseIf').next().value.getGeneratorHere();
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElseIf'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text before', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text before', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside elseif', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside elseif', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text after', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text after', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle an if elseif else conditional', () => {
     runner.load(conditionalYarnData);
-    const run = runner.run('BasicIfElseIfElse');
+    let run = runner.run('BasicIfElseIfElse').next().value.getGeneratorHere();
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElseIfElse'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text before', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text before', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside else', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside else', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text after', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text after', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Halts when given the <<stop>> command', () => {
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('StopCommand');
+    let run = runner.run('StopCommand').next().value.getGeneratorHere();
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'StopCommand'; }) } };
     delete metadata.body;
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('First line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('First line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Ignores content after jumps when going through multiple options', () => {
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('Option1');
+    let run = runner.run('Option1').next().value.getGeneratorHere();
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'Option1'; }) } };
     delete metadata.body;
     const metadata2 = { ...commandAndFunctionYarnData.find((n) => { return n.title === 'Option2'; }) };
@@ -742,58 +746,58 @@ describe('Dialogue', () => {
     delete metadata3.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Prompt1', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Prompt1', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Prompt2', [], metadata2));
+    expect(value).toEqual({ ...new bondage.TextResult('Prompt2', [], metadata2), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('First line', [], metadata3));
+    expect(value).toEqual({ ...new bondage.TextResult('First line', [], metadata3), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Returns commands to the user', () => {
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('BasicCommands');
+    let run = runner.run('BasicCommands').next().value.getGeneratorHere();
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommands'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command', [], metadata));
+    expect(value).toEqual({ ...new bondage.CommandResult('command', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('text in between commands', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('text in between commands', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command with "space"', [], metadata));
+    expect(value).toEqual({ ...new bondage.CommandResult('command with "space"', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Returns commands with inline expressions to the user', () => {
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('ExpressionArgumentCommand');
+    let run = runner.run('ExpressionArgumentCommand').next().value.getGeneratorHere();
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; }) } };
     delete metadata.body;
     runner.variables.set('testvar1', 1);
     runner.variables.set('testvar2', 5);
     runner.variables.set('testvar3', 10);
     const value = run.next().value;
-    expect(value).toEqual(new bondage.CommandResult('command 1 5 apple 10', [], metadata));
+    expect(value).toEqual({ ...new bondage.CommandResult('command 1 5 apple 10', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('handles a simple function call with numbers', () => {
     runner.registerFunction('addOne', (num) => { return num + 1; });
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('NumberFunction');
+    let run = runner.run('NumberFunction').next().value.getGeneratorHere();
 
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'NumberFunction'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('4', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('4', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('5', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('5', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
@@ -812,90 +816,90 @@ describe('Dialogue', () => {
     });
 
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('FunctionConditional');
+    let run = runner.run('FunctionConditional').next().value.getGeneratorHere();
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'FunctionConditional'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('First line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('First line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This should show', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This should show', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('After both', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('After both', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Should ignore text after a jump after an option', () => {
     runner.load(conditionalYarnData);
-    const run = runner.run('TextAfterJumpAfterOption');
+    let run = runner.run('TextAfterJumpAfterOption').next().value.getGeneratorHere();
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'TextAfterJumpAfterOption'; }) } };
     delete metadata.body;
     const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'give_key'; }) };
     delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text before', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text before', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside if', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside if', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Give key' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('You give the key to the troll.', [], metadata2));
+    expect(value).toEqual({ ...new bondage.TextResult('You give the key to the troll.', [], metadata2), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Should ignore text after a jump after a conditional option', () => {
     runner.load(conditionalYarnData);
-    const run = runner.run('ConditionalOption');
+    let run = runner.run('ConditionalOption').next().value.getGeneratorHere();
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'ConditionalOption'; }) } };
     delete metadata.body;
     const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'Objective'; }) };
     delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text before', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text before', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Cond Option' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('You reach the objective.', [], metadata2));
+    expect(value).toEqual({ ...new bondage.TextResult('You reach the objective.', [], metadata2), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Should ignore text after a jump after an option in a conditional block', () => {
     runner.load(conditionalYarnData);
-    const run = runner.run('OptionAfterOptionWithinConditional');
+    let run = runner.run('OptionAfterOptionWithinConditional').next().value.getGeneratorHere();
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'OptionAfterOptionWithinConditional'; }) } };
     delete metadata.body;
     const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'give_key'; }) };
     delete metadata2.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text before', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text before', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside if', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside if', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Give key' },
       { text: 'You keep the key.' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('You give the key to the troll.', [], metadata2));
+    expect(value).toEqual({ ...new bondage.TextResult('You give the key to the troll.', [], metadata2), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
 
     expect(run.next().done).toBe(true);
@@ -903,78 +907,78 @@ describe('Dialogue', () => {
 
   it('Should move on after a first option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('EmptyFirstOption');
+    let run = runner.run('EmptyFirstOption').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptyFirstOption'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is after both options', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is after both options', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Should move on after a second option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('EmptySecondOption');
+    let run = runner.run('EmptySecondOption').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptySecondOption'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
     value.select(1);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is after both options', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is after both options', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Should move on after a conditional option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
-    const run = runner.run('EmptyConditional');
+    let run = runner.run('EmptyConditional').next().value.getGeneratorHere();
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptyConditional'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'Option 1' },
       { text: 'Option 2' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is after both options', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is after both options', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle a simple inline expression', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('SimpleInlineExp');
+    let run = runner.run('SimpleInlineExp').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExp'; }) } };
     delete metadata.body;
 
     runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('1', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('1', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle sequential inline expressions', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('SequentialInlineExpressions');
+    let run = runner.run('SequentialInlineExpressions').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SequentialInlineExpressions'; }) } };
     delete metadata.body;
 
@@ -982,14 +986,14 @@ describe('Dialogue', () => {
     runner.variables.set('secondvar', 2);
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('12', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('12', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle non-sequential inline expressions', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('NonSequentialInlineExpressions');
+    let run = runner.run('NonSequentialInlineExpressions').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'NonSequentialInlineExpressions'; }) } };
     delete metadata.body;
 
@@ -997,137 +1001,137 @@ describe('Dialogue', () => {
     runner.variables.set('secondvar', 2);
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('1textbetween2', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('1textbetween2', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle a simple inline expression in a sentence', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('InlineExpSentence');
+    let run = runner.run('InlineExpSentence').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpSentence'; }) } };
     delete metadata.body;
 
     runner.variables.set('firstvar', 'test');
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test.', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test.', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle an arithmetic inline expression', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('InlineExpArithmetic');
+    let run = runner.run('InlineExpArithmetic').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpArithmetic'; }) } };
     delete metadata.body;
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('The results are 10 and 12 and 1.', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('The results are 10 and 12 and 1.', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle an inline expression with a variable', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('InlineExpVariable');
+    let run = runner.run('InlineExpVariable').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpVariable'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('The results are -1 and true and true and true and true and true.', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('The results are -1 and true and true and true and true and true.', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle an inline expression in an option', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('OptionInlineExpression');
+    let run = runner.run('OptionInlineExpression').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'OptionInlineExpression'; }) } };
     delete metadata.body;
     runner.variables.set('firstvar', 'test');
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'First test choice' },
       { text: 'Second choice' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is Option1\'s test text', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is Option1\'s test text', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle an inline expression in a conditional option', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('ConditionalOptionInlineExpression');
+    let run = runner.run('ConditionalOptionInlineExpression').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'ConditionalOptionInlineExpression'; }) } };
     delete metadata.body;
     runner.variables.set('firstvar', 'test');
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'First test choice' },
       { text: 'Second choice' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(0);
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is Option1\'s test text', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is Option1\'s test text', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle a simple inline expression whitespace in a sentence', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('InlineExpAddSentence');
+    let run = runner.run('InlineExpAddSentence').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpAddSentence'; }) } };
     delete metadata.body;
 
     runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a 2 sentence.', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a 2 sentence.', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle an if arithmetic expression elseif conditional', () => {
     runner.load(conditionalYarnData);
-    const run = runner.run('ArithmeticExpressionConditional');
+    let run = runner.run('ArithmeticExpressionConditional').next().value.getGeneratorHere();
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'ArithmeticExpressionConditional'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside if', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside if', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text after', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text after', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Final text', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Final text', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(run.next().done).toBe(true);
   });
 
   it('Can evaluate a numeric assignment with exponent expression', () => {
     runner.load(assignmentYarnData);
-    const run = runner.run('ExponentExpression');
+    let run = runner.run('ExponentExpression').next().value.getGeneratorHere();
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'ExponentExpression'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toBe(undefined);
 
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Test Line After', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Test Line After', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(runner.variables.get('testvar')).toEqual(2 ** 2);
 
@@ -1136,15 +1140,16 @@ describe('Dialogue', () => {
 
   it('can handle a negated function call in a conditional', () => {
     runner.registerFunction('returnFalse', () => { return false; });
-
     runner.load(conditionalYarnData);
-    const run = runner.run('IfNotFunction');
+    let run = runner.run('IfNotFunction');
+    // run = run.next().value.getGeneratorHere()
+
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'IfNotFunction'; }) } };
     delete metadata.body;
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Inside if', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Inside if', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Text after', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Text after', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
@@ -1163,21 +1168,21 @@ describe('Dialogue', () => {
     });
 
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('InlineExpFunctionResult');
+    let run = runner.run('InlineExpFunctionResult').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpFunctionResult'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('The results are true.', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('The results are true.', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can handle inline expression containing equality', () => {
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('InlineExpEquality');
+    let run = runner.run('InlineExpEquality').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpEquality'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a true sentence.', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a true sentence.', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
@@ -1185,97 +1190,97 @@ describe('Dialogue', () => {
     runner.registerFunction('testfunc', () => { return 1; });
 
     runner.load(inlineExpressionYarnData);
-    const run = runner.run('InlineExpFunctionResultExp');
+    let run = runner.run('InlineExpFunctionResultExp').next().value.getGeneratorHere();
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpFunctionResultExp'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('The results are 2.', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('The results are 2.', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can run through a single line with an escaped curly brace', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNodeEscapeCurlyBrace');
+    let run = runner.run('OneNodeEscapeCurlyBrace').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeCurlyBrace'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a {test} line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a {test} line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Does not remove backslashes if noEscape is on', () => {
     runner.load(linksYarnData);
     runner.noEscape = true;
-    const run = runner.run('OneNodeEscapeCurlyBrace');
+    let run = runner.run('OneNodeEscapeCurlyBrace').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeCurlyBrace'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a \\{test\\} line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a \\{test\\} line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
     runner.noEscape = false;
   });
 
   it('Can run through a single line with two consecutive escaped curly braces', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNodeEscapeTwoCurlyBraces');
+    let run = runner.run('OneNodeEscapeTwoCurlyBraces').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeTwoCurlyBraces'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a {{test} line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a {{test} line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can run through a single line with an escaped hashtag', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNodeEscapeHashtag');
+    let run = runner.run('OneNodeEscapeHashtag').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtag'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a #test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a #test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can escape hashtags and comments together', () => {
     runner.load(linksYarnData);
-    const run = runner.run('OneNodeEscapeHashtagComment');
+    let run = runner.run('OneNodeEscapeHashtagComment').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtagComment'; }) } };
     delete metadata.body;
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult(
+    expect(value).toEqual({ ...new bondage.TextResult(
       'This is a test line#escaped//',
       ['lastHashtag'],
       metadata,
-    ));
+    ), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Can run through three lines when the first ends on an escaped character', () => {
     runner.load(linksYarnData);
-    const run = runner.run('ThreeLineEscape');
+    let run = runner.run('ThreeLineEscape').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeLineEscape'; }) } };
     delete metadata.body;
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is a test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is a test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('This is another test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('This is another test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult('Yet another test line', [], metadata));
+    expect(value).toEqual({ ...new bondage.TextResult('Yet another test line', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
   it('Throws an error if an out-of-range option is selected', () => {
     runner.load(linksYarnData);
-    const run = runner.run('ThreeNodes');
+    let run = runner.run('ThreeNodes').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
     value = run.next().value;
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'First choice' },
       { text: 'Second choice' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(() => { value.select(100); }).toThrow();
     expect(() => { value.select(); }).toThrow();
@@ -1283,24 +1288,24 @@ describe('Dialogue', () => {
 
   it('Throws an error if no option is selected before next() is called', () => {
     runner.load(linksYarnData);
-    const run = runner.run('ThreeNodes');
+    let run = runner.run('ThreeNodes').next().value.getGeneratorHere();
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
     delete metadata.body;
 
     let value = run.next().value;
     value = run.next().value;
     value = run.next().value;
-    expect(value).toEqual(new bondage.OptionsResult([
+    expect(value).toEqual({ ...new bondage.OptionsResult([
       { text: 'First choice' },
       { text: 'Second choice' },
-    ], metadata));
+    ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     expect(() => { run.next(); }).toThrow();
   });
 
   it('Throws an error if a function is called but not registered', () => {
     runner.load(commandAndFunctionYarnData);
-    const run = runner.run('FunctionConditional');
+    let run = runner.run('FunctionConditional').next().value.getGeneratorHere();
     run.next();
     expect(() => { run.next(); }).toThrow();
   });
@@ -1381,9 +1386,9 @@ describe('Dialogue', () => {
       ===
     `;
     runner.load(dialogue);
-    const run = runner.run('Start');
+    let run = runner.run('Start').next().value.getGeneratorHere();
     let value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult(
+    expect(value).toEqual({ ...new bondage.TextResult(
       'This is a test line.',
       [],
       {
@@ -1391,16 +1396,16 @@ describe('Dialogue', () => {
         otherkey: 'someValue',
         filetags: ['someFiletag', 'someOtherFiletag'],
       },
-    ));
+    ), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult(
+    expect(value).toEqual({ ...new bondage.TextResult(
       'This is another test line.',
       [],
       {
         title: 'End',
         filetags: ['someFiletag', 'someOtherFiletag'],
       },
-    ));
+    ), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
@@ -1413,13 +1418,13 @@ describe('Dialogue', () => {
       ===
     `;
     runner.load(dialogue);
-    const run = runner.run('Start');
+    let run = runner.run('Start').next().value.getGeneratorHere();
     const value = run.next().value;
-    expect(value).toEqual(new bondage.TextResult(
+    expect(value).toEqual({ ...new bondage.TextResult(
       'This is a test line.',
       [],
       { title: 'Start' },
-    ));
+    ), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
   });
 
@@ -1437,7 +1442,7 @@ describe('Dialogue', () => {
       ===
     `;
     runner.load(dialogue);
-    const run = runner.run('Start');
+    let run = runner.run('Start').next().value.getGeneratorHere();
     let value = run.next().value;
     expect(value.text).toEqual('1');
     value = run.next().value;
@@ -1457,7 +1462,7 @@ describe('Dialogue', () => {
     `;
     runner.variables.set('testvar1', 99);
     runner.load(dialogue);
-    const run = runner.run('Start');
+    let run = runner.run('Start').next().value.getGeneratorHere();
     const value = run.next().value;
     expect(value.text).toEqual('99');
     expect(run.next().done).toBe(true);
@@ -1493,8 +1498,10 @@ describe('Dialogue', () => {
       ===
     `;
     runner.load(dialogue);
-    const run = runner.run('Start');
-    expect(() => { run.next(); }).toThrow();
+    expect(() => {
+      let run = runner.run('Start').next().value.getGeneratorHere();
+      run.next();
+    }).toThrow();
   });
 
   it('handles an indented command in a conditional block', () => {
@@ -1514,7 +1521,7 @@ describe('Dialogue', () => {
       ===
     `;
     runner.load(dialogue);
-    const run = runner.run('Start');
+    let run = runner.run('Start').next().value.getGeneratorHere();
     let value = run.next().value;
     expect(value.text).toEqual('1');
     value = run.next().value;
@@ -1536,7 +1543,7 @@ describe('Dialogue', () => {
       ===
     `;
     runner.load(dialogue);
-    const run = runner.run('Start');
+    let run = runner.run('Start').next().value.getGeneratorHere();
     let value = run.next().value;
     expect(value.text).toEqual('1');
     value = run.next().value;
@@ -1560,7 +1567,7 @@ describe('Dialogue', () => {
       ===
     `;
     runner.load(dialogue);
-    const run = runner.run('Start');
+    let run = runner.run('Start').next().value.getGeneratorHere();
     let value = run.next().value;
     expect(value.text).toEqual('hello');
     value = run.next().value;
@@ -1577,7 +1584,7 @@ describe('Dialogue', () => {
       ===
     `;
     runner.load(dialogue);
-    const run = runner.run('Start');
+    let run = runner.run('Start').next().value.getGeneratorHere();
     let value = run.next().value;
     expect(value.text).toEqual('hello');
     value = run.next().value;

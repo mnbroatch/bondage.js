@@ -12,8 +12,8 @@ const getNormalGenerator = (runner, nodeName) => runner.run(nodeName)
 const getGetGeneratorHereGenerator = (runner, nodeName) => runner.run(nodeName).next().value.getGeneratorHere()
 
 // describe.each([[getGetGeneratorHereGenerator]])('Dialogue', (getGenerator) => {
-describe.each([[getNormalGenerator]])('Dialogue', (getGenerator) => {
-// describe.each([[getNormalGenerator], [getGetGeneratorHereGenerator]])('Dialogue', (getGenerator) => {
+// describe.each([[getNormalGenerator]])('Dialogue', (getGenerator) => {
+describe.each([[getNormalGenerator], [getGetGeneratorHereGenerator]])('Dialogue', (getGenerator) => {
   let linksYarnData;
   let shortcutsYarnData;
   let assignmentYarnData;
@@ -840,8 +840,6 @@ describe.each([[getNormalGenerator]])('Dialogue', (getGenerator) => {
 
     let value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult('Text before', [], metadata), getGeneratorHere: value.getGeneratorHere });
-    value = run.next().value;
-    expect(value).toEqual({ ...new bondage.TextResult('Inside if', [], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value = run.next().value;
     expect(value).toEqual({ ...new bondage.OptionsResult([
@@ -849,10 +847,10 @@ describe.each([[getNormalGenerator]])('Dialogue', (getGenerator) => {
     ], metadata), getGeneratorHere: value.getGeneratorHere });
 
     value.select(0);
-    value = run.next().value;
+    const next = run.next()
+    value = next.value;
     expect(value).toEqual({ ...new bondage.TextResult('You give the key to the troll.', [], metadata2), getGeneratorHere: value.getGeneratorHere });
-
-    expect(run.next().done).toBe(true);
+    expect(next.done).toBe(true);
   });
 
   it('Should ignore text after a jump after a conditional option', () => {
@@ -882,7 +880,6 @@ describe.each([[getNormalGenerator]])('Dialogue', (getGenerator) => {
     runner.load(conditionalYarnData);
     let run = getGenerator(runner, 'OptionAfterOptionWithinConditional');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'OptionAfterOptionWithinConditional'; }) } };
-    console.log('metadata.body', metadata.body)
     delete metadata.body;
     const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'give_key'; }) };
     delete metadata2.body;
@@ -901,11 +898,7 @@ describe.each([[getNormalGenerator]])('Dialogue', (getGenerator) => {
     value.select(0);
     value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult('You give the key to the troll.', [], metadata2), getGeneratorHere: value.getGeneratorHere });
-    value = run.next().value;
-
-    const blah = run.next()
-    // console.log('blah', JSON.stringify(blah, null, 2))
-    expect(blah.done).toBe(true);
+    expect(run.next().done).toBe(true);
   });
 
   it('Should move on after a first option with no follow-up is selected', () => {
@@ -1433,20 +1426,20 @@ describe.each([[getNormalGenerator]])('Dialogue', (getGenerator) => {
       <<declare $testvar1 = 1>>
       <<set $testvar2 to 2>>
       <<declare $testvar2 = 023984029384>>
-      { $testvar1 }
-      { $testvar2 }
-      { $testvar3 }
+      var1 { $testvar1 }
+      var2 { $testvar2 }
+      var3 { $testvar3 }
       <<declare $testvar3 = 3>>
       ===
     `;
     runner.load(dialogue);
     let run = getGenerator(runner, 'Start');
     let value = run.next().value;
-    expect(value.text).toEqual('1');
+    expect(value.text).toEqual('var1 1');
     value = run.next().value;
-    expect(value.text).toEqual('2');
+    expect(value.text).toEqual('var2 2');
     value = run.next().value;
-    expect(value.text).toEqual('3');
+    expect(value.text).toEqual('var3 3');
     expect(run.next().done).toBe(true);
   });
 

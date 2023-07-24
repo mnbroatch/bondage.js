@@ -9,11 +9,10 @@ const nodeTypes = types.types;
 class Runner {
   constructor() {
     this.noEscape = false;
-    this.shouldQueueAssignments = false;
+    this.lookahead = false;
     this.yarnNodes = {};
     this.variables = new DefaultVariableStorage();
     this.functions = {};
-    this.queuedOperations = [];
   }
 
   /**
@@ -119,6 +118,11 @@ class Runner {
    * @param {string} [nodeName] - The name of the yarn node to begin at
    */
   * run(nodeName) {
+    const { parserNodes, metadata } = this.getParserNodes(nodeName)
+    return yield* this.evalNodes(parserNodes, metadata);
+  }
+
+  getParserNodes(nodeName) {
     const yarnNode = this.yarnNodes[nodeName];
     if (yarnNode === undefined) {
       throw new Error(`Node "${nodeName}" does not exist`);
@@ -127,7 +131,8 @@ class Runner {
     const parserNodes = Array.from(parser.parse(yarnNode.body));
     const metadata = { ...yarnNode };
     delete metadata.body;
-    return yield* this.evalNodes(parserNodes, metadata);
+
+    return { parserNodes, metadata };
   }
 
   /**
@@ -136,110 +141,97 @@ class Runner {
    * @param {Node[]} nodes
    * @param {YarnNode[]} metadata
    */
-  * evalNodes(nodes, metadata, restNodes = [], startingFilteredNodeIndex = 0, shortcutNodes = [], textRunNodes = []) {
+  * evalNodes(nodes, metadata, shortcutNodes = [], textRunNodes = []) {
     const filteredNodes = nodes.filter(Boolean);
 
     // Yield the individual user-visible results
     let result
-    for (let nodeIdx = startingFilteredNodeIndex; nodeIdx < filteredNodes.length; nodeIdx += 1) {
-      // Need unique copies to make a special duplicate generator
-      // for lookahead, rewind, or other funky stuff
-      const _textRunNodes = [ ...textRunNodes ]
-      const _shortcutNodes = [...shortcutNodes]
-      const _nodeIdx = nodeIdx
-      const _nodes = [...nodes]
-      const _restNodes = [...restNodes]
-      const getGeneratorHere = () => {
-        return this.evalNodes(_nodes, metadata, _restNodes, _nodeIdx, _shortcutNodes, _textRunNodes)
-      }
+    // Need unique copies to make a special duplicate generator
+    // for lookahead, rewind, or other funky stuff
+    const _textRunNodes = [ ...textRunNodes ]
+    const _shortcutNodes = [...shortcutNodes]
+    const _nodes = [...nodes]
+    const getGeneratorHere = () => {
+      return this.evalNodes(_nodes, metadata, _shortcutNodes, _textRunNodes)
+    }
 
-      const node = filteredNodes[nodeIdx];
-      const nextNode = filteredNodes[nodeIdx + 1];
+    const node = filteredNodes[0];
+    const nextNode = filteredNodes[1];
 
-      // Text and the output of Inline Expressions
-      // are combined to deliver a TextNode.
+    // Text and the output of Inline Expressions
+    // are combined to deliver a TextNode.
+    if (
+      node instanceof nodeTypes.Text
+      || node instanceof nodeTypes.Expression
+    ) {
+      textRunNodes.push(node)
       if (
-        node instanceof nodeTypes.Text
-        || node instanceof nodeTypes.Expression
+        nextNode
+        && node.lineNum === nextNode.lineNum
+        && (
+          nextNode instanceof nodeTypes.Text
+          || nextNode instanceof nodeTypes.Expression
+        )
       ) {
-        textRunNodes.push(node)
-        if (
-          nextNode
-          && node.lineNum === nextNode.lineNum
-          && (
-            nextNode instanceof nodeTypes.Text
-            || nextNode instanceof nodeTypes.Expression
-          )
-        ) {
-          // Same line, with another text equivalent to add to the
-          // text run further on in the loop, so don't yield.
-        } else {
-          const text = textRunNodes.reduce((acc, node) => acc + this.evaluateExpressionOrLiteral(node).toString(), '');
-          textRunNodes = [];
-          const bleh = Object.assign(new results.TextResult(text, node.hashtags, metadata), { getGeneratorHere });
-          
-          if (filteredNodes.length === nodeIdx + 1 && !restNodes.length) {
-            return yield bleh
-          } else {
-            yield bleh
-          }
-        }
-      } else if (node instanceof nodeTypes.Shortcut) {
-        // Need to accumulate all adjacent selectables into one list
-        shortcutNodes.push(node);
-        if (!(nextNode instanceof nodeTypes.Shortcut)) {
-          // Last shortcut in the series, so yield the shortcuts.
-          result = yield* this.handleShortcuts(shortcutNodes, metadata, getGeneratorHere);
-          shortcutNodes = []; // figure out a test to fail when this is removed
-        }
-      } else if (node instanceof nodeTypes.Assignment) {
-        const _node = node
-        const cb = () => { this.evaluateAssignment(_node) };
-        if (this.shouldQueueAssignments) {
-          this.queuedOperations.push(cb)
-        } else {
-          cb()
-        }
-      } else if (node instanceof nodeTypes.Conditional) {
-        // Get the results of the conditional
-        const evalResult = this.evaluateConditional(node);
-        if (evalResult) {
-          // Run the results if applicable
-          return yield* this.evalNodes(evalResult, metadata, filteredNodes.slice(nodeIdx + 1));
-        }
-      } else if (node instanceof types.JumpCommandNode) {
-        const destination = node.destination instanceof types.InlineExpressionNode
-          ? this.evaluateExpressionOrLiteral(node.destination)
-          : node.destination
-        return yield * this.run(destination)
-        // returning ignores the rest of this recursive loop and having a 
-        // return value tells outer loops in the recursion to stop as well
-        console.log('123123node', node)
-        result = { stop: true };
-      } else if (node instanceof types.StopCommandNode) {
-        result = { stop: true };
+        // Same line, with another text equivalent to add to the
+        // text run further on in the loop, so don't yield.
       } else {
-        const command = this.evaluateExpressionOrLiteral(node.command);
-        yield Object.assign(new results.CommandResult(command, node.hashtags, metadata), { getGeneratorHere });
+        const text = textRunNodes.reduce((acc, node) => acc + this.evaluateExpressionOrLiteral(node).toString(), '');
+        textRunNodes = [];
+        const textResult = Object.assign(new results.TextResult(text, node.hashtags, metadata), { getGeneratorHere });
+        
+        if (filteredNodes.length === 1) {
+          return textResult
+        } else {
+          yield textResult
+        }
       }
-
-      if (result) {
-        break
+    } else if (node instanceof nodeTypes.Shortcut) {
+      // Need to accumulate all adjacent selectables into one list
+      shortcutNodes.push(node);
+      if (!(nextNode instanceof nodeTypes.Shortcut)) {
+        // Last shortcut in the series, so yield the shortcuts.
+        return yield* this.handleShortcuts(shortcutNodes, metadata, filteredNodes.slice(1), getGeneratorHere);
+      }
+    } else if (node instanceof nodeTypes.Assignment) {
+      if (!this.lookahead) {
+        this.evaluateAssignment(_node)
+      }
+    } else if (node instanceof nodeTypes.Conditional) {
+      // Get the results of the conditional
+      const evalResult = this.evaluateConditional(node);
+      if (evalResult) {
+        // Run the results if applicable
+        return yield* this.evalNodes([ ...evalResult, ...filteredNodes.slice(1) ], metadata, shortcutNodes, textRunNodes);
+      }
+    } else if (node instanceof types.JumpCommandNode) {
+      const destination = node.destination instanceof types.InlineExpressionNode
+        ? this.evaluateExpressionOrLiteral(node.destination)
+        : node.destination
+      const { parserNodes, metadata } = this.getParserNodes(destination)
+      return yield* this.evalNodes(parserNodes, metadata);
+    } else if (node instanceof types.StopCommandNode) {
+      return
+    } else {
+      const command = this.evaluateExpressionOrLiteral(node.command);
+      const commandResult = Object.assign(new results.CommandResult(command, node.hashtags, metadata), { getGeneratorHere });
+      if (filteredNodes.length === 1) {
+        return commandResult
+      } else {
+        yield commandResult
       }
     }
 
-    if (restNodes.length) {
-      return yield* this.evalNodes(restNodes, metadata)
+    if (filteredNodes.length > 1) {
+      return yield* this.evalNodes(filteredNodes.slice(1), metadata, shortcutNodes, textRunNodes);
     }
-
-    return result;
   }
 
   /**
    * yield a shortcut result then handle the subsequent selection
    * @param {any[]} selections
    */
-  * handleShortcuts(selections, metadata, getGeneratorHere) {
+  * handleShortcuts(selections, metadata, restNodes, getGeneratorHere) {
     // Multiple options to choose from (or just a single shortcut)
     // Tag any conditional dialog options that result to false,
     // the consuming app does the actual filtering or whatever
@@ -258,18 +250,22 @@ class Runner {
     });
 
     const optionsResult = Object.assign(new results.OptionsResult(transformedSelections, metadata), { getGeneratorHere });
-    yield optionsResult;
-    if (typeof optionsResult.selected === 'number') {
-      const selectedOption = transformedSelections[optionsResult.selected];
-      if (selectedOption.content) {
-        // Recursively go through the nodes nested within
-        return yield* this.evalNodes(selectedOption.content, metadata);
-      }
-    } else {
+
+    yield optionsResult
+
+    if (typeof optionsResult.selected !== 'number') {
       throw new Error('No option selected before resuming dialogue');
     }
 
-    return undefined;
+    const selectedOption = transformedSelections[optionsResult.selected];
+    if (selectedOption.content) {
+      // Recursively go through the nodes nested within
+      return yield* this.evalNodes([ ...selectedOption.content, ...restNodes ], metadata);
+    } else {
+      if (restNodes.length) {
+        return yield* this.evalNodes(restNodes, metadata);
+      }
+    }
   }
 
   /**

@@ -11,7 +11,9 @@ import bondage from '../src/index';
 const getNormalGenerator = (runner, nodeName) => runner.run(nodeName)
 const getGetGeneratorHereGenerator = (runner, nodeName) => runner.run(nodeName).next().value.getGeneratorHere()
 
-describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
+// describe.each([[getGetGeneratorHereGenerator]])('Dialogue', (getGenerator) => {
+describe.each([[getNormalGenerator]])('Dialogue', (getGenerator) => {
+// describe.each([[getNormalGenerator], [getGetGeneratorHereGenerator]])('Dialogue', (getGenerator) => {
   let linksYarnData;
   let shortcutsYarnData;
   let assignmentYarnData;
@@ -36,7 +38,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through a single line', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNode').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNode');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNode'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -46,7 +48,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through two lines', () => {
     runner.load(linksYarnData);
-    let run = runner.run('TwoLines').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'TwoLines');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'TwoLines'; }) } };
     delete metadata.body;
     let value = run.next().value;
@@ -58,7 +60,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can start at a different node', () => {
     runner.load(linksYarnData);
-    let run = runner.run('Option2').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Option2');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option2'; }) } };
     delete metadata.body;
 
@@ -69,7 +71,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through a first option to another node', () => {
     runner.load(linksYarnData);
-    let run = runner.run('ThreeNodes').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ThreeNodes');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
     delete metadata.body;
     const metadata2 = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option1'; }) } };
@@ -95,7 +97,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through a second option to another node', () => {
     runner.load(linksYarnData);
-    let run = runner.run('ThreeNodes').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ThreeNodes');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
     delete metadata.body;
     const metadata2 = { ...{ ...linksYarnData.find((n) => { return n.title === 'Option2'; }) } };
@@ -121,7 +123,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Includes node metadata with result', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNodeMetadata').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeMetadata');
     const value = run.next().value;
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeMetadata'; }) } };
     delete metadata.body;
@@ -132,7 +134,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Includes hashtags with text results', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNodeHashtag').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeHashtag');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeHashtag'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -144,9 +146,9 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
     expect(run.next().done).toBe(true);
   });
 
-  it('Ignores comments on option lines', () => {
+  it('Ignores hashtags in comments on option lines', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('NonNestedHashtag').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'NonNestedHashtag');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNestedHashtag'; }) } };
     delete metadata.body;
 
@@ -164,7 +166,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('includes hashtags on conditional option lines', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('ConditionalHashtag').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ConditionalHashtag');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'ConditionalHashtag'; }) } };
     delete metadata.body;
 
@@ -188,7 +190,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('includes hashtags on command lines', () => {
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('BasicCommandsHashtag').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'BasicCommandsHashtag');
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsHashtag'; }) } };
     delete metadata.body;
 
@@ -203,11 +205,10 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('includes hashtags on lines only containing inline expression', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('SimpleInlineExpHashtag');
+    runner.variables.set('firstvar', 1);
+    let run = getGenerator(runner, 'SimpleInlineExpHashtag');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpHashtag'; }) } };
     delete metadata.body;
-
-    runner.variables.set('firstvar', 1);
 
     run = run.next().value.getGeneratorHere();
     const value = run.next().value;
@@ -218,7 +219,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Ignores comments on text lines', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNodeComment').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeComment');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeComment'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -228,7 +229,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Ignores comments on their own line', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNodeWholeLineComment').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeWholeLineComment');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeWholeLineComment'; }) } };
     delete metadata.body;
     let value = run.next().value;
@@ -238,9 +239,9 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
     expect(run.next().done).toBe(true);
   });
 
-  it('Ignores comments on option lines', () => {
+  it('Ignores inline expressions in comments on option lines', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('NonNestedComment').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'NonNestedComment');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNestedComment'; }) } };
     delete metadata.body;
 
@@ -258,7 +259,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('ignores comments on conditional option lines', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('ConditionalComment').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ConditionalComment');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'ConditionalComment'; }) } };
     delete metadata.body;
 
@@ -282,7 +283,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('ignores comments on command lines', () => {
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('BasicCommandsComment').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'BasicCommandsComment');
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommandsComment'; }) } };
     delete metadata.body;
 
@@ -297,11 +298,10 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('ignores comments on lines only containing inline expression', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('SimpleInlineExpComment').next().value.getGeneratorHere();
+    runner.variables.set('firstvar', 1);
+    let run = getGenerator(runner, 'SimpleInlineExpComment');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExpComment'; }) } };
     delete metadata.body;
-
-    runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult('1', [], metadata), getGeneratorHere: value.getGeneratorHere });
@@ -311,7 +311,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Automatically goes to the jump node', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneJumpPassthrough').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneJumpPassthrough');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneJumpPassthrough'; }) } };
     delete metadata.body;
     const metadata2 = { ...linksYarnData.find((n) => { return n.title === 'Option1'; }) };
@@ -326,7 +326,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Automatically goes through two jumps', () => {
     runner.load(linksYarnData);
-    let run = runner.run('TwoJumpPassthrough').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'TwoJumpPassthrough');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'TwoJumpPassthrough'; }) } };
     delete metadata.body;
     const metadata2 = { ...linksYarnData.find((n) => { return n.title === 'OneJumpPassthrough'; }) };
@@ -345,7 +345,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through shortcuts', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('NonNested').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'NonNested');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'NonNested'; }) } };
     delete metadata.body;
 
@@ -369,7 +369,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through nested shortcuts', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('Nested').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Nested');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'Nested'; }) } };
     delete metadata.body;
 
@@ -402,7 +402,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can exclude a conditional shortcut', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('Conditional').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Conditional');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'Conditional'; }) } };
     delete metadata.body;
 
@@ -426,7 +426,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can set a custom variable storage', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('Numeric').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Numeric');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Numeric'; }) } };
     delete metadata.body;
 
@@ -446,7 +446,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate a numeric assignment', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('Numeric').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Numeric');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Numeric'; }) } };
     delete metadata.body;
 
@@ -465,7 +465,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate a numeric assignment with an expression', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('NumericExpression').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'NumericExpression');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'NumericExpression'; }) } };
     delete metadata.body;
 
@@ -484,7 +484,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate a numeric assignment with division expression', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('AssignmentWithDivision').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'AssignmentWithDivision');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'AssignmentWithDivision'; }) } };
     delete metadata.body;
 
@@ -503,7 +503,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate an string assignment', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('String').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'String');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'String'; }) } };
     delete metadata.body;
 
@@ -522,7 +522,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate a string assignment with an expression', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('StringExpression').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'StringExpression');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'StringExpression'; }) } };
     delete metadata.body;
 
@@ -541,7 +541,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate a boolean assignment', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('Boolean').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Boolean');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Boolean'; }) } };
     delete metadata.body;
 
@@ -560,7 +560,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate a function boolean assignment', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('AssignmentWithFunction').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'AssignmentWithFunction');
     runner.registerFunction('identity', (x) => { return x; });
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'AssignmentWithFunction'; }) } };
     delete metadata.body;
@@ -581,7 +581,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate a boolean assignment with expression', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('BooleanExpression').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'BooleanExpression');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'BooleanExpression'; }) } };
     delete metadata.body;
 
@@ -600,7 +600,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate an assignment from one variable to another', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('Variable').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Variable');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'Variable'; }) } };
     delete metadata.body;
 
@@ -620,7 +620,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate an assignment from one variable to another via an expression', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('VariableExpression').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'VariableExpression');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'VariableExpression'; }) } };
     delete metadata.body;
 
@@ -640,7 +640,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate an assignment from one variable to another via an expression with self reference', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('VariableExpression2').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'VariableExpression2');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'VariableExpression2'; }) } };
     delete metadata.body;
 
@@ -660,7 +660,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an if conditional', () => {
     runner.load(conditionalYarnData);
-    let run = runner.run('BasicIf').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'BasicIf');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIf'; }) } };
     delete metadata.body;
 
@@ -678,7 +678,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an if else conditional', () => {
     runner.load(conditionalYarnData);
-    let run = runner.run('BasicIfElse').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'BasicIfElse');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElse'; }) } };
     delete metadata.body;
 
@@ -694,7 +694,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an if elseif conditional', () => {
     runner.load(conditionalYarnData);
-    let run = runner.run('BasicIfElseIf').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'BasicIfElseIf');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElseIf'; }) } };
     delete metadata.body;
 
@@ -710,7 +710,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an if elseif else conditional', () => {
     runner.load(conditionalYarnData);
-    let run = runner.run('BasicIfElseIfElse').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'BasicIfElseIfElse');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'BasicIfElseIfElse'; }) } };
     delete metadata.body;
 
@@ -726,7 +726,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Halts when given the <<stop>> command', () => {
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('StopCommand').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'StopCommand');
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'StopCommand'; }) } };
     delete metadata.body;
 
@@ -737,7 +737,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Ignores content after jumps when going through multiple options', () => {
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('Option1').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Option1');
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'Option1'; }) } };
     delete metadata.body;
     const metadata2 = { ...commandAndFunctionYarnData.find((n) => { return n.title === 'Option2'; }) };
@@ -760,7 +760,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Returns commands to the user', () => {
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('BasicCommands').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'BasicCommands');
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'BasicCommands'; }) } };
     delete metadata.body;
 
@@ -775,12 +775,12 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Returns commands with inline expressions to the user', () => {
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('ExpressionArgumentCommand').next().value.getGeneratorHere();
-    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; }) } };
-    delete metadata.body;
     runner.variables.set('testvar1', 1);
     runner.variables.set('testvar2', 5);
     runner.variables.set('testvar3', 10);
+    let run = getGenerator(runner, 'ExpressionArgumentCommand');
+    const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'ExpressionArgumentCommand'; }) } };
+    delete metadata.body;
     const value = run.next().value;
     expect(value).toEqual({ ...new bondage.CommandResult('command 1 5 apple 10', [], metadata), getGeneratorHere: value.getGeneratorHere });
     expect(run.next().done).toBe(true);
@@ -789,7 +789,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
   it('handles a simple function call with numbers', () => {
     runner.registerFunction('addOne', (num) => { return num + 1; });
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('NumberFunction').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'NumberFunction');
 
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'NumberFunction'; }) } };
     delete metadata.body;
@@ -816,7 +816,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
     });
 
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('FunctionConditional').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'FunctionConditional');
     const metadata = { ...{ ...commandAndFunctionYarnData.find((n) => { return n.title === 'FunctionConditional'; }) } };
     delete metadata.body;
 
@@ -832,7 +832,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Should ignore text after a jump after an option', () => {
     runner.load(conditionalYarnData);
-    let run = runner.run('TextAfterJumpAfterOption').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'TextAfterJumpAfterOption');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'TextAfterJumpAfterOption'; }) } };
     delete metadata.body;
     const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'give_key'; }) };
@@ -857,7 +857,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Should ignore text after a jump after a conditional option', () => {
     runner.load(conditionalYarnData);
-    let run = runner.run('ConditionalOption').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ConditionalOption');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'ConditionalOption'; }) } };
     delete metadata.body;
     const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'Objective'; }) };
@@ -880,8 +880,9 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Should ignore text after a jump after an option in a conditional block', () => {
     runner.load(conditionalYarnData);
-    let run = runner.run('OptionAfterOptionWithinConditional').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OptionAfterOptionWithinConditional');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'OptionAfterOptionWithinConditional'; }) } };
+    console.log('metadata.body', metadata.body)
     delete metadata.body;
     const metadata2 = { ...conditionalYarnData.find((n) => { return n.title === 'give_key'; }) };
     delete metadata2.body;
@@ -902,12 +903,14 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
     expect(value).toEqual({ ...new bondage.TextResult('You give the key to the troll.', [], metadata2), getGeneratorHere: value.getGeneratorHere });
     value = run.next().value;
 
-    expect(run.next().done).toBe(true);
+    const blah = run.next()
+    // console.log('blah', JSON.stringify(blah, null, 2))
+    expect(blah.done).toBe(true);
   });
 
   it('Should move on after a first option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('EmptyFirstOption').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'EmptyFirstOption');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptyFirstOption'; }) } };
     delete metadata.body;
 
@@ -926,7 +929,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Should move on after a second option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('EmptySecondOption').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'EmptySecondOption');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptySecondOption'; }) } };
     delete metadata.body;
 
@@ -945,7 +948,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Should move on after a conditional option with no follow-up is selected', () => {
     runner.load(shortcutsYarnData);
-    let run = runner.run('EmptyConditional').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'EmptyConditional');
     const metadata = { ...{ ...shortcutsYarnData.find((n) => { return n.title === 'EmptyConditional'; }) } };
     delete metadata.body;
 
@@ -964,11 +967,10 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle a simple inline expression', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('SimpleInlineExp').next().value.getGeneratorHere();
+    runner.variables.set('firstvar', 1);
+    let run = getGenerator(runner, 'SimpleInlineExp');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SimpleInlineExp'; }) } };
     delete metadata.body;
-
-    runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult('1', [], metadata), getGeneratorHere: value.getGeneratorHere });
@@ -978,12 +980,11 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle sequential inline expressions', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('SequentialInlineExpressions').next().value.getGeneratorHere();
-    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SequentialInlineExpressions'; }) } };
-    delete metadata.body;
-
     runner.variables.set('firstvar', 1);
     runner.variables.set('secondvar', 2);
+    let run = getGenerator(runner, 'SequentialInlineExpressions');
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'SequentialInlineExpressions'; }) } };
+    delete metadata.body;
 
     const value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult('12', [], metadata), getGeneratorHere: value.getGeneratorHere });
@@ -993,12 +994,11 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle non-sequential inline expressions', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('NonSequentialInlineExpressions').next().value.getGeneratorHere();
-    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'NonSequentialInlineExpressions'; }) } };
-    delete metadata.body;
-
     runner.variables.set('firstvar', 1);
     runner.variables.set('secondvar', 2);
+    let run = getGenerator(runner, 'NonSequentialInlineExpressions');
+    const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'NonSequentialInlineExpressions'; }) } };
+    delete metadata.body;
 
     const value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult('1textbetween2', [], metadata), getGeneratorHere: value.getGeneratorHere });
@@ -1008,11 +1008,10 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle a simple inline expression in a sentence', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('InlineExpSentence').next().value.getGeneratorHere();
+    runner.variables.set('firstvar', 'test');
+    let run = getGenerator(runner, 'InlineExpSentence');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpSentence'; }) } };
     delete metadata.body;
-
-    runner.variables.set('firstvar', 'test');
 
     const value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult('This is a test.', [], metadata), getGeneratorHere: value.getGeneratorHere });
@@ -1022,7 +1021,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an arithmetic inline expression', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('InlineExpArithmetic').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'InlineExpArithmetic');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpArithmetic'; }) } };
     delete metadata.body;
 
@@ -1034,7 +1033,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an inline expression with a variable', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('InlineExpVariable').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'InlineExpVariable');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpVariable'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1045,7 +1044,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an inline expression in an option', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('OptionInlineExpression').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OptionInlineExpression');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'OptionInlineExpression'; }) } };
     delete metadata.body;
     runner.variables.set('firstvar', 'test');
@@ -1068,7 +1067,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an inline expression in a conditional option', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('ConditionalOptionInlineExpression').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ConditionalOptionInlineExpression');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'ConditionalOptionInlineExpression'; }) } };
     delete metadata.body;
     runner.variables.set('firstvar', 'test');
@@ -1091,7 +1090,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle a simple inline expression whitespace in a sentence', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('InlineExpAddSentence').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'InlineExpAddSentence');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpAddSentence'; }) } };
     delete metadata.body;
 
@@ -1105,7 +1104,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle an if arithmetic expression elseif conditional', () => {
     runner.load(conditionalYarnData);
-    let run = runner.run('ArithmeticExpressionConditional').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ArithmeticExpressionConditional');
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'ArithmeticExpressionConditional'; }) } };
     delete metadata.body;
 
@@ -1121,7 +1120,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can evaluate a numeric assignment with exponent expression', () => {
     runner.load(assignmentYarnData);
-    let run = runner.run('ExponentExpression').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ExponentExpression');
     const metadata = { ...{ ...assignmentYarnData.find((n) => { return n.title === 'ExponentExpression'; }) } };
     delete metadata.body;
 
@@ -1141,8 +1140,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
   it('can handle a negated function call in a conditional', () => {
     runner.registerFunction('returnFalse', () => { return false; });
     runner.load(conditionalYarnData);
-    let run = runner.run('IfNotFunction');
-    // run = run.next().value.getGeneratorHere()
+    let run = getGenerator(runner, 'IfNotFunction');
 
     const metadata = { ...{ ...conditionalYarnData.find((n) => { return n.title === 'IfNotFunction'; }) } };
     delete metadata.body;
@@ -1168,7 +1166,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
     });
 
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('InlineExpFunctionResult').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'InlineExpFunctionResult');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpFunctionResult'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1178,7 +1176,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can handle inline expression containing equality', () => {
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('InlineExpEquality').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'InlineExpEquality');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpEquality'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1190,7 +1188,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
     runner.registerFunction('testfunc', () => { return 1; });
 
     runner.load(inlineExpressionYarnData);
-    let run = runner.run('InlineExpFunctionResultExp').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'InlineExpFunctionResultExp');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpFunctionResultExp'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1200,7 +1198,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through a single line with an escaped curly brace', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNodeEscapeCurlyBrace').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeEscapeCurlyBrace');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeCurlyBrace'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1211,7 +1209,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
   it('Does not remove backslashes if noEscape is on', () => {
     runner.load(linksYarnData);
     runner.noEscape = true;
-    let run = runner.run('OneNodeEscapeCurlyBrace').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeEscapeCurlyBrace');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeCurlyBrace'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1222,7 +1220,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through a single line with two consecutive escaped curly braces', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNodeEscapeTwoCurlyBraces').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeEscapeTwoCurlyBraces');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeTwoCurlyBraces'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1232,7 +1230,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through a single line with an escaped hashtag', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNodeEscapeHashtag').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeEscapeHashtag');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtag'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1242,7 +1240,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can escape hashtags and comments together', () => {
     runner.load(linksYarnData);
-    let run = runner.run('OneNodeEscapeHashtagComment').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'OneNodeEscapeHashtagComment');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'OneNodeEscapeHashtagComment'; }) } };
     delete metadata.body;
     const value = run.next().value;
@@ -1256,7 +1254,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Can run through three lines when the first ends on an escaped character', () => {
     runner.load(linksYarnData);
-    let run = runner.run('ThreeLineEscape').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ThreeLineEscape');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeLineEscape'; }) } };
     delete metadata.body;
     let value = run.next().value;
@@ -1270,7 +1268,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Throws an error if an out-of-range option is selected', () => {
     runner.load(linksYarnData);
-    let run = runner.run('ThreeNodes').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ThreeNodes');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
     delete metadata.body;
 
@@ -1288,7 +1286,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Throws an error if no option is selected before next() is called', () => {
     runner.load(linksYarnData);
-    let run = runner.run('ThreeNodes').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'ThreeNodes');
     const metadata = { ...{ ...linksYarnData.find((n) => { return n.title === 'ThreeNodes'; }) } };
     delete metadata.body;
 
@@ -1305,7 +1303,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
 
   it('Throws an error if a function is called but not registered', () => {
     runner.load(commandAndFunctionYarnData);
-    let run = runner.run('FunctionConditional').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'FunctionConditional');
     run.next();
     expect(() => { run.next(); }).toThrow();
   });
@@ -1386,7 +1384,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
       ===
     `;
     runner.load(dialogue);
-    let run = runner.run('Start').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Start');
     let value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult(
       'This is a test line.',
@@ -1418,7 +1416,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
       ===
     `;
     runner.load(dialogue);
-    let run = runner.run('Start').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Start');
     const value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult(
       'This is a test line.',
@@ -1442,7 +1440,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
       ===
     `;
     runner.load(dialogue);
-    let run = runner.run('Start').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Start');
     let value = run.next().value;
     expect(value.text).toEqual('1');
     value = run.next().value;
@@ -1462,7 +1460,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
     `;
     runner.variables.set('testvar1', 99);
     runner.load(dialogue);
-    let run = runner.run('Start').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Start');
     const value = run.next().value;
     expect(value.text).toEqual('99');
     expect(run.next().done).toBe(true);
@@ -1499,7 +1497,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
     `;
     runner.load(dialogue);
     expect(() => {
-      let run = runner.run('Start').next().value.getGeneratorHere();
+      let run = getGenerator(runner, 'Start');
       run.next();
     }).toThrow();
   });
@@ -1521,7 +1519,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
       ===
     `;
     runner.load(dialogue);
-    let run = runner.run('Start').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Start');
     let value = run.next().value;
     expect(value.text).toEqual('1');
     value = run.next().value;
@@ -1543,7 +1541,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
       ===
     `;
     runner.load(dialogue);
-    let run = runner.run('Start').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Start');
     let value = run.next().value;
     expect(value.text).toEqual('1');
     value = run.next().value;
@@ -1567,7 +1565,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
       ===
     `;
     runner.load(dialogue);
-    let run = runner.run('Start').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Start');
     let value = run.next().value;
     expect(value.text).toEqual('hello');
     value = run.next().value;
@@ -1584,7 +1582,7 @@ describe.each([getNormalGenerator, getGetGeneratorHereGenerator], () => {
       ===
     `;
     runner.load(dialogue);
-    let run = runner.run('Start').next().value.getGeneratorHere();
+    let run = getGenerator(runner, 'Start');
     let value = run.next().value;
     expect(value.text).toEqual('hello');
     value = run.next().value;

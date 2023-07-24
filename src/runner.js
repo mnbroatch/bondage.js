@@ -127,10 +127,7 @@ class Runner {
     const parserNodes = Array.from(parser.parse(yarnNode.body));
     const metadata = { ...yarnNode };
     delete metadata.body;
-    const result = yield* this.evalNodes(parserNodes, metadata);
-    // if (result && result.jump) {
-    //   yield* this.run(result && result.jump)
-    // }
+    return yield* this.evalNodes(parserNodes, metadata);
   }
 
   /**
@@ -139,20 +136,23 @@ class Runner {
    * @param {Node[]} nodes
    * @param {YarnNode[]} metadata
    */
-  * evalNodes(nodes, metadata, startingFilteredNodeIndex = 0, shortcutNodes = [], textRun = '') {
+  * evalNodes(nodes, metadata, restNodes = [], startingFilteredNodeIndex = 0, shortcutNodes = [], textRunNodes = []) {
     const filteredNodes = nodes.filter(Boolean);
 
     // Yield the individual user-visible results
-    // Need to accumulate all adjacent selectables
-    // into one list (hence some of the weirdness here)
+    let result
     for (let nodeIdx = startingFilteredNodeIndex; nodeIdx < filteredNodes.length; nodeIdx += 1) {
-      // For lookahead systems, which could evaluate nodes
-      // before variables change, for instance.
-      const _textRun = textRun
+      // Need unique copies to make a special duplicate generator
+      // for lookahead, rewind, or other funky stuff
+      const _textRunNodes = [ ...textRunNodes ]
       const _shortcutNodes = [...shortcutNodes]
       const _nodeIdx = nodeIdx
       const _nodes = [...nodes]
-      const getGeneratorHere = () => this.evalNodes(nodes, metadata, _nodeIdx, _shortcutNodes, _textRun)
+      const _restNodes = [...restNodes]
+      const getGeneratorHere = () => {
+        return this.evalNodes(_nodes, metadata, _restNodes, _nodeIdx, _shortcutNodes, _textRunNodes)
+      }
+
       const node = filteredNodes[nodeIdx];
       const nextNode = filteredNodes[nodeIdx + 1];
 
@@ -162,7 +162,7 @@ class Runner {
         node instanceof nodeTypes.Text
         || node instanceof nodeTypes.Expression
       ) {
-        textRun += this.evaluateExpressionOrLiteral(node).toString();
+        textRunNodes.push(node)
         if (
           nextNode
           && node.lineNum === nextNode.lineNum
@@ -174,22 +174,28 @@ class Runner {
           // Same line, with another text equivalent to add to the
           // text run further on in the loop, so don't yield.
         } else {
-          yield Object.assign(new results.TextResult(textRun, node.hashtags, metadata), { getGeneratorHere });
-          textRun = '';
+          const text = textRunNodes.reduce((acc, node) => acc + this.evaluateExpressionOrLiteral(node).toString(), '');
+          textRunNodes = [];
+          const bleh = Object.assign(new results.TextResult(text, node.hashtags, metadata), { getGeneratorHere });
+          
+          if (filteredNodes.length === nodeIdx + 1 && !restNodes.length) {
+            return yield bleh
+          } else {
+            yield bleh
+          }
         }
       } else if (node instanceof nodeTypes.Shortcut) {
+        // Need to accumulate all adjacent selectables into one list
         shortcutNodes.push(node);
         if (!(nextNode instanceof nodeTypes.Shortcut)) {
           // Last shortcut in the series, so yield the shortcuts.
-          const result = yield* this.handleShortcuts(shortcutNodes, metadata, getGeneratorHere);
-          if (result) return result
+          result = yield* this.handleShortcuts(shortcutNodes, metadata, getGeneratorHere);
           shortcutNodes = []; // figure out a test to fail when this is removed
         }
       } else if (node instanceof nodeTypes.Assignment) {
         const _node = node
         const cb = () => { this.evaluateAssignment(_node) };
         if (this.shouldQueueAssignments) {
-          // Undocumented because it's not user friendly; for supporting lookahead
           this.queuedOperations.push(cb)
         } else {
           cb()
@@ -199,25 +205,34 @@ class Runner {
         const evalResult = this.evaluateConditional(node);
         if (evalResult) {
           // Run the results if applicable
-          return yield* this.evalNodes([ ...evalResult, ...filteredNodes.slice(nodeIdx + 1) ], metadata);
+          return yield* this.evalNodes(evalResult, metadata, filteredNodes.slice(nodeIdx + 1));
         }
       } else if (node instanceof types.JumpCommandNode) {
         const destination = node.destination instanceof types.InlineExpressionNode
           ? this.evaluateExpressionOrLiteral(node.destination)
           : node.destination
-        yield * this.run(destination)
+        return yield * this.run(destination)
         // returning ignores the rest of this recursive loop and having a 
         // return value tells outer loops in the recursion to stop as well
-        return { stop: true };
+        console.log('123123node', node)
+        result = { stop: true };
       } else if (node instanceof types.StopCommandNode) {
-        return { stop: true };
+        result = { stop: true };
       } else {
         const command = this.evaluateExpressionOrLiteral(node.command);
         yield Object.assign(new results.CommandResult(command, node.hashtags, metadata), { getGeneratorHere });
       }
+
+      if (result) {
+        break
+      }
     }
 
-    return undefined;
+    if (restNodes.length) {
+      return yield* this.evalNodes(restNodes, metadata)
+    }
+
+    return result;
   }
 
   /**
@@ -313,6 +328,10 @@ class Runner {
       return node.reduce((acc, n) => {
         return acc + this.evaluateExpressionOrLiteral(n).toString();
       }, '');
+    }
+
+    if (typeof node !== 'object') {
+      return node
     }
 
     const nodeHandlers = {

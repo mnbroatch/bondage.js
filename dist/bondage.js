@@ -3027,20 +3027,19 @@ var _defaultVariableStorage = _interopRequireDefault(__webpack_require__(826));
 
 var _convertYarnToJs = _interopRequireDefault(__webpack_require__(833));
 
-var _nodes = _interopRequireDefault(__webpack_require__(987));
+var _nodes2 = _interopRequireDefault(__webpack_require__(987));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const nodeTypes = _nodes.default.types;
+const nodeTypes = _nodes2.default.types;
 
 class Runner {
   constructor() {
     this.noEscape = false;
-    this.shouldQueueAssignments = false;
+    this.lookahead = false;
     this.yarnNodes = {};
     this.variables = new _defaultVariableStorage.default();
     this.functions = {};
-    this.queuedOperations = [];
   }
   /**
    * Loads the yarn node data into this.nodes
@@ -3148,29 +3147,35 @@ class Runner {
     this.functions[name] = func;
   }
   /**
-   * Generator to return each sequential dialog result starting from the given node
-   * @param {string} [startNode] - The name of the yarn node to begin at
+   * Generator to run a dialogue, starting at a specified node.
+   * @param {string} [nodeName] - The name of the yarn node to begin at
    */
 
 
-  *run(startNode) {
-    let jumpTo = startNode;
+  *run(nodeName) {
+    const {
+      parserNodes,
+      metadata
+    } = this.getParserNodes(nodeName);
+    return yield* this.evalNodes(parserNodes, metadata);
+  }
 
-    while (jumpTo) {
-      const yarnNode = this.yarnNodes[jumpTo];
+  getParserNodes(nodeName) {
+    const yarnNode = this.yarnNodes[nodeName];
 
-      if (yarnNode === undefined) {
-        throw new Error(`Node "${startNode}" does not exist`);
-      } // Parse the entire node
+    if (yarnNode === undefined) {
+      throw new Error(`Node "${nodeName}" does not exist`);
+    } // Parse the entire node
 
 
-      const parserNodes = Array.from(_parser.default.parse(yarnNode.body));
-      const metadata = { ...yarnNode
-      };
-      delete metadata.body;
-      const result = yield* this.evalNodes(parserNodes, metadata);
-      jumpTo = result && result.jump;
-    }
+    const parserNodes = Array.from(_parser.default.parse(yarnNode.body));
+    const metadata = { ...yarnNode
+    };
+    delete metadata.body;
+    return {
+      parserNodes,
+      metadata
+    };
   }
   /**
    * Evaluate a list of parser nodes, yielding the ones that need to be seen by
@@ -3181,85 +3186,88 @@ class Runner {
 
 
   *evalNodes(nodes, metadata) {
-    let shortcutNodes = [];
-    let textRun = '';
+    let shortcutNodes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+    let textRunNodes = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
     const filteredNodes = nodes.filter(Boolean); // Yield the individual user-visible results
-    // Need to accumulate all adjacent selectables
-    // into one list (hence some of the weirdness here)
 
-    for (let nodeIdx = 0; nodeIdx < filteredNodes.length; nodeIdx += 1) {
-      const node = filteredNodes[nodeIdx];
-      const nextNode = filteredNodes[nodeIdx + 1]; // Text and the output of Inline Expressions
-      // are combined to deliver a TextNode.
+    let result; // Need unique copies to make a special duplicate generator
+    // for lookahead, rewind, or other funky stuff
 
-      if (node instanceof nodeTypes.Text || node instanceof nodeTypes.Expression) {
-        textRun += this.evaluateExpressionOrLiteral(node).toString();
+    const _textRunNodes = [...textRunNodes];
+    const _shortcutNodes = [...shortcutNodes];
+    const _nodes = [...nodes];
 
-        if (nextNode && node.lineNum === nextNode.lineNum && (nextNode instanceof nodeTypes.Text || nextNode instanceof nodeTypes.Expression)) {// Same line, with another text equivalent to add to the
-          // text run further on in the loop, so don't yield.
-        } else {
-          yield new _results.default.TextResult(textRun, node.hashtags, metadata);
-          textRun = '';
-        }
-      } else if (node instanceof nodeTypes.Shortcut) {
-        shortcutNodes.push(node);
+    const getGeneratorHere = () => {
+      return this.evalNodes(_nodes, metadata, _shortcutNodes, _textRunNodes);
+    };
 
-        if (!(nextNode instanceof nodeTypes.Shortcut)) {
-          // Last shortcut in the series, so yield the shortcuts.
-          const result = yield* this.handleShortcuts(shortcutNodes, metadata);
+    const node = filteredNodes[0];
+    const nextNode = filteredNodes[1]; // Text and the output of Inline Expressions
+    // are combined to deliver a TextNode.
 
-          if (result && (result.stop || result.jump)) {
-            return result;
-          }
+    if (node instanceof nodeTypes.Text || node instanceof nodeTypes.Expression) {
+      textRunNodes.push(node);
 
-          shortcutNodes = [];
-        }
-      } else if (node instanceof nodeTypes.Assignment) {
-        const _node = node;
-
-        const cb = () => {
-          this.evaluateAssignment(_node);
-        };
-
-        if (this.shouldQueueAssignments) {
-          // Undocumented because it's not user friendly; for supporting lookahead
-          this.queuedOperations.push(cb);
-        } else {
-          cb();
-        }
-      } else if (node instanceof nodeTypes.Conditional) {
-        // Get the results of the conditional
-        const evalResult = this.evaluateConditional(node);
-
-        if (evalResult) {
-          // Run the remaining results
-          const result = yield* this.evalNodes(evalResult, metadata);
-
-          if (result && (result.stop || result.jump)) {
-            return result;
-          }
-        }
-      } else if (node instanceof _nodes.default.JumpCommandNode) {
-        // ignore the rest of this outer loop and
-        // tell parent loops to ignore following nodes.
-        // Recursive call here would cause stack overflow
-        const destination = node.destination instanceof _nodes.default.InlineExpressionNode ? this.evaluateExpressionOrLiteral(node.destination) : node.destination;
-        return {
-          jump: destination
-        };
-      } else if (node instanceof _nodes.default.StopCommandNode) {
-        // ignore the rest of this outer loop and
-        // tell parent loops to ignore following nodes
-        return {
-          stop: true
-        };
+      if (nextNode && node.lineNum === nextNode.lineNum && (nextNode instanceof nodeTypes.Text || nextNode instanceof nodeTypes.Expression)) {// Same line, with another text equivalent to add to the
+        // text run further on in the loop, so don't yield.
       } else {
-        const command = this.evaluateExpressionOrLiteral(node.command);
-        yield new _results.default.CommandResult(command, node.hashtags, metadata);
+        const text = textRunNodes.reduce((acc, node) => acc + this.evaluateExpressionOrLiteral(node).toString(), '');
+        textRunNodes = [];
+        const textResult = Object.assign(new _results.default.TextResult(text, node.hashtags, metadata), {
+          getGeneratorHere
+        });
+
+        if (filteredNodes.length === 1) {
+          return textResult;
+        } else {
+          yield textResult;
+        }
+      }
+    } else if (node instanceof nodeTypes.Shortcut) {
+      // Need to accumulate all adjacent selectables into one list
+      shortcutNodes.push(node);
+
+      if (!(nextNode instanceof nodeTypes.Shortcut)) {
+        // Last shortcut in the series, so yield the shortcuts.
+        return yield* this.handleShortcuts(shortcutNodes, metadata, filteredNodes.slice(1), getGeneratorHere);
+      }
+    } else if (node instanceof nodeTypes.Assignment) {
+      if (!this.lookahead) {
+        this.evaluateAssignment(_node);
+      }
+    } else if (node instanceof nodeTypes.Conditional) {
+      // Get the results of the conditional
+      const evalResult = this.evaluateConditional(node);
+
+      if (evalResult) {
+        // Run the results if applicable
+        return yield* this.evalNodes([...evalResult, ...filteredNodes.slice(1)], metadata, shortcutNodes, textRunNodes);
+      }
+    } else if (node instanceof _nodes2.default.JumpCommandNode) {
+      const destination = node.destination instanceof _nodes2.default.InlineExpressionNode ? this.evaluateExpressionOrLiteral(node.destination) : node.destination;
+      const {
+        parserNodes,
+        metadata
+      } = this.getParserNodes(destination);
+      return yield* this.evalNodes(parserNodes, metadata);
+    } else if (node instanceof _nodes2.default.StopCommandNode) {
+      return;
+    } else {
+      const command = this.evaluateExpressionOrLiteral(node.command);
+      const commandResult = Object.assign(new _results.default.CommandResult(command, node.hashtags, metadata), {
+        getGeneratorHere
+      });
+
+      if (filteredNodes.length === 1) {
+        return commandResult;
+      } else {
+        yield commandResult;
       }
     }
 
-    return undefined;
+    if (filteredNodes.length > 1) {
+      return yield* this.evalNodes(filteredNodes.slice(1), metadata, shortcutNodes, textRunNodes);
+    }
   }
   /**
    * yield a shortcut result then handle the subsequent selection
@@ -3267,7 +3275,7 @@ class Runner {
    */
 
 
-  *handleShortcuts(selections, metadata) {
+  *handleShortcuts(selections, metadata, restNodes, getGeneratorHere) {
     // Multiple options to choose from (or just a single shortcut)
     // Tag any conditional dialog options that result to false,
     // the consuming app does the actual filtering or whatever
@@ -3284,21 +3292,25 @@ class Runner {
         text
       });
     });
-    const optionsResult = new _results.default.OptionsResult(transformedSelections, metadata);
+    const optionsResult = Object.assign(new _results.default.OptionsResult(transformedSelections, metadata), {
+      getGeneratorHere
+    });
     yield optionsResult;
 
-    if (typeof optionsResult.selected === 'number') {
-      const selectedOption = transformedSelections[optionsResult.selected];
-
-      if (selectedOption.content) {
-        // Recursively go through the nodes nested within
-        return yield* this.evalNodes(selectedOption.content, metadata);
-      }
-    } else {
+    if (typeof optionsResult.selected !== 'number') {
       throw new Error('No option selected before resuming dialogue');
     }
 
-    return undefined;
+    const selectedOption = transformedSelections[optionsResult.selected];
+
+    if (selectedOption.content) {
+      // Recursively go through the nodes nested within
+      return yield* this.evalNodes([...selectedOption.content, ...restNodes], metadata);
+    } else {
+      if (restNodes.length) {
+        return yield* this.evalNodes(restNodes, metadata);
+      }
+    }
   }
   /**
    * Evaluates the given assignment node
@@ -3361,6 +3373,10 @@ class Runner {
       return node.reduce((acc, n) => {
         return acc + this.evaluateExpressionOrLiteral(n).toString();
       }, '');
+    }
+
+    if (typeof node !== 'object') {
+      return node;
     }
 
     const nodeHandlers = {

@@ -195,7 +195,7 @@ class Runner {
       }
     } else if (node instanceof nodeTypes.Assignment) {
       if (!this.lookahead) {
-        this.evaluateAssignment(_node)
+        this.evaluateAssignment(node)
       }
     } else if (node instanceof nodeTypes.Conditional) {
       // Get the results of the conditional

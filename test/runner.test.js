@@ -1600,4 +1600,28 @@ describe.each([[getNormalGenerator], [getGetGeneratorHereGenerator]])('Dialogue'
     value = run.next().value;
     expect(value.text).toEqual('Goodbye 1');
   })
+
+  test('Should handle a comment after a conditional', () => {
+    const dialogue = `
+      title:Start
+      ---
+      // blah
+      Hello
+      <<if true == true>>
+        Goodbye
+      <<endif>>
+      // bleh
+      Hello again
+      ===
+    `
+
+    runner.load(dialogue);
+    let run = getGenerator(runner, 'Start');
+    let value = run.next().value;
+    expect(value.text).toEqual('Hello');
+    value = run.next().value;
+    expect(value.text).toEqual('Goodbye');
+    value = run.next().value;
+    expect(value.text).toEqual('Hello again');
+  })
 });

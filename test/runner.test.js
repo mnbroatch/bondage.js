@@ -1580,4 +1580,24 @@ describe.each([[getNormalGenerator], [getGetGeneratorHereGenerator]])('Dialogue'
     value = run.next().value;
     expect(value.text).toEqual('hello');
   });
+
+  test('Should respect a variable set externally before a check', () => {
+    const dialogue = `
+      title:Start
+      ---
+      Hello
+      <<if $a == 1>>
+        Goodbye {$a}
+      <<endif>>
+      ===
+    `
+
+    runner.load(dialogue);
+    let run = getGenerator(runner, 'Start');
+    let value = run.next().value;
+    expect(value.text).toEqual('Hello');
+    runner.variables.set('a', 1)
+    value = run.next().value;
+    expect(value.text).toEqual('Goodbye 1');
+  })
 });

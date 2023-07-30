@@ -1082,12 +1082,11 @@ describe.each([[getNormalGenerator], [getGetGeneratorHereGenerator]])('Dialogue'
   });
 
   it('Can handle a simple inline expression whitespace in a sentence', () => {
+    runner.variables.set('firstvar', 1);
     runner.load(inlineExpressionYarnData);
     let run = getGenerator(runner, 'InlineExpAddSentence');
     const metadata = { ...{ ...inlineExpressionYarnData.find((n) => { return n.title === 'InlineExpAddSentence'; }) } };
     delete metadata.body;
-
-    runner.variables.set('firstvar', 1);
 
     const value = run.next().value;
     expect(value).toEqual({ ...new bondage.TextResult('This is a 2 sentence.', [], metadata), getGeneratorHere: value.getGeneratorHere });

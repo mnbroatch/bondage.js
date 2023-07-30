@@ -3448,7 +3448,13 @@ class Runner {
         return a.booleanLiteral === 'true';
       },
       VariableNode: a => {
-        return this.variables.get(a.variableName);
+        const value = this.variables.get(a.variableName);
+
+        if (value === undefined) {
+          throw new Error(`Attempted to access undefined variable "${a.variableName}"`);
+        }
+
+        return value;
       },
       FunctionCallNode: a => {
         return this.evaluateFunctionCall(a);

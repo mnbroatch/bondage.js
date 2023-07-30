@@ -1582,4 +1582,3 @@ describe.each([[getNormalGenerator], [getGetGeneratorHereGenerator]])('Dialogue'
     expect(value.text).toEqual('hello');
   });
 });
-

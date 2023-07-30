@@ -353,7 +353,13 @@ class Runner {
       NumericLiteralNode: (a) => { return parseFloat(a.numericLiteral); },
       StringLiteralNode: (a) => { return `${a.stringLiteral}`; },
       BooleanLiteralNode: (a) => { return a.booleanLiteral === 'true'; },
-      VariableNode: (a) => { return this.variables.get(a.variableName); },
+      VariableNode: (a) => {
+        const value = this.variables.get(a.variableName)
+        if (value === undefined) {
+          throw new Error(`Attempted to access undefined variable "${a.variableName}"`)
+        }
+        return value;
+      },
       FunctionCallNode: (a) => { return this.evaluateFunctionCall(a); },
       InlineExpressionNode: (a) => { return a; },
     };
